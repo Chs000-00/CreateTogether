@@ -1,0 +1,14 @@
+{
+	"geode": "3.9.0",
+	"gd": {
+		"win": "2.206",
+		"android": "2.206",
+		"mac": "2.206",
+		"ios": "2.206"
+	},
+	"id": "chs000.createtogether",
+	"name": "Create Together",
+	"version": "v0.1.0",
+	"developer": "chs000",
+	"description": ""
+}
