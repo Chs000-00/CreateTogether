@@ -1,6 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
-
+#include "isteamfriends.h"
 
 using namespace geode::prelude;
 
@@ -28,5 +28,6 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 
 	void onHost(CCObject*) {
 		FLAlertLayer::create("CreateTogether", "Might be hosting!", "OK")->show();
+		SteamFriends()->ActivateGameOverlay( "friends" );
 	}
 };
