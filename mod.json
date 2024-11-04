@@ -10,12 +10,5 @@
 	"name": "Create Together",
 	"version": "v0.1.0",
 	"developer": "chs000",
-	"description": "",
-    "dependencies": [
-        {
-            "id": "geode.node-ids",
-            "version": "v1.10.0",
-            "importance": "required"
-        }
-    ]
+	"description": ""
 }

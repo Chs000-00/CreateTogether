@@ -1,23 +1,39 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
+#include <Geode/modify/LevelEditorLayer.hpp>
 #include "isteamfriends.h"
 #include "isteammatchmaking.h"
 
+
 using namespace geode::prelude;
 
-class $modify(MyEditorPauseLayer, EditorPauseLayer) {
+class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 
+	
     struct Fields {
         uint64 m_lobbyId = 0;
 		bool m_isInLobby = false;
     };
+
+
+	bool init(GJGameLevel* p0, bool p1) {
+
+		if (!LevelEditorLayer::init(p0, p1)) {
+			return false;
+		}
+
+		return true;
+	}
+};
+
+class $modify(MyEditorPauseLayer, EditorPauseLayer) {
+
 
 	bool init(LevelEditorLayer* p0) {
 
 		if (!EditorPauseLayer::init(p0)) {
 			return false;
 		}
-
 
 		auto hostButton = CCMenuItemSpriteExtra::create(
 			CircleButtonSprite::createWithSpriteFrameName("GJ_hammerIcon_001.png", (1.0F), geode::CircleBaseColor::Gray, geode::CircleBaseSize::Small),	
@@ -33,10 +49,14 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 		return true;
 	}
 
+	void onExitEditor(cocos2d::CCObject* sender) {
+		leaveLobby();
+	}
+
 	void onHost(CCObject*) {
 		FLAlertLayer::create("CreateTogether", "Might be hosting!", "OK")->show();
-		
 		auto lobby = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
+		log::info("Creating a lobby...");
 	}
 
 	void inviteFriends() {
@@ -44,8 +64,10 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 	}
 
 	void leaveLobby() {
-		if (m_fields->m_isInLobby) {
-			SteamMatchmaking()->LeaveLobby(m_fields->m_lobbyId);
+		auto lvlEditor = static_cast<MyLevelEditorLayer*>(m_editorLayer)->m_fields;
+		if (lvlEditor->m_isInLobby) {
+			SteamMatchmaking()->LeaveLobby(lvlEditor->m_lobbyId);
+			log::info("Leaving lobby with ID {}", lvlEditor->m_lobbyId);
 		}
 	}
 };
