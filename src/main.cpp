@@ -3,6 +3,7 @@
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include "isteamfriends.h"
 #include "isteammatchmaking.h"
+#include "LobbyPopup.hpp"
 
 
 using namespace geode::prelude;
@@ -54,9 +55,10 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 	}
 
 	void onHost(CCObject*) {
-		FLAlertLayer::create("CreateTogether", "Might be hosting!", "OK")->show();
+		// FLAlertLayer::create("CreateTogether", "Might be hosting!", "OK")->show();
 		auto lobby = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
 		log::info("Creating a lobby...");
+		LobbyPopup::create("TEST");
 	}
 
 	void inviteFriends() {

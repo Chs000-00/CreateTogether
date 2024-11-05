@@ -1,10 +1,11 @@
 #include <Geode/Geode.hpp>
+#include "LobbyPopup.hpp"
 
 using namespace geode::prelude;
 
 
 // specify parameters for the setup function in the Popup<...> template
-class CreateLobbyPopup : public geode::Popup<std::string const&> {
+class LobbyPopup : public geode::Popup<std::string const&> {
 protected:
     bool setup(std::string const& value) override {
         // convenience function provided by Popup
@@ -18,8 +19,8 @@ protected:
     }
 
 public:
-    static CreateLobbyPopup* create(std::string const& text) {
-        auto ret = new CreateLobbyPopup();
+    static LobbyPopup* create(std::string const& text) {
+        auto ret = new LobbyPopup();
         if (ret->initAnchored(240.f, 160.f, text)) {
             ret->autorelease();
             return ret;
