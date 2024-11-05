@@ -71,7 +71,7 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 			log::info("Leaving lobby with ID {}", lvlEditor->m_lobbyId);
 		}
         else {
-            log::info("Cant leave lobby because not in lobby!")
+                log::info("Cant leave lobby because not in lobby!")
         }
 	}
 };
