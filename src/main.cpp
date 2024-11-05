@@ -14,14 +14,14 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
         bool m_isInLobby = false;
     };
 
-	bool init(GJGameLevel* p0, bool p1) {
+    bool init(GJGameLevel* p0, bool p1) {
+        
+        if (!LevelEditorLayer::init(p0, p1)) {
+            return false;
+        }
 
-		if (!LevelEditorLayer::init(p0, p1)) {
-			return false;
-		}
-
-		return true;
-	}
+        return true;
+    }
 };
 
 class $modify(MyEditorPauseLayer, EditorPauseLayer) {
@@ -66,12 +66,12 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
         // This causes crash! TODO: FIX CRASH!
         // Too lazy to test, but usingstatic_cast<LevelEditorLayer*> might work?
         auto clvlEditor = static_cast<MyLevelEditorLayer*>(m_editorLayer)->m_fields;
-		if (clvlEditor->m_isInLobby) {
-			SteamMatchmaking()->LeaveLobby(lvlEditor->m_lobbyId);
-			log::info("Leaving lobby with ID {}", lvlEditor->m_lobbyId);
-		}
+        if (clvlEditor->m_isInLobby) {
+            SteamMatchmaking()->LeaveLobby(lvlEditor->m_lobbyId);
+            log::info("Leaving lobby with ID {}", lvlEditor->m_lobbyId);
+        }
         else {
-                log::info("Cant leave lobby because not in lobby!")
+            log::info("Cant leave lobby because not in lobby!")
         }
 	}
 };
