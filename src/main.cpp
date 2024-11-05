@@ -5,17 +5,14 @@
 #include "isteammatchmaking.h"
 #include "LobbyPopup.hpp"
 
-
 using namespace geode::prelude;
 
 class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 
-	
     struct Fields {
         uint64 m_lobbyId = 0;
-		bool m_isInLobby = false;
+        bool m_isInLobby = false;
     };
-
 
 	bool init(GJGameLevel* p0, bool p1) {
 
@@ -28,7 +25,6 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 };
 
 class $modify(MyEditorPauseLayer, EditorPauseLayer) {
-
 
 	bool init(LevelEditorLayer* p0) {
 
@@ -50,10 +46,6 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 		return true;
 	}
 
-	void onExitEditor(cocos2d::CCObject* sender) {
-		leaveLobby();
-	}
-
 	void onHost(CCObject*) {
 		// FLAlertLayer::create("CreateTogether", "Might be hosting!", "OK")->show();
 		auto lobby = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
@@ -65,11 +57,21 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 		SteamFriends()->ActivateGameOverlay( "friends" );
 	}
 
+
+	void onExitEditor(cocos2d::CCObject* sender) {
+		leaveLobby();
+	}
+
 	void leaveLobby() {
-		auto lvlEditor = static_cast<MyLevelEditorLayer*>(m_editorLayer)->m_fields;
-		if (lvlEditor->m_isInLobby) {
+        // This causes crash! TODO: FIX CRASH!
+        // Too lazy to test, but usingstatic_cast<LevelEditorLayer*> might work?
+        auto clvlEditor = static_cast<MyLevelEditorLayer*>(m_editorLayer)->m_fields;
+		if (clvlEditor->m_isInLobby) {
 			SteamMatchmaking()->LeaveLobby(lvlEditor->m_lobbyId);
 			log::info("Leaving lobby with ID {}", lvlEditor->m_lobbyId);
 		}
+        else {
+            log::info("Cant leave lobby because not in lobby!")
+        }
 	}
 };
