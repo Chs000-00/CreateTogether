@@ -6,7 +6,7 @@ using namespace geode::prelude;
 
 // specify parameters for the setup function in the Popup<...> template
 class LobbyPopup : public geode::Popup<std::string const&> {
-protected:
+private:
     bool setup(std::string const& value) override;
 
 public:
