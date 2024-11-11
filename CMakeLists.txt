@@ -4,7 +4,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(CreateTogether VERSION 1.0.0)
+project(CreateTogether VERSION 0.1.1)
+
+add_compile_definitions(
+    MOD_LOBBY_NAME="${PROJECT_NAME}"
+    MOD_VERSION="${PROJECT_VERSION}"
+)
 
 # Set up the mod binary
 add_library(${PROJECT_NAME} SHARED
@@ -19,6 +24,7 @@ else()
     message(STATUS "Found Geode: $ENV{GEODE_SDK}")
 endif()
 
+set(GEODE_LINK_NIGHTLY ON)
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
