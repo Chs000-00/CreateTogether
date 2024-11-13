@@ -3,7 +3,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
-#include "ModifyEditorLayer.hpp"
 
 
 using namespace geode::prelude;

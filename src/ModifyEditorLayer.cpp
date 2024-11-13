@@ -1,10 +1,15 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
-#include "isteamfriends.h"
-#include "isteammatchmaking.h"
-#include "LobbyPopup.hpp"
+#include <isteamfriends.h>
+#include <isteammatchmaking.h>
+#include "ui/LobbyPopup.hpp"
 #include "ModifyEditorLayer.hpp"
+
+// TODO: Remove this when I stop using it!
+#include <Geode/modify/MenuLayer.hpp>
+#include "layers/LobbiesLayer.hpp"
+
 
 using namespace geode::prelude;
 
@@ -24,7 +29,7 @@ void MyLevelEditorLayer::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailu
 
 		// Constants can be changed in CMakeLists.txt
 		// Kind of a bad idea but who cares
-		
+
 		// SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "lobby_type", MOD_LOBBY_NAME); // TODO: Uncomment this
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "version", MOD_VERSION);
 	}
@@ -66,7 +71,9 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 				m_fields->m_lobbyPopup = LobbyPopup::create();
 			}
 			
-			m_fields->m_lobbyPopup->show();
+			if (m_fields->m_lobbyPopup) {
+				m_fields->m_lobbyPopup->show();
+			}
 		}
 		else {
 			// TODO: Create diff popup or pass m_isInLobby as an argument
@@ -96,4 +103,11 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 			log::info("Can't leave lobby because not in lobby!");
 		}
     }
+};
+
+// TODO: remove this when devtools can compile
+class $modify(MenuLayer) {
+	void onMoreGames(cocos2d::CCObject* sender) {
+		LobbiesLayer::scene();
+	}
 };

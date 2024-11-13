@@ -11,12 +11,13 @@ add_compile_definitions(
     MOD_VERSION="${PROJECT_VERSION}"
 )
 
-# Set up the mod binary
-add_library(${PROJECT_NAME} SHARED
+file(GLOB SOURCES
     src/ModifyEditorLayer.cpp
-    src/LobbyPopup.cpp
-    # Add any extra C++ source files here
+    src/layers/*.cpp
+    src/ui/*.cpp
 )
+# Set up the mod binary
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 if (NOT DEFINED ENV{GEODE_SDK})
     message(FATAL_ERROR "Unable to find Geode SDK! Please define GEODE_SDK environment variable to point to Geode")

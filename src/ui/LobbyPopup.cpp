@@ -1,8 +1,8 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include "LobbyPopup.hpp"
-#include "isteammatchmaking.h"
-#include "ModifyEditorLayer.hpp"
+#include <isteammatchmaking.h>
+#include "../ModifyEditorLayer.hpp"
 
 using namespace geode::prelude;
 
@@ -25,8 +25,8 @@ bool LobbyPopup::setup() {
         menu_selector(LobbyPopup::inviteFriends)
     );
 
-    this->m_buttonMenu->addChildAtPosition(startHostingButton, Anchor::Bottom, {20, 20});
-    this->m_buttonMenu->addChildAtPosition(inviteFriendsButton, Anchor::BottomLeft, {0, 20});
+    this->m_buttonMenu->addChildAtPosition(startHostingButton, Anchor::Bottom, {0, 20});
+    this->m_buttonMenu->addChildAtPosition(inviteFriendsButton, Anchor::BottomLeft, {20, 20});
 
     return true;
 }
@@ -44,7 +44,7 @@ void LobbyPopup::startHosting(CCObject* sender) {
 }
 
 void LobbyPopup::inviteFriends(CCObject* sender) {
-    SteamFriends()->ActivateGameOverlay( "friends" );
+    SteamFriends()->ActivateGameOverlay("friends");
 }
 
 LobbyPopup* LobbyPopup::create() {
