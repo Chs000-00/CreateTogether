@@ -14,4 +14,5 @@ public:
     static LobbiesLayer* scene();
     static LobbiesLayer* create();
     void onBack(CCObject* sender);
+    void keyBackClicked();
 };

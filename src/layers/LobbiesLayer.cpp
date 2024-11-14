@@ -40,14 +40,17 @@ bool LobbiesLayer::init() {
 
 }
 
-void LobbiesLayer::onLobbyListRetrieved( LobbyMatchList_t *pLobbyMatchList, bool bIOFailure ) {
-    // TODO: FINISH THIS FUNC
-    auto list = createLobbyList();
-    menu->addChildAtPosition(list, Anchor::Center, -list->getContentSize() / 2);
-}
+// void LobbiesLayer::onLobbyListRetrieved( LobbyMatchList_t *pLobbyMatchList, bool bIOFailure ) {
+//     // TODO: FINISH THIS FUNC
+//     auto list = createLobbyList();
+//     menu->addChildAtPosition(list, Anchor::Center, -list->getContentSize() / 2);
+// }
 
+void LobbiesLayer::keyBackClicked() {
+    this->onBack(nullptr);
+}
 void LobbiesLayer::onBack(CCObject* sender) {
-    CreatorLayer::scene();
+    CCDirector::get()->replaceScene(CCTransitionFade::create(0.5, CreatorLayer::scene()));
 }
 
 LobbiesLayer* LobbiesLayer::create() {
