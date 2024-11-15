@@ -11,11 +11,9 @@ add_compile_definitions(
     MOD_VERSION="${PROJECT_VERSION}"
 )
 
-# TODO: Move modify files into appropriate folders
-# TODO: Split modify into more files
+
 file(GLOB SOURCES
-    src/ModifyEditorLayer.cpp
-    src/ModifyCreatorLayer.cpp
+    src/hooks/*.cpp
     src/layers/*.cpp
     src/ui/*.cpp
 )

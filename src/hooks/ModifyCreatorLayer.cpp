@@ -1,6 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelBrowserLayer.hpp>
-#include "layers/LobbiesLayer.hpp"
+#include <isteammatchmaking.h>
+#include "../layers/LobbiesLayer.hpp"
 
 
 using namespace geode::prelude;

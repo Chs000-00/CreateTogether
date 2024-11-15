@@ -3,7 +3,7 @@
 #include <Geode/binding/GameManager.hpp>
 #include "LobbyPopup.hpp"
 #include <isteammatchmaking.h>
-#include "../ModifyEditorLayer.hpp"
+#include "../hooks/ModifyGameManager.hpp"
 
 using namespace geode::prelude;
 
