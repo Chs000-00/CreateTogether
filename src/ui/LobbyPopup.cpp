@@ -1,5 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
+#include <Geode/binding/GameManager.hpp>
 #include "LobbyPopup.hpp"
 #include <isteammatchmaking.h>
 #include "../ModifyEditorLayer.hpp"
@@ -33,14 +34,13 @@ bool LobbyPopup::setup() {
 
 
 void LobbyPopup::startHosting(CCObject* sender) {
-    if (auto* lvlEditorLayer = LevelEditorLayer::get()) {
 
-        auto lvlEditorCast = static_cast<MyLevelEditorLayer*>(lvlEditorLayer);
-        auto lvlEditorFields = lvlEditorCast->m_fields.self();
+    auto gameManagerCast = static_cast<MyGameManager*>(GameManager::get());
+    auto gameManagerFields = gameManagerCast->m_fields.self();
 
-        lvlEditorFields->m_lobby = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
-        lvlEditorFields->m_isInLobbyCallResult.Set(lvlEditorFields->m_lobby, lvlEditorCast, &MyLevelEditorLayer::onLobbyCreated);
-    }
+    gameManagerFields->m_lobby = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
+    gameManagerFields->m_isInLobbyCallResult.Set(gameManagerFields->m_lobby, gameManagerCast, &MyGameManager::onLobbyCreated);
+
 }
 
 void LobbyPopup::inviteFriends(CCObject* sender) {

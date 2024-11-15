@@ -1,5 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
+#include <Geode/modify/GameManager.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <isteamfriends.h>
 #include <isteammatchmaking.h>
@@ -13,16 +14,17 @@
 
 using namespace geode::prelude;
 
-bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
+
+bool MyGameManager::init() {
 	
-	if (!LevelEditorLayer::init(p0, p1)) {
+	if (!GameManager::init()) {
 		return false;
 	}
 
 	return true;
 }
 
-void MyLevelEditorLayer::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
+void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 	if (pCallback->m_eResult == k_EResultOK) {
 		m_fields->m_isInLobby = true;
 		m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
@@ -34,6 +36,8 @@ void MyLevelEditorLayer::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailu
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "version", MOD_VERSION);
 	}
 }
+
+
 
 class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 
@@ -64,8 +68,10 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 
 	void onHostPopupButton(CCObject*) {
 		// TODO: add if condition over cast
-		auto lvlEditorFields = static_cast<MyLevelEditorLayer*>(m_editorLayer)->m_fields.self();
-		if (!lvlEditorFields->m_isInLobby) {
+		auto gameManager = GameManager::get();
+		auto gameManagerFields = static_cast<MyGameManager*>(gameManager)->m_fields.self();
+
+		if (!gameManagerFields->m_isInLobby) {
 			// TODO: Shorten this
 			if (!m_fields->m_lobbyPopup) {
 				m_fields->m_lobbyPopup = LobbyPopup::create();
@@ -93,11 +99,15 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 
 	void leaveLobby() {
 		// TODO: add if condition over cast
-		auto lvlEditorFields = static_cast<MyLevelEditorLayer*>(m_editorLayer)->m_fields.self();
+		auto gameManager = GameManager::get();
+		auto gameManagerFields = static_cast<MyGameManager*>(gameManager)->m_fields.self();
 
-		if (lvlEditorFields->m_isInLobby) {
-			SteamMatchmaking()->LeaveLobby(lvlEditorFields->m_lobbyId);
-			log::info("Leaving lobby with ID {}", lvlEditorFields->m_lobbyId);
+		if (gameManagerFields->m_isInLobby) {
+			log::info("Leaving lobby with ID {}", gameManagerFields->m_lobbyId);
+			SteamMatchmaking()->LeaveLobby(gameManagerFields->m_lobbyId);
+			gameManagerFields->m_lobby = NULL;
+			gameManagerFields->m_lobbyId = 0;
+			gameManagerFields->m_isInLobby = false;
 		}
 		else {
 			log::info("Can't leave lobby because not in lobby!");

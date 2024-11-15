@@ -8,11 +8,11 @@ using namespace geode::prelude;
 class LobbiesLayer : public cocos2d::CCLayer {
 protected:
     bool init() override;
+    void keyBackClicked() override;
     void onLobbyListRetrieved( LobbyMatchList_t *pLobbyMatchList, bool bIOFailure );
 
 public:
     static LobbiesLayer* scene();
     static LobbiesLayer* create();
     void onBack(CCObject* sender);
-    void keyBackClicked();
 };
