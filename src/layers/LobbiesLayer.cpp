@@ -1,5 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/ui/General.hpp>
+#include <Geode/ui/LoadingSpinner.hpp>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
 #include <isteammatchmaking.h>
 #include "LobbiesLayer.hpp"
@@ -8,18 +9,16 @@
 using namespace geode::prelude;
 
 bool LobbiesLayer::init() {
-    if (!CCLayer::init())
+    if (!CCLayer::init()) {
         return false;
+    }
 
     GameManager::get()->fadeInMenuMusic();
 
     this->setID("LobbiesLayer");
+    this->setKeyboardEnabled(true);
+    this->setKeypadEnabled(true);
 
-    auto background = createLayerBG();
-    background->setID("background");
-    this->addChild(background);
-
-    addSideArt(this, geode::SideArt::All, geode::SideArtStyle::Layer);
 
     auto backBtn = CCMenuItemSpriteExtra::create(
         CCSprite::createWithSpriteFrameName("GJ_arrow_01_001.png"),
@@ -27,9 +26,19 @@ bool LobbiesLayer::init() {
         menu_selector(LobbiesLayer::onBack)
     );
 
+    auto background = createLayerBG();
+    background->setID("background");
+    this->addChild(background);
+
+    auto spinner = LoadingSpinner::create(100);
+
+    addSideArt(this, geode::SideArt::All, geode::SideArtStyle::Layer);
+    
     backBtn->setID("back-btn");
+
     auto menu = CCMenu::create();
     menu->addChildAtPosition(backBtn, geode::Anchor::TopLeft, {25, -25});
+    menu->addChildAtPosition(spinner, geode::Anchor::Center);
 
 
 
@@ -51,7 +60,7 @@ void LobbiesLayer::keyBackClicked() {
     this->onBack(nullptr);
 }
 void LobbiesLayer::onBack(CCObject* sender) {
-    CCDirector::get()->replaceScene(CCTransitionFade::create(0.5, CreatorLayer::scene()));
+    CCDirector::get()->replaceScene(CCTransitionFade::create(0.5, LevelBrowserLayer::scene(GJSearchObject::create(SearchType::MyLevels))));
 }
 
 LobbiesLayer* LobbiesLayer::create() {

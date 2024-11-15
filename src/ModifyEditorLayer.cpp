@@ -2,21 +2,19 @@
 #include <Geode/modify/EditorPauseLayer.hpp>
 #include <Geode/modify/GameManager.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
+#include <Geode/modify/LevelBrowserLayer.hpp>
 #include <isteamfriends.h>
 #include <isteammatchmaking.h>
 #include "ui/LobbyPopup.hpp"
 #include "ModifyEditorLayer.hpp"
 
-// TODO: Remove this when I stop using it!
-#include <Geode/modify/MenuLayer.hpp>
-#include "layers/LobbiesLayer.hpp"
-
 
 using namespace geode::prelude;
 
-
+// This is sorta usless...
+// I should remove
 bool MyGameManager::init() {
-	
+
 	if (!GameManager::init()) {
 		return false;
 	}
@@ -77,6 +75,7 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 				m_fields->m_lobbyPopup = LobbyPopup::create();
 			}
 			
+			// Make sure we really did in fact create a popup
 			if (m_fields->m_lobbyPopup) {
 				m_fields->m_lobbyPopup->show();
 			}
@@ -115,9 +114,3 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
     }
 };
 
-// TODO: remove this when devtools can compile
-class $modify(MenuLayer) {
-	void onMoreGames(cocos2d::CCObject* sender) {
-		LobbiesLayer::scene();
-	}
-};

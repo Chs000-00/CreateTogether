@@ -2,6 +2,7 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
+#include <isteammatchmaking.h>
 
 using namespace geode::prelude;
 
