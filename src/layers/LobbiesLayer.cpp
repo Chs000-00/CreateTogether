@@ -3,8 +3,9 @@
 #include <Geode/ui/LoadingSpinner.hpp>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
 #include <isteammatchmaking.h>
-#include "LobbiesLayer.hpp"
 #include "../ui/LobbyList.hpp"
+#include "../ui/LevelListBorders.hpp"
+#include "LobbiesLayer.hpp"
 
 using namespace geode::prelude;
 
@@ -32,28 +33,34 @@ bool LobbiesLayer::init() {
 
     auto spinner = LoadingSpinner::create(100);
 
-    addSideArt(this, geode::SideArt::All, geode::SideArtStyle::Layer);
+    addSideArt(this, SideArt::All, SideArtStyle::Layer);
     
     backBtn->setID("back-btn");
 
-    auto menu = CCMenu::create();
-    menu->addChildAtPosition(backBtn, geode::Anchor::TopLeft, {25, -25});
-    menu->addChildAtPosition(spinner, geode::Anchor::Center);
 
+    // TODO: Put this in a task
+    auto vfriends = fetchFriends();
+    auto list = createLobbyList(vfriends);
+
+    auto listBorders = GDLevelListBorders::create();
+    listBorders->setContentSize({356, 220});
+    
+
+    auto menu = CCMenu::create();
+    menu->addChildAtPosition(backBtn, Anchor::TopLeft, {25, -25});
+    menu->addChildAtPosition(spinner, Anchor::Center);
+    menu->addChildAtPosition(list, Anchor::Center, -list->getContentSize() / 2);
+    menu->addChildAtPosition(listBorders, Anchor::Center);
 
 
 
     this->addChild(menu);
 
+
     return true;
 
 }
 
-// void LobbiesLayer::onLobbyListRetrieved( LobbyMatchList_t *pLobbyMatchList, bool bIOFailure ) {
-//     // TODO: FINISH THIS FUNC
-//     auto list = createLobbyList();
-//     menu->addChildAtPosition(list, Anchor::Center, -list->getContentSize() / 2);
-// }
 
 
 void LobbiesLayer::keyBackClicked() {

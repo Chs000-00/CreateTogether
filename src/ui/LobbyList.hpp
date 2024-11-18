@@ -2,15 +2,16 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/ui/ScrollLayer.hpp>
+#include <isteammatchmaking.h>
 
 using namespace geode::prelude;
 
 struct lobbyData {
-    std::string gdUserName;
+    CSteamID steamId;
     std::string steamUserName;
     std::string levelName;
 };
 
-void requestAndCreateLobby(CCMenu* pMenu);
+std::vector<lobbyData> fetchFriends();
 
-ScrollLayer* createLobbyList(std::vector<lobbyData> const& myItems);
+ScrollLayer* createLobbyList(std::vector<lobbyData> const& lobbyList);
