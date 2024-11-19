@@ -14,4 +14,4 @@ struct lobbyData {
 
 std::vector<lobbyData> fetchFriends();
 
-ScrollLayer* createLobbyList(std::vector<lobbyData> const& lobbyList);
+ScrollLayer* createLobbyList(std::vector<lobbyData>* lobbyList);
