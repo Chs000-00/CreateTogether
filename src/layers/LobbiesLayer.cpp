@@ -50,9 +50,12 @@ bool LobbiesLayer::init() {
     menu->addChildAtPosition(backBtn, Anchor::TopLeft, {25, -25});
     menu->addChildAtPosition(spinner, Anchor::Center);
 
+    // Couldn't some sort of race condition happen here if the user somehow presses the button before the bind happens?
+    menu->addChildAtPosition(refreshBtn, Anchor::BottomRight);
+
+
     this->addChild(menu);
 
-    
     m_fetchFriendsTaskListener.bind([menu](FetchFriendsTask::Event* event) {
         if (event->getValue()){
             auto list = createLobbyList(event->getValue());
@@ -64,20 +67,19 @@ bool LobbiesLayer::init() {
         }
     });
 
-    this->refreshLobbyList(refreshBtn); // Bad
+    this->refreshLobbyList(nullptr);
 
     
 
     return true;
 }
 
-// TODO: Fix this
 void LobbiesLayer::refreshLobbyList(CCObject* sender) {
-    m_fetchFriendsTaskListener.setFilter(loadLobbyList(menu)); // I dont think i'm using tasks right
+    m_fetchFriendsTaskListener.setFilter(loadLobbyList()); // I dont think i'm using tasks right
 }
 
-
-FetchFriendsTask LobbiesLayer::loadLobbyList(CCMenu* menu) {
+// TODO: Replace function with one that fetches current lobbies instead of friends!
+FetchFriendsTask LobbiesLayer::loadLobbyList() {
     return FetchFriendsTask::run([](auto progress, auto hasBeenCancelled) -> std::vector<lobbyData> {
 
         int friendsCount = SteamFriends()->GetFriendCount( k_EFriendFlagImmediate );
@@ -92,7 +94,7 @@ FetchFriendsTask LobbiesLayer::loadLobbyList(CCMenu* menu) {
 
             // TODO: friendGameInfo.m_steamIDLobby.IsValid() 
             if (SteamFriends()->GetFriendGamePlayed( steamIDFriend, &friendGameInfo) || true) { 
-                // I Might not need to do requestLobbyData
+                // I might not need to do requestLobbyData
                 // auto data = SteamMatchmaking()->RequestLobbyData(friendGameInfo.m_steamIDLobby);
                 clobby.steamUserName = SteamFriends()->GetFriendPersonaName(steamIDFriend);
                 clobby.steamId = friendGameInfo.m_steamIDLobby;

@@ -20,7 +20,7 @@ protected:
 public:
     static LobbiesLayer* scene();
     static LobbiesLayer* create();
-    FetchFriendsTask loadLobbyList(CCMenu* menu);
+    FetchFriendsTask loadLobbyList();
     void refreshLobbyList(CCObject* sender);
     void onBack(CCObject* sender);
 };
