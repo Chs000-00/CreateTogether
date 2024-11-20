@@ -8,14 +8,14 @@ using namespace geode::prelude;
 
 // This is sorta usless...
 // I should remove
-bool MyGameManager::init() {
+// bool MyGameManager::init() {
 
-	if (!GameManager::init()) {
-		return false;
-	}
+// 	if (!GameManager::init()) {
+// 		return false;
+// 	}
 
-	return true;
-}
+// 	return true;
+// }
 
 void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 	if (pCallback->m_eResult == k_EResultOK) {
@@ -30,4 +30,7 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 	}
 }
 
-
+// I am slowly devolving into madness
+void MyGameManager::Fields::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
+	log::debug("Game join request from steamID: {}", pCallback->m_steamIDFriend.ConvertToUint64());
+}

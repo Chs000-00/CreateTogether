@@ -56,16 +56,15 @@ bool LobbiesLayer::init() {
 
     this->addChild(menu);
 
-    m_fetchFriendsTaskListener.bind([menu](FetchFriendsTask::Event* event) {
-        if (event->getValue()){
-            auto list = createLobbyList(event->getValue());
-
-            auto listBorders = GDLevelListBorders::create();
-            listBorders->setContentSize({356, 220}); // TODO: list->getContentSize()
-            menu->addChildAtPosition(list, Anchor::Center, -list->getContentSize() / 2);
-            menu->addChildAtPosition(listBorders, Anchor::Center);
-        }
-    });
+    // Honestly I dont think im using tasks right here
+    // TODO: Use Steam Callbacks instead
+    // m_fetchFriendsTaskListener.bind([menu](FetchFriendsTask::Event* event) {
+    //     auto list = createLobbyList(event->getValue());
+    //     auto listBorders = GDLevelListBorders::create();
+    //     listBorders->setContentSize({356, 220}); // TODO: list->getContentSize()
+    //     menu->addChildAtPosition(list, Anchor::Center, -list->getContentSize() / 2);
+    //     menu->addChildAtPosition(listBorders, Anchor::Center);
+    // });
 
     this->refreshLobbyList(nullptr);
 
@@ -75,7 +74,9 @@ bool LobbiesLayer::init() {
 }
 
 void LobbiesLayer::refreshLobbyList(CCObject* sender) {
-    m_fetchFriendsTaskListener.setFilter(loadLobbyList()); // I dont think i'm using tasks right
+    // TODO: Fetch lobbies
+    // m_fetchFriendsTaskListener.setFilter(loadLobbyList());
+    log::error("Feature not implemented yet!");
 }
 
 // TODO: Replace function with one that fetches current lobbies instead of friends!
