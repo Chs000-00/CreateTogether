@@ -31,6 +31,6 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 }
 
 // I am slowly devolving into madness
-void MyGameManager::Fields::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
+void MyGameManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 	log::debug("Game join request from steamID: {}", pCallback->m_steamIDFriend.ConvertToUint64());
 }
