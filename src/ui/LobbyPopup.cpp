@@ -1,8 +1,8 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/binding/GameManager.hpp>
-#include "LobbyPopup.hpp"
 #include <isteammatchmaking.h>
+#include "LobbyPopup.hpp"
 #include "../hooks/ModifyGameManager.hpp"
 
 using namespace geode::prelude;
