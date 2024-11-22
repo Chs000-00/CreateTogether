@@ -17,22 +17,21 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
     GameObject* createObject(int p0, cocos2d::CCPoint p1, bool p2) {
         log::info("createObject called with args {} : {}, {} : {}", p0, p1.x, p1.y, p2);
 
-        // TODO: Putting this in a pointer as a field of LevelEditorLayer MIGHT be a better idea
-        // Then static_casting each time an object is placed
-        auto gameManager = GameManager::get();
-		auto gameManagerFields = static_cast<MyGameManager*>(gameManager)->m_fields.self();
+		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
-        if (gameManagerFields->m_isInLobby == false) {
+        if (gameManager->m_fields->m_isInLobby == false || p2) {
             return LevelEditorLayer::createObject(p0, p1, p2);
         }
 
-        //(auto lobby = lobbyList->begin(); lobby != lobbyList->end(); ++lobby)
+        matjson::Value object = matjson::makeObject({
+            {"Type", "makeObject"},
+            {"x", p1.x},
+            {"y", p1.y},
+            {"ObjID", p0}
+        });
 
-
-        for (auto const& member : gameManagerFields->m_playersInLobby)
-        {
-            auto msg = SteamNetworkingMessages()->SendMessageToUser(member, );
-        } 
+        gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
+ 
         return LevelEditorLayer::createObject(p0, p1, p2);
     }
 

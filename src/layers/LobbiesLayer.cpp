@@ -87,7 +87,7 @@ FetchFriendsTask LobbiesLayer::loadLobbyList() {
         std::vector<lobbyData> dataVector;
         lobbyData clobby;
 
-        for ( int i = 0; i < friendsCount; i++ )
+        for (int i = 0; i < friendsCount; i++)
         {
             FriendGameInfo_t friendGameInfo;
             CSteamID steamIDFriend = SteamFriends()->GetFriendByIndex( i, k_EFriendFlagImmediate );

@@ -2,6 +2,8 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/modify/GameManager.hpp>
+#include <Geode/binding/GJGameLevel.hpp>
+#include <isteammatchmaking.h>
 #include <isteamfriends.h>
 #include <steam_api_common.h>
 #include <steamnetworkingtypes.h>
@@ -25,6 +27,7 @@
 
 using namespace geode::prelude;
 
+
 class $modify(MyGameManager, GameManager) {
 
     struct Fields {
@@ -33,10 +36,12 @@ class $modify(MyGameManager, GameManager) {
         uint64 m_lobbyId = 0; // TODO: I probably shouldn't be using 0 as the lobbyID!
         bool m_isInLobby = false;
 		bool m_isHost = false; // TODO: use GetLobbyOwner instead? Possibly?
+		LevelEditorLayer m_level;
 
 		std::vector<SteamNetworkingIdentity> m_playersInLobby;
 
         STEAM_CALLBACK_FIELDS(onGameJoinRequest, GameLobbyJoinRequested_t);
+		STEAM_CALLBACK_FIELDS(onGameOverlayActivated, GameOverlayActivated_t);
 
 		CCallResult< MyGameManager, LobbyCreated_t > m_isInLobbyCallResult;
 		CCallResult< MyGameManager, LobbyEnter_t > m_enterLobbyCallResult;
@@ -44,9 +49,13 @@ class $modify(MyGameManager, GameManager) {
     };
 
     // bool init();
+	void update(float p0);
     void onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure);
 	void onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure);
 	void fetchMemberList();
+	void sendDataToMembers(const void* data);
+	void receiveData();
     STEAM_CALLBACK_FIXED(MyGameManager, onGameJoinRequest, GameLobbyJoinRequested_t);
+	STEAM_CALLBACK_FIXED(MyGameManager, onGameOverlayActivated, GameOverlayActivated_t);
 
 };
