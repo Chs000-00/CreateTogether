@@ -46,9 +46,13 @@ void MyGameManager::onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure) {
 	}
 }
 
+void CallbackManager::onGameJoinRequestWrapper( GameLobbyJoinRequested_t* pCallback ) {
+	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+	gameManager->onGameJoinRequest(pCallback);
+}
+
 // I am slowly devolving into madness
 void MyGameManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
-
 	geode::createQuickPopup(
 		"Lobby?",            // title
 		"Join Lobby?",   // content
@@ -61,11 +65,6 @@ void MyGameManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 		}
 	);
 }
-
-void MyGameManager::onGameOverlayActivated(GameOverlayActivated_t* pCallback) {
-	log::info("Callbacks work!");
-}
-
 
 void MyGameManager::fetchMemberList() {
 	int lobbyMemberCount = SteamMatchmaking()->GetNumLobbyMembers(m_fields->m_lobbyId);
@@ -110,7 +109,6 @@ void MyGameManager::receiveData() {
 		this->m_fields->m_level.addSpecial(gameObj);
 	}
 }
-
 
 void MyGameManager::update(float p0) {
 	SteamAPI_RunCallbacks();
