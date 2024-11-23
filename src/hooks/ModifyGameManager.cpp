@@ -9,18 +9,19 @@
 
 using namespace geode::prelude;
 
+void CallbackManager::onGameJoinRequestWrapper(GameLobbyJoinRequested_t* pCallback) {
+	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+	gameManager->onGameJoinRequest(pCallback);
+}
 
-// bool MyGameManager::init() {
-
-// 	if (!GameManager::init()) {
-// 		return false;
-// 	}
-
-// 	return true;
-// }
+void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
+	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+	gameManager->fetchMemberList();
+}
 
 void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 	if (pCallback->m_eResult == k_EResultOK) {
+		log::info("Created Lobby!");
 		m_fields->m_isInLobby = true;
 		m_fields->m_isHost = true;
 		m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
@@ -33,22 +34,17 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 	}
 }
 
-
-
 void MyGameManager::onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure) {
 	m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
+	m_fields->m_level = LevelEditorLayer::create(GJGameLevel::create(), false);
+	log::info("EnterLobby called!");
 	if (m_fields->m_isHost) {
 		log::info("Entered Lobby as host, not doing anything anymore!");
 		return;
 	}
 	else {
-    	CCDirector::get()->replaceScene(CCTransitionFade::create(0.5, this->m_fields->m_level.scene(GJGameLevel::create(), false)));
+		switchToScene(m_fields->m_level);
 	}
-}
-
-void CallbackManager::onGameJoinRequestWrapper( GameLobbyJoinRequested_t* pCallback ) {
-	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-	gameManager->onGameJoinRequest(pCallback);
 }
 
 // I am slowly devolving into madness
@@ -57,13 +53,18 @@ void MyGameManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 		"Lobby?",            // title
 		"Join Lobby?",   // content
 		"Nah", "Yeah",      // buttons
-		[&](auto, bool btn2) {
+		[this, pCallback](auto, bool btn2) {
 			if (btn2) {
-				log::debug("Joining game with steamID: {}", pCallback->m_steamIDFriend.ConvertToUint64());
-				auto lobby = SteamMatchmaking()->JoinLobby(pCallback->m_steamIDLobby); // I'm not sure if this is needed
+				this->joinLobbyFromRequest(pCallback);
 			}
 		}
 	);
+}
+
+void MyGameManager::joinLobbyFromRequest(GameLobbyJoinRequested_t* pCallback) {
+	log::debug("Joining game with steamID: {}", pCallback->m_steamIDLobby.ConvertToUint64());
+	this->m_fields->m_lobby = SteamMatchmaking()->JoinLobby(pCallback->m_steamIDLobby); // I'm not sure if this is needed
+	this->m_fields->m_enterLobbyCallResult.Set(this->m_fields->m_lobby, this, &MyGameManager::onLobbyEnter);
 }
 
 void MyGameManager::fetchMemberList() {
@@ -81,6 +82,7 @@ void MyGameManager::fetchMemberList() {
 // Sends data to all members in current lobby
 void MyGameManager::sendDataToMembers(const void* data) {
 	for (auto const& member : this->m_fields->m_playersInLobby) {
+        log::debug("SendData called on some user!");
 		SteamNetworkingMessages()->SendMessageToUser(member, data, sizeof(data), k_nSteamNetworkingSend_Reliable, 0);
 	}
 }
@@ -89,6 +91,7 @@ void MyGameManager::receiveData() {
 	SteamNetworkingMessage_t* messageList[32];
 	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 32);
 	for (int i = 0; i < numMessages; i++) {
+		log::debug("Data received!");
 		SteamNetworkingMessage_t* msg = messageList[i];
 		auto res = matjson::parse(static_cast<const char*>(msg->GetData()));
 
@@ -106,7 +109,7 @@ void MyGameManager::receiveData() {
 		auto gameObj = GameObject::createWithKey((int) unwrappedMessage["ObjID"].asInt().unwrap());
 		gameObj->setPosition({(float) unwrappedMessage["x"].asInt().unwrap(), (float) unwrappedMessage["y"].asInt().unwrap()} );
 
-		this->m_fields->m_level.addSpecial(gameObj);
+		this->m_fields->m_level->addSpecial(gameObj);
 	}
 }
 

@@ -15,7 +15,6 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
     // }
 
     GameObject* createObject(int p0, cocos2d::CCPoint p1, bool p2) {
-        log::info("createObject called with args {} : {}, {} : {}", p0, p1.x, p1.y, p2);
 
 		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
