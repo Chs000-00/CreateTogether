@@ -2,6 +2,7 @@
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/binding/GameObject.hpp>
 #include <isteamnetworkingmessages.h>
+#include "../ActionTypes.hpp"
 #include "ModifyGameManager.hpp"
 
 using namespace geode::prelude;
@@ -23,13 +24,14 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
         }
 
         matjson::Value object = matjson::makeObject({
-            {"Type", "makeObject"},
+            {"Type", static_cast<int>(eBlockPlaced)},
             {"x", p1.x},
             {"y", p1.y},
             {"ObjID", p0}
         });
 
-        gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
+        gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).append("\0").c_str());
+
  
         return LevelEditorLayer::createObject(p0, p1, p2);
     }

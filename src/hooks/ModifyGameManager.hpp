@@ -13,7 +13,7 @@ using namespace geode::prelude;
 class CallbackManager {
 private:
 	STEAM_CALLBACK(CallbackManager, onGameJoinRequestWrapper, GameLobbyJoinRequested_t);
-	STEAM_CALLBACK(CallbackManager, onLobbyChatUpdateWrapper, LobbyChatUpdate_t);
+	STEAM_CALLBACK(CallbackManager, onLobbyDataUpdateWrapper, LobbyDataUpdate_t);
 };
 
 class $modify(MyGameManager, GameManager) {
@@ -23,6 +23,7 @@ class $modify(MyGameManager, GameManager) {
         uint64 m_lobbyId = 0; // TODO: I probably shouldn't be using 0 as the lobbyID!
         bool m_isInLobby = false;
 		bool m_isHost = false; // TODO: use GetLobbyOwner instead? Possibly?
+		bool m_isInEditorLayer = false;
 		LevelEditorLayer* m_level;
 		CallbackManager callbackManager;
 
@@ -38,6 +39,6 @@ class $modify(MyGameManager, GameManager) {
 	void onGameJoinRequest(GameLobbyJoinRequested_t* pCallback);
 	void joinLobbyFromRequest(GameLobbyJoinRequested_t* pCallback);
 	void fetchMemberList();
-	void sendDataToMembers(const void* data);
+	void sendDataToMembers(const char* data);
 	void receiveData();
 };

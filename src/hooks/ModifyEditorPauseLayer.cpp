@@ -71,6 +71,8 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 		auto gameManager = GameManager::get();
 		auto gameManagerFields = static_cast<MyGameManager*>(gameManager)->m_fields.self();
 
+		gameManagerFields->m_isInEditorLayer = false;
+
 		if (gameManagerFields->m_isInLobby) {
 			log::info("Leaving lobby with ID {}", gameManagerFields->m_lobbyId);
 			SteamMatchmaking()->LeaveLobby(gameManagerFields->m_lobbyId);

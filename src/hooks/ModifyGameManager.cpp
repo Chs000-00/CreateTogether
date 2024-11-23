@@ -4,6 +4,8 @@
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
 #include <isteammatchmaking.h>
 #include <isteamnetworkingmessages.h>
+#include <isteamuser.h>
+#include "../ActionTypes.hpp"
 #include "ModifyGameManager.hpp"
 
 
@@ -14,7 +16,7 @@ void CallbackManager::onGameJoinRequestWrapper(GameLobbyJoinRequested_t* pCallba
 	gameManager->onGameJoinRequest(pCallback);
 }
 
-void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
+void CallbackManager::onLobbyDataUpdateWrapper(LobbyDataUpdate_t* pCallback) {
 	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 	gameManager->fetchMemberList();
 }
@@ -22,6 +24,12 @@ void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 	if (pCallback->m_eResult == k_EResultOK) {
 		log::info("Created Lobby!");
+
+		// Although this would work, this shouldnt be relied on for checking if
+		// the player is in the editor layer.
+		// TODO: Change this inside EditorLayer::init instead!
+		m_fields->m_isInEditorLayer = true;
+
 		m_fields->m_isInLobby = true;
 		m_fields->m_isHost = true;
 		m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
@@ -37,12 +45,14 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 void MyGameManager::onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure) {
 	m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
 	m_fields->m_level = LevelEditorLayer::create(GJGameLevel::create(), false);
+	m_fields->m_isInLobby = true;
 	log::info("EnterLobby called!");
 	if (m_fields->m_isHost) {
 		log::info("Entered Lobby as host, not doing anything anymore!");
 		return;
 	}
 	else {
+		m_fields->m_isInEditorLayer = true;
 		switchToScene(m_fields->m_level);
 	}
 }
@@ -71,19 +81,26 @@ void MyGameManager::fetchMemberList() {
 	int lobbyMemberCount = SteamMatchmaking()->GetNumLobbyMembers(m_fields->m_lobbyId);
 	SteamNetworkingIdentity member;
 
+	log::debug("Fetch Memberlist Called; Fetching {} users:", lobbyMemberCount);
+
 	for (int i = 0; i < lobbyMemberCount; i++) {
 		CSteamID steamIDFriend = SteamMatchmaking()->GetLobbyMemberByIndex(m_fields->m_lobbyId, i);
+		if (steamIDFriend == SteamUser()->GetSteamID()) {
+			continue;
+		}
+
 		member.SetSteamID(steamIDFriend);
+		log::debug("{} with id: {}", SteamFriends()->GetFriendPersonaName(steamIDFriend), steamIDFriend.ConvertToUint64());
 		m_fields->m_playersInLobby.push_back(member);   
 	} 
 }
 
 // TODO: EResult? Vectors?
 // Sends data to all members in current lobby
-void MyGameManager::sendDataToMembers(const void* data) {
+void MyGameManager::sendDataToMembers(const char* data) {
 	for (auto const& member : this->m_fields->m_playersInLobby) {
         log::debug("SendData called on some user!");
-		SteamNetworkingMessages()->SendMessageToUser(member, data, sizeof(data), k_nSteamNetworkingSend_Reliable, 0);
+		SteamNetworkingMessages()->SendMessageToUser(member, data, static_cast<uint32>(strlen(data)), k_nSteamNetworkingSend_Reliable, 0);
 	}
 }
 
@@ -91,25 +108,37 @@ void MyGameManager::receiveData() {
 	SteamNetworkingMessage_t* messageList[32];
 	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 32);
 	for (int i = 0; i < numMessages; i++) {
-		log::debug("Data received!");
 		SteamNetworkingMessage_t* msg = messageList[i];
 		auto res = matjson::parse(static_cast<const char*>(msg->GetData()));
 
-		// This could be removed later on
+		log::debug("Data received! {} ", static_cast<const char*>(msg->GetData()));
+
 		if (!res) {
 			log::error("Failed to parse json: {}", res.unwrapErr());
 			return;
 		}
 
-		// TODO: Check type
 		matjson::Value unwrappedMessage = res.unwrap();
 
+		auto level = LevelEditorLayer::get();
 
-		// TODO: Validate position and ID
-		auto gameObj = GameObject::createWithKey((int) unwrappedMessage["ObjID"].asInt().unwrap());
-		gameObj->setPosition({(float) unwrappedMessage["x"].asInt().unwrap(), (float) unwrappedMessage["y"].asInt().unwrap()} );
+		if (!level) {
+			level = this->m_fields->m_level;
+		}
 
-		this->m_fields->m_level->addSpecial(gameObj);
+		switch ((int) unwrappedMessage["Type"].asInt().unwrapOr(-1)) {
+			case eBlockPlaced: {
+				// TODO: Validate position and ID
+				auto gameObj = GameObject::createWithKey((int) unwrappedMessage["ObjID"].asInt().unwrap());
+				gameObj->setPosition({(float) unwrappedMessage["x"].asInt().unwrap(), (float) unwrappedMessage["y"].asInt().unwrap()} );
+				level->addSpecial(gameObj);
+				break;
+			}
+
+			default:
+				log::warn("No case switch found! Are you sure you are on the right version?");
+		}
+		msg->Release();
 	}
 }
 
@@ -119,5 +148,6 @@ void MyGameManager::update(float p0) {
 	if (this->m_fields->m_isInLobby) {
 		this->receiveData();
 	}
+
 	GameManager::update(p0);
 }
