@@ -24,7 +24,7 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
         }
 
         matjson::Value object = matjson::makeObject({
-            {"Type", static_cast<int>(eBlockPlaced)},
+            {"Type", static_cast<int>(eActionPlacedObject)},
             {"x", p1.x},
             {"y", p1.y},
             {"ObjID", p0}
@@ -32,8 +32,25 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 
         gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).append("\0").c_str());
 
- 
         return LevelEditorLayer::createObject(p0, p1, p2);
+    }
+
+    void updateLevelFont(int p0) {
+
+		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+
+        if (gameManager->m_fields->m_isInLobby == false) {
+            return LevelEditorLayer::updateLevelFont(p0);
+        }
+
+        matjson::Value object = matjson::makeObject({
+            {"Type", static_cast<int>(eActionUpdatedFont)},
+            {"FontID", p0}
+        });
+
+        gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).append("\0").c_str());
+
+        return LevelEditorLayer::updateLevelFont(p0);
     }
 
 };

@@ -66,6 +66,19 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 		EditorPauseLayer::onSaveAndPlay(sender); // And exit editor (whoops)
 	}
 
+
+	// Debug Button
+	void onAlignX(cocos2d::CCObject* sender) {
+		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+		gameManager->fetchMemberList();
+		log::debug("LobbyID: {} | IsInEditorLayer: {} | IsHost: {} | IsInLobby: {}", gameManager->m_fields->m_lobbyId, gameManager->m_fields->m_isInEditorLayer, gameManager->m_fields->m_isHost, gameManager->m_fields->m_isInLobby);
+		
+		// This should output the same values
+		log::debug("LevelEditorLayer::get(): {} | gameManager->m_fields->m_level: {}", fmt::ptr(LevelEditorLayer::get()), fmt::ptr(gameManager->m_fields->m_level));
+	}
+
+
+
 	void leaveLobby() {
 		// TODO: add if condition over cast
 		auto gameManager = GameManager::get();
@@ -76,7 +89,8 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 		if (gameManagerFields->m_isInLobby) {
 			log::info("Leaving lobby with ID {}", gameManagerFields->m_lobbyId);
 			SteamMatchmaking()->LeaveLobby(gameManagerFields->m_lobbyId);
-			gameManagerFields->m_lobby = NULL;
+			gameManagerFields->m_lobbyCreated = 0;
+			gameManagerFields->m_lobbyJoined = 0;
 			gameManagerFields->m_lobbyId = 0;
 			gameManagerFields->m_isInLobby = false;
 		}
