@@ -38,14 +38,16 @@ void LobbyPopup::startHosting(CCObject* sender) {
     auto gameManagerCast = static_cast<MyGameManager*>(GameManager::get());
     auto gameManagerFields = gameManagerCast->m_fields.self();
 
-    gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
+    //gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
+    gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
     gameManagerFields->m_isHost = true;
     gameManagerFields->m_isInLobbyCallResult.Set(gameManagerFields->m_lobbyCreated, gameManagerCast, &MyGameManager::onLobbyCreated);
 
 }
 
 void LobbyPopup::inviteFriends(CCObject* sender) {
-    SteamFriends()->ActivateGameOverlay("friends");
+    auto gameManagerFields = static_cast<MyGameManager*>(GameManager::get())->m_fields.self();
+    SteamFriends()->ActivateGameOverlayInviteDialog(gameManagerFields->m_lobbyId);
 }
 
 LobbyPopup* LobbyPopup::create() {

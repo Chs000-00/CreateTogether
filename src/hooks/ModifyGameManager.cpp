@@ -29,6 +29,23 @@ void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 	gameManager->fetchMemberList();
 }
 
+void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
+
+	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+	gameManager->m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
+	gameManager->m_fields->m_level = LevelEditorLayer::create(GJGameLevel::create(), false);
+	gameManager->m_fields->m_isInLobby = true;
+	gameManager->fetchMemberList();
+	log::info("EnterLobby called with! SteamID: {} | ChatRoomEnterResponse: {}", pCallback->m_ulSteamIDLobby, pCallback->m_EChatRoomEnterResponse);
+
+	if (gameManager->m_fields->m_isHost) {
+		log::warn("onLobbyEntered called as host!");
+	} else {
+		gameManager->m_fields->m_isInEditorLayer = true;
+		switchToScene(gameManager->m_fields->m_level);
+	}
+}
+
 void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 	if (pCallback->m_eResult == k_EResultOK) {
 		log::info("Created Lobby with steamID {} !", pCallback->m_ulSteamIDLobby);
@@ -52,6 +69,7 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 
 		// SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "lobby_type", MOD_LOBBY_NAME); // TODO: Uncomment this
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "version", MOD_VERSION);
+		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "host_steamid", std::to_string(pCallback->m_ulSteamIDLobby).c_str());
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "level_name", LevelEditorLayer::get()->m_level->m_levelName.c_str());
 	}
 	else {
@@ -64,30 +82,16 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 	}
 }
 
-void MyGameManager::onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure) {
-	m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
-	m_fields->m_level = LevelEditorLayer::create(GJGameLevel::create(), false);
-	m_fields->m_isInLobby = true;
-	this->fetchMemberList();
-	log::info("EnterLobby called with! SteamID: {} | ChatRoomEnterResponse: {}", pCallback->m_ulSteamIDLobby, pCallback->m_EChatRoomEnterResponse);
-	if (m_fields->m_isHost) {
-		log::debug("Entered Lobby as host, not doing anything anymore!");
-		return;
-	}
-	else {
-		m_fields->m_isInEditorLayer = true;
-		switchToScene(m_fields->m_level);
-	}
-}
-
 // I am slowly devolving into madness
 void MyGameManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
+	// TODO: Remove this
 	geode::createQuickPopup(
 		"Lobby?",            // title
 		"Join Lobby?",   // content
 		"Nah", "Yeah",      // buttons
 		[this, pCallback](auto, bool btn2) {
 			if (btn2) {
+				// TODO: Remove this
 				this->joinLobbyFromRequest(pCallback);
 			}
 		}
@@ -95,9 +99,22 @@ void MyGameManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 }
 
 void MyGameManager::joinLobbyFromRequest(GameLobbyJoinRequested_t* pCallback) {
-	log::debug("Joining game with steamID: {}", pCallback->m_steamIDLobby.ConvertToUint64());
+
+	log::debug("JoinLobbyRequest Called with steamID: {} | friendID: {} | friendName: {}", pCallback->m_steamIDLobby.ConvertToUint64(), pCallback->m_steamIDFriend.ConvertToUint64(), SteamFriends()->GetFriendPersonaName(pCallback->m_steamIDFriend));
+
+	FriendGameInfo_t* friendGameInfo;
+	auto res = SteamFriends()->GetFriendGamePlayed(pCallback->m_steamIDFriend, friendGameInfo);
+
+	log::debug("GetFriendGamePlayed: LobbyID: {} | GameID: {}", friendGameInfo->m_steamIDLobby.ConvertToUint64(), friendGameInfo->m_gameID.ToUint64());
+
+	if (friendGameInfo->m_steamIDLobby != pCallback->m_steamIDLobby) {
+		log::error("SteamLobbyID Mismatch! {} != {}", friendGameInfo->m_steamIDLobby.ConvertToUint64(), pCallback->m_steamIDLobby.ConvertToUint64());
+	}
+
+	
+
+	//this->m_fields->m_lobbyJoined = SteamMatchmaking()->JoinLobby(CSteamID(uint64(109775240971106601)));
 	this->m_fields->m_lobbyJoined = SteamMatchmaking()->JoinLobby(pCallback->m_steamIDLobby); // I'm not sure if this is needed
-	this->m_fields->m_enterLobbyCallResult.Set(this->m_fields->m_lobbyJoined, this, &MyGameManager::onLobbyEnter);
 }
 
 void MyGameManager::fetchMemberList() {

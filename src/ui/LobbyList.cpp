@@ -2,11 +2,12 @@
 #include <Geode/ui/ScrollLayer.hpp>
 #include <isteammatchmaking.h>
 #include <isteamfriends.h>
-#include "LobbyList.hpp"
+#include "../layers/LobbiesLayer.hpp"
+#include "../LobbyData.hpp"
 
 using namespace geode::prelude;
 
-ScrollLayer* createLobbyList(std::vector<lobbyData>* lobbyList) {
+ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData>* lobbyList) {
     auto scrollLayer = ScrollLayer::create({ 356, 220 });
   
   	scrollLayer->m_contentLayer->setLayout(
@@ -22,7 +23,10 @@ ScrollLayer* createLobbyList(std::vector<lobbyData>* lobbyList) {
 
     for (auto lobby = lobbyList->begin(); lobby != lobbyList->end(); ++lobby) {
         auto node = CCNode::create();
+        auto menu = CCMenu::create();
 
+
+        menu->setContentSize({ scrollLayer->getContentWidth(), 50 });
         node->setContentSize({ scrollLayer->getContentWidth(), 50 });
 
 
@@ -44,22 +48,34 @@ ScrollLayer* createLobbyList(std::vector<lobbyData>* lobbyList) {
         node->addChildAtPosition(bg, Anchor::Center);
 
         // Add Buttons and whatnot here using addChildAtPosition
+        // IMPORTANT: Always add your list nodes as children to the 
+      	// *content layer* - never the list directly!
+        // We don't need to handle positioning here as the content layer is 
+      	// managed by the ColumnLayout
+        
         auto steamUsernameLabel = CCLabelBMFont::create(lobby->steamUserName.c_str(), "bigFont.fnt");
         steamUsernameLabel->setScale(0.5);
         node->addChildAtPosition(steamUsernameLabel, Anchor::Center);
 
-      	// IMPORTANT: Always add your list nodes as children to the 
-      	// *content layer* - never the list directly!
-        // We don't need to handle positioning here as the content layer is 
-      	// managed by the ColumnLayout
+        auto joinBtn = CCMenuItemSpriteExtra::create(
+          ButtonSprite::create("Join"),
+          scrollLayer,
+          menu_selector(LobbiesLayer::onJoin)
+        );
 
+        node->setZOrder(9);
+        joinBtn->setTag(std::distance(lobbyList->begin(), lobby));
+        menu->addChildAtPosition(joinBtn, Anchor::Right, {-30, 0});
 
+      	
       	scrollLayer->m_contentLayer->addChild(node);
+        node->addChildAtPosition(menu, Anchor::Center);
       
         alternateColorBG = !alternateColorBG;
     }
   
   	scrollLayer->m_contentLayer->updateLayout();
+    scrollLayer->setTouchEnabled(true);
 
   	return scrollLayer;
 }

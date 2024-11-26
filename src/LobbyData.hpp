@@ -11,7 +11,3 @@ struct lobbyData {
     std::string steamUserName;
     std::string levelName;
 };
-
-std::vector<lobbyData> fetchFriends();
-
-ScrollLayer* createLobbyList(std::vector<lobbyData>* lobbyList);

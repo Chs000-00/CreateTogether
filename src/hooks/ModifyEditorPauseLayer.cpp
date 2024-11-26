@@ -57,7 +57,7 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 	}
 
 	void onExitEditor(cocos2d::CCObject* sender) {
-		leaveLobby(); // Leave Lobby
+		// leaveLobby(); // Leave Lobby
 		EditorPauseLayer::onExitEditor(sender); // And exit editor (whoops)
 	}
 

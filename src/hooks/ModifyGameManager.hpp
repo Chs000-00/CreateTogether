@@ -14,6 +14,7 @@ class CallbackManager {
 private:
 	STEAM_CALLBACK(CallbackManager, onGameJoinRequestWrapper, GameLobbyJoinRequested_t);
 	STEAM_CALLBACK(CallbackManager, onLobbyChatUpdateWrapper, LobbyChatUpdate_t);
+	STEAM_CALLBACK(CallbackManager, onLobbyEnter, LobbyEnter_t);
 };
 
 class $modify(MyGameManager, GameManager) {

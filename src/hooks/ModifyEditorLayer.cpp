@@ -17,6 +17,8 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 
     GameObject* createObject(int p0, cocos2d::CCPoint p1, bool p2) {
 
+        log::info("GameObject created!");
+
 		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
         if (gameManager->m_fields->m_isInLobby == false || p2) {

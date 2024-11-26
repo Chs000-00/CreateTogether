@@ -4,9 +4,10 @@
 #include <Geode/ui/LoadingSpinner.hpp>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
 #include <isteammatchmaking.h>
-#include "../ui/LobbyList.hpp"
-#include "../ui/LevelListBorders.hpp"
 #include "LobbiesLayer.hpp"
+#include "../hooks/ModifyGameManager.hpp"
+#include "../LobbyData.hpp"
+#include "../ui/LevelListBorders.hpp"
 
 using namespace geode::prelude;
 
@@ -58,13 +59,14 @@ bool LobbiesLayer::init() {
 
     // Honestly I dont think im using tasks right here
     // TODO: Use Steam Callbacks instead
-    // m_fetchFriendsTaskListener.bind([menu](FetchFriendsTask::Event* event) {
-    //     auto list = createLobbyList(event->getValue());
-    //     auto listBorders = GDLevelListBorders::create();
-    //     listBorders->setContentSize({356, 220}); // TODO: list->getContentSize()
-    //     menu->addChildAtPosition(list, Anchor::Center, -list->getContentSize() / 2);
-    //     menu->addChildAtPosition(listBorders, Anchor::Center);
-    // });
+    m_fetchFriendsTaskListener.bind([menu, this](FetchFriendsTask::Event* event) {
+        this->m_data = event->getValue();
+        auto list = LobbiesLayer::createLobbyList(event->getValue());
+        auto listBorders = GDLevelListBorders::create();
+        listBorders->setContentSize({356, 220}); // TODO: list->getContentSize()
+        menu->addChildAtPosition(list, Anchor::Center, -list->getContentSize() / 2);
+        menu->addChildAtPosition(listBorders, Anchor::Center);
+    });
 
     this->refreshLobbyList(nullptr);
 
@@ -75,8 +77,8 @@ bool LobbiesLayer::init() {
 
 void LobbiesLayer::refreshLobbyList(CCObject* sender) {
     // TODO: Fetch lobbies
-    // m_fetchFriendsTaskListener.setFilter(loadLobbyList());
-    log::error("Feature not implemented yet!");
+    m_fetchFriendsTaskListener.setFilter(loadLobbyList());
+    log::error("Feature not implemented yet! Might break!");
 }
 
 // TODO: Replace function with one that fetches current lobbies instead of friends!
@@ -93,14 +95,13 @@ FetchFriendsTask LobbiesLayer::loadLobbyList() {
             CSteamID steamIDFriend = SteamFriends()->GetFriendByIndex( i, k_EFriendFlagImmediate );
 
 
-            // TODO: friendGameInfo.m_steamIDLobby.IsValid() 
-            if (SteamFriends()->GetFriendGamePlayed( steamIDFriend, &friendGameInfo) || true) { 
-                // I might not need to do requestLobbyData
+            if (SteamFriends()->GetFriendGamePlayed( steamIDFriend, &friendGameInfo) || friendGameInfo.m_steamIDLobby.IsValid() ) { 
                 // auto data = SteamMatchmaking()->RequestLobbyData(friendGameInfo.m_steamIDLobby);
                 clobby.steamUserName = SteamFriends()->GetFriendPersonaName(steamIDFriend);
                 clobby.steamId = friendGameInfo.m_steamIDLobby;
 
                 dataVector.push_back(clobby);   
+                log::info("Data stuff: {} | {}", clobby.steamId.ConvertToUint64(), steamIDFriend.ConvertToUint64());
             } 
 
         }
@@ -116,6 +117,14 @@ void LobbiesLayer::keyBackClicked() {
 void LobbiesLayer::onBack(CCObject* sender) {
     CCDirector::get()->replaceScene(CCTransitionFade::create(0.5, LevelBrowserLayer::scene(GJSearchObject::create(SearchType::MyLevels))));
 }
+
+void LobbiesLayer::onJoin(CCObject* sender) {
+    auto lobbyID = this->m_data->at(sender->getTag()).steamId;
+    log::info("Joining lobby with steamID: {}", lobbyID.ConvertToUint64());
+    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+	gameManager->m_fields->m_lobbyJoined = SteamMatchmaking()->JoinLobby(lobbyID); 
+}
+
 
 LobbiesLayer* LobbiesLayer::create() {
     auto ret = new LobbiesLayer;
