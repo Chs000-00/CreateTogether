@@ -12,8 +12,33 @@
 using namespace geode::prelude;
 
 void CallbackManager::onGameJoinRequestWrapper(GameLobbyJoinRequested_t* pCallback) {
-	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-	gameManager->onGameJoinRequest(pCallback);
+
+	auto callback = new GameLobbyJoinRequested_t;
+	callback->m_steamIDFriend = pCallback->m_steamIDFriend;
+	callback->m_steamIDLobby = pCallback->m_steamIDLobby;
+
+	// TODO: Remove this
+	geode::createQuickPopup(
+		"Lobby?",            // title
+		"Join Lobby?",   // content
+		"Nah", "Yeah",      // buttons
+		[callback](auto, bool btn2) {
+			if (btn2) {
+				// TODO: Remove this
+				auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+				log::debug("JoinLobbyRequest Called with steamID: {} | friendID: {} | friendName: {}", callback->m_steamIDLobby.ConvertToUint64(), callback->m_steamIDFriend.ConvertToUint64(), SteamFriends()->GetFriendPersonaName(callback->m_steamIDFriend));
+
+				gameManager->m_fields->m_lobbyJoined = SteamMatchmaking()->JoinLobby(callback->m_steamIDLobby); // I'm not sure if this is needed
+
+				delete callback;
+
+			}
+			else {
+				delete callback;
+			}
+		}
+		
+	);
 }
 
 void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
@@ -80,41 +105,6 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 		m_fields->m_lobbyJoined = 0;
 		m_fields->m_isInLobby = false;
 	}
-}
-
-// I am slowly devolving into madness
-void MyGameManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
-	// TODO: Remove this
-	geode::createQuickPopup(
-		"Lobby?",            // title
-		"Join Lobby?",   // content
-		"Nah", "Yeah",      // buttons
-		[this, pCallback](auto, bool btn2) {
-			if (btn2) {
-				// TODO: Remove this
-				this->joinLobbyFromRequest(pCallback);
-			}
-		}
-	);
-}
-
-void MyGameManager::joinLobbyFromRequest(GameLobbyJoinRequested_t* pCallback) {
-
-	log::debug("JoinLobbyRequest Called with steamID: {} | friendID: {} | friendName: {}", pCallback->m_steamIDLobby.ConvertToUint64(), pCallback->m_steamIDFriend.ConvertToUint64(), SteamFriends()->GetFriendPersonaName(pCallback->m_steamIDFriend));
-
-	FriendGameInfo_t* friendGameInfo;
-	auto res = SteamFriends()->GetFriendGamePlayed(pCallback->m_steamIDFriend, friendGameInfo);
-
-	log::debug("GetFriendGamePlayed: LobbyID: {} | GameID: {}", friendGameInfo->m_steamIDLobby.ConvertToUint64(), friendGameInfo->m_gameID.ToUint64());
-
-	if (friendGameInfo->m_steamIDLobby != pCallback->m_steamIDLobby) {
-		log::error("SteamLobbyID Mismatch! {} != {}", friendGameInfo->m_steamIDLobby.ConvertToUint64(), pCallback->m_steamIDLobby.ConvertToUint64());
-	}
-
-	
-
-	//this->m_fields->m_lobbyJoined = SteamMatchmaking()->JoinLobby(CSteamID(uint64(109775240971106601)));
-	this->m_fields->m_lobbyJoined = SteamMatchmaking()->JoinLobby(pCallback->m_steamIDLobby); // I'm not sure if this is needed
 }
 
 void MyGameManager::fetchMemberList() {

@@ -38,8 +38,6 @@ class $modify(MyGameManager, GameManager) {
 	void update(float p0);
     void onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure);
 	void onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure);
-	void onGameJoinRequest(GameLobbyJoinRequested_t* pCallback);
-	void joinLobbyFromRequest(GameLobbyJoinRequested_t* pCallback);
 	void fetchMemberList();
 	void sendDataToMembers(const char* data);
 	void receiveData();

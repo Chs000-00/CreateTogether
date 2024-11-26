@@ -10,14 +10,7 @@ using namespace geode::prelude;
 
 class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 
-    // void addSpecial(GameObject* p0) {
-    //     log::info("AddSpecial called with gameobject uid {}", p0->m_uniqueID);
-    //     LevelEditorLayer::addSpecial(p0);
-    // }
-
     GameObject* createObject(int p0, cocos2d::CCPoint p1, bool p2) {
-
-        log::info("GameObject created!");
 
 		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 

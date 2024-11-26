@@ -57,7 +57,7 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 	}
 
 	void onExitEditor(cocos2d::CCObject* sender) {
-		// leaveLobby(); // Leave Lobby
+		leaveLobby(); // Leave Lobby
 		EditorPauseLayer::onExitEditor(sender); // And exit editor (whoops)
 	}
 
@@ -65,18 +65,6 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 		leaveLobby(); // Leave Lobby
 		EditorPauseLayer::onSaveAndPlay(sender); // And exit editor (whoops)
 	}
-
-
-	// Debug Button
-	void onAlignX(cocos2d::CCObject* sender) {
-		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-		gameManager->fetchMemberList();
-		log::debug("LobbyID: {} | IsInEditorLayer: {} | IsHost: {} | IsInLobby: {}", gameManager->m_fields->m_lobbyId, gameManager->m_fields->m_isInEditorLayer, gameManager->m_fields->m_isHost, gameManager->m_fields->m_isInLobby);
-		
-		// This should output the same values
-		log::debug("LevelEditorLayer::get(): {} | gameManager->m_fields->m_level: {}", fmt::ptr(LevelEditorLayer::get()), fmt::ptr(gameManager->m_fields->m_level));
-	}
-
 
 
 	void leaveLobby() {
