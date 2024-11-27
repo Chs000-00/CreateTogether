@@ -18,6 +18,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
             return true;
         }
 
+
         auto openSearchForLobbyLayer = CCMenuItemSpriteExtra::create(
             // "GJ_hammerIcon_001.png" Possibly?
             CircleButtonSprite::createWithSpriteFrameName("GJ_sFriendsIcon_001.png", (1.0F), geode::CircleBaseColor::Green),	

@@ -6,6 +6,7 @@
 #include <isteamnetworkingmessages.h>
 #include <isteamuser.h>
 #include "../ActionTypes.hpp"
+#include "ModifyEditorLayer.hpp"
 #include "ModifyGameManager.hpp"
 
 
@@ -56,17 +57,29 @@ void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 
 void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 
+	if (pCallback->m_EChatRoomEnterResponse != k_EChatRoomEnterResponseSuccess) {
+		log::error("Failed to enter lobby with error code {}", pCallback->m_EChatRoomEnterResponse);
+		FLAlertLayer::create(
+			"Lobby Error",  
+			fmt::format("Failed to enter lobby; <cr>Error {} </c>", pCallback->m_EChatRoomEnterResponse),
+			"OK"   
+		)->show();
+		return;
+	}
+
+
 	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-	gameManager->m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
-	gameManager->m_fields->m_level = LevelEditorLayer::create(GJGameLevel::create(), false);
-	gameManager->m_fields->m_isInLobby = true;
 	gameManager->fetchMemberList();
 	log::info("EnterLobby called with! SteamID: {} | ChatRoomEnterResponse: {}", pCallback->m_ulSteamIDLobby, pCallback->m_EChatRoomEnterResponse);
 
 	if (gameManager->m_fields->m_isHost) {
 		log::warn("onLobbyEntered called as host!");
+		gameManager->m_fields->m_level = LevelEditorLayer::get();
 	} else {
 		gameManager->m_fields->m_isInEditorLayer = true;
+		gameManager->m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
+		gameManager->m_fields->m_isInLobby = true;
+		gameManager->m_fields->m_level = LevelEditorLayer::create(GJGameLevel::create(), false);
 		switchToScene(gameManager->m_fields->m_level);
 	}
 }
@@ -133,6 +146,7 @@ void MyGameManager::sendDataToMembers(const char* data) {
         log::debug("SendData called on {}", SteamFriends()->GetFriendPersonaName(member.GetSteamID()));
 		SteamNetworkingMessages()->SendMessageToUser(member, data, static_cast<uint32>(strlen(data)), k_nSteamNetworkingSend_Reliable, 0);
 	}
+	log::debug("Done sending messages");
 }
 
 void MyGameManager::receiveData() {
@@ -140,7 +154,7 @@ void MyGameManager::receiveData() {
 	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 32);
 	for (int i = 0; i < numMessages; i++) {
 		SteamNetworkingMessage_t* msg = messageList[i];
-		auto res = matjson::parse(static_cast<const char*>(msg->GetData()));
+		auto res = matjson::parse(static_cast<std::string>(static_cast<const char*>(msg->GetData())).append("\0"));
 
 		log::debug("Data received: {} ", static_cast<const char*>(msg->GetData()));
 
@@ -151,19 +165,25 @@ void MyGameManager::receiveData() {
 
 		matjson::Value unwrappedMessage = res.unwrap();
 
-		auto level = this->m_fields->m_level;
+		auto level = static_cast<MyLevelEditorLayer*>(this->m_fields->m_level);
 
 		switch ((int) unwrappedMessage["Type"].asInt().unwrapOr(-1)) {
 			case eActionPlacedObject: {
 				// TODO: Validate position and ID
-				auto gameObj = GameObject::createWithKey((int) unwrappedMessage["ObjID"].asInt().unwrap());
-				gameObj->setPosition({(float) unwrappedMessage["x"].asInt().unwrap(), (float) unwrappedMessage["y"].asInt().unwrap()} );
-				level->addSpecial(gameObj);
+				auto gameObjectID = (int)unwrappedMessage["ObjID"].asInt().unwrap();
+				cocos2d::CCPoint gameObjectPos = {(float)unwrappedMessage["x"].asInt().unwrap(), (float)unwrappedMessage["y"].asInt().unwrap()};
+				
+				// TODO: Figure out why it dosent
+				level->m_fields->m_wasDataSent = true;
+				level->createObject(gameObjectID, gameObjectPos, false);
+				level->m_fields->m_wasDataSent = false;
 				break;
 			}
 
 			case eActionUpdatedFont: {
+				level->m_fields->m_wasDataSent = true;
 				level->updateLevelFont(unwrappedMessage["FontID"].asInt().unwrap());
+				level->m_fields->m_wasDataSent = false;
 				break;
 			}
 

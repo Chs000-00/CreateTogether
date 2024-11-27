@@ -4,48 +4,47 @@
 #include <isteamnetworkingmessages.h>
 #include "../ActionTypes.hpp"
 #include "ModifyGameManager.hpp"
+#include "ModifyEditorLayer.hpp"
 
 using namespace geode::prelude;
 
 
-class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 
-    GameObject* createObject(int p0, cocos2d::CCPoint p1, bool p2) {
+GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p2) {
 
-		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
-        if (gameManager->m_fields->m_isInLobby == false || p2) {
-            return LevelEditorLayer::createObject(p0, p1, p2);
-        }
-
-        matjson::Value object = matjson::makeObject({
-            {"Type", static_cast<int>(eActionPlacedObject)},
-            {"x", p1.x},
-            {"y", p1.y},
-            {"ObjID", p0}
-        });
-
-        gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).append("\0").c_str());
-
+    if (!gameManager->m_fields->m_isInLobby || p2 || m_fields->m_wasDataSent) {
         return LevelEditorLayer::createObject(p0, p1, p2);
     }
 
-    void updateLevelFont(int p0) {
+    matjson::Value object = matjson::makeObject({
+        {"Type", static_cast<int>(eActionPlacedObject)},
+        {"x", p1.x},
+        {"y", p1.y},
+        {"ObjID", p0}
+    });
 
-		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
+    
+    return LevelEditorLayer::createObject(p0, p1, p2);
+}
 
-        if (gameManager->m_fields->m_isInLobby == false) {
-            return LevelEditorLayer::updateLevelFont(p0);
-        }
 
-        matjson::Value object = matjson::makeObject({
-            {"Type", static_cast<int>(eActionUpdatedFont)},
-            {"FontID", p0}
-        });
+void MyLevelEditorLayer::updateLevelFont(int p0) {
 
-        gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).append("\0").c_str());
+    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
+    if (gameManager->m_fields->m_isInLobby == false || m_fields->m_wasDataSent) {
         return LevelEditorLayer::updateLevelFont(p0);
     }
 
-};
+    matjson::Value object = matjson::makeObject({
+        {"Type", static_cast<int>(eActionUpdatedFont)},
+        {"FontID", p0}
+    });
+
+    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
+
+    return LevelEditorLayer::updateLevelFont(p0);
+}
