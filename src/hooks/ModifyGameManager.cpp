@@ -7,10 +7,13 @@
 #include <isteamuser.h>
 #include "../ActionTypes.hpp"
 #include "ModifyEditorLayer.hpp"
+#include "ModifyGameObject.hpp"
 #include "ModifyGameManager.hpp"
 
 
 using namespace geode::prelude;
+
+#define GET_OBJECT_FROM_UID (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(unwrappedMessage["ObjectUID"].asInt().unwrap())
 
 void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 
@@ -149,10 +152,10 @@ void MyGameManager::fetchMemberList() {
 // Sends data to all members in current lobby
 void MyGameManager::sendDataToMembers(const char* data) {
 	for (auto const& member : this->m_fields->m_playersInLobby) {
-        log::debug("SendData called on {}", SteamFriends()->GetFriendPersonaName(member.GetSteamID()));
+        // log::debug("SendData called on {}", SteamFriends()->GetFriendPersonaName(member.GetSteamID()));
 		SteamNetworkingMessages()->SendMessageToUser(member, data, static_cast<uint32>(strlen(data)), k_nSteamNetworkingSend_Reliable, 0);
 	}
-	log::debug("Done sending messages");
+	// log::debug("Done sending messages");
 }
 
 void MyGameManager::receiveData() {
@@ -173,23 +176,46 @@ void MyGameManager::receiveData() {
 
 		auto level = static_cast<MyLevelEditorLayer*>(this->m_fields->m_level);
 
-		switch ((int) unwrappedMessage["Type"].asInt().unwrapOr(-1)) {
+		// TODO: Try using results instead
+		// TODO: Check amd validate the data 
+		switch ((int)unwrappedMessage["Type"].asInt().unwrapOr(-1)) {
 			case eActionPlacedObject: {
-				// TODO: Validate position and ID
 				auto gameObjectID = (int)unwrappedMessage["ObjID"].asInt().unwrap();
 				cocos2d::CCPoint gameObjectPos = {(float)unwrappedMessage["x"].asInt().unwrap(), (float)unwrappedMessage["y"].asInt().unwrap()};
 				
-				// TODO: Figure out why it dosent
+				// TODO: Figure if a race condition is possible
 				level->m_fields->m_wasDataSent = true;
-				level->createObject(gameObjectID, gameObjectPos, false);
+				GameObject* placedGameObject = level->createObject(gameObjectID, gameObjectPos, false);
 				level->m_fields->m_wasDataSent = false;
+				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, placedGameObject->m_uniqueID);
+
 				break;
 			}
-
+			
+			// TODO: Check if this works
 			case eActionUpdatedFont: {
 				level->m_fields->m_wasDataSent = true;
 				level->updateLevelFont(unwrappedMessage["FontID"].asInt().unwrap());
 				level->m_fields->m_wasDataSent = false;
+				break;
+			}
+
+			case eActionDeletedObject: {
+				auto deletedObject = GET_OBJECT_FROM_UID;
+				auto betterDeletedObject = static_cast<MyGameObject*>(deletedObject);
+				betterDeletedObject->m_fields->m_wasDataSent = true;
+				level->deleteObject(deletedObject);
+				betterDeletedObject->m_fields->m_wasDataSent = false;
+				break;
+			}
+
+			case eActionMovedObject: {
+				auto movedObject = GET_OBJECT_FROM_UID;
+				auto betterDeletedObject = static_cast<MyGameObject*>(movedObject);
+				cocos2d::CCPoint newPos = {(float)unwrappedMessage["x"].asInt().unwrap(), (float)unwrappedMessage["y"].asInt().unwrap()};
+				betterDeletedObject->m_fields->m_wasDataSent = true;
+				level->setPosition(newPos);
+				betterDeletedObject->m_fields->m_wasDataSent = false;
 				break;
 			}
 

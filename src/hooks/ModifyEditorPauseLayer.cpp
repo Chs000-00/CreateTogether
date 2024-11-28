@@ -61,6 +61,16 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 		EditorPauseLayer::onExitEditor(sender); // And exit editor (whoops)
 	}
 
+	// void onAlignX(cocos2d::CCObject* sender) {
+	// 	auto editor = this->m_editorLayer;
+	// 	auto objectsArr = CCArrayExt<GameObject*>(editor->m_objects);
+	// 	unsigned int index = 0;
+	// 	for (auto obj : objectsArr) {
+	// 		log::info("Object with index {} with UUID {} and ObjectID {}", index, obj->m_uniqueID, obj->m_objectID);
+	// 		index += 1;
+	// 	}
+	// }
+
 	void onSaveAndPlay(cocos2d::CCObject* sender) {
 		leaveLobby(); // Leave Lobby
 		EditorPauseLayer::onSaveAndPlay(sender); // And exit editor (whoops)

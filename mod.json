@@ -11,6 +11,9 @@
 	"version": "v0.1.1",
 	"developer": "chs000",
 	"description": "",
+	"links": {
+		"source": "https://github.com/Chs000-00/CreateTogether"
+	},
 	"dependencies": [
 		{
 			"id": "geode.node-ids",
