@@ -12,7 +12,7 @@
 
 using namespace geode::prelude;
 
-void CallbackManager::onGameJoinRequestWrapper(GameLobbyJoinRequested_t* pCallback) {
+void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 
 	auto callback = new GameLobbyJoinRequested_t;
 	callback->m_steamIDFriend = pCallback->m_steamIDFriend;
@@ -45,15 +45,22 @@ void CallbackManager::onGameJoinRequestWrapper(GameLobbyJoinRequested_t* pCallba
 void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
-	log::debug("LobbyChatUpdateWrapper called! UserID: {} | UserName: {} | StateChange: {} | SteamIDMakingChange: {}", pCallback->m_ulSteamIDUserChanged, SteamFriends()->GetFriendPersonaName(pCallback->m_ulSteamIDUserChanged), pCallback->m_rgfChatMemberStateChange, pCallback->m_ulSteamIDMakingChange);
 
 	if (gameManager->m_fields->m_lobbyId != pCallback->m_ulSteamIDLobby) {
-		log::debug("Mismatching Update! {} != {}", gameManager->m_fields->m_lobbyId, pCallback->m_ulSteamIDLobby);
+		// log::debug("Mismatching Update! {} != {}", gameManager->m_fields->m_lobbyId, pCallback->m_ulSteamIDLobby);
 		return;
 	}
 
+	log::debug("LobbyChatUpdateWrapper called. UserID: {} | UserName: {} | StateChange: {} | SteamIDMakingChange: {}", pCallback->m_ulSteamIDUserChanged, SteamFriends()->GetFriendPersonaName(pCallback->m_ulSteamIDUserChanged), pCallback->m_rgfChatMemberStateChange, pCallback->m_ulSteamIDMakingChange);
+
+
 	gameManager->fetchMemberList();
 }
+
+void CallbackManager::onNetworkingMessagesSessionRequest(SteamNetworkingMessagesSessionRequest_t* pCallback) {
+	SteamNetworkingMessages()->AcceptSessionWithUser(pCallback->m_identityRemote);
+}
+
 
 void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 
@@ -69,8 +76,9 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 
 
 	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-	gameManager->fetchMemberList();
 	log::info("EnterLobby called with! SteamID: {} | ChatRoomEnterResponse: {}", pCallback->m_ulSteamIDLobby, pCallback->m_EChatRoomEnterResponse);
+
+	gameManager->m_fields->m_isInLobby = true;
 
 	if (gameManager->m_fields->m_isHost) {
 		log::warn("onLobbyEntered called as host!");
@@ -78,8 +86,8 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 	} else {
 		gameManager->m_fields->m_isInEditorLayer = true;
 		gameManager->m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
-		gameManager->m_fields->m_isInLobby = true;
 		gameManager->m_fields->m_level = LevelEditorLayer::create(GJGameLevel::create(), false);
+		gameManager->fetchMemberList();
 		switchToScene(gameManager->m_fields->m_level);
 	}
 }
@@ -93,7 +101,6 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 		// TODO: Change this inside EditorLayer::init instead!
 		m_fields->m_isInEditorLayer = true;
 
-		m_fields->m_isInLobby = true;
 		m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
 
 		// Get pointer to the current level editor
@@ -107,7 +114,6 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 
 		// SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "lobby_type", MOD_LOBBY_NAME); // TODO: Uncomment this
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "version", MOD_VERSION);
-		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "host_steamid", std::to_string(pCallback->m_ulSteamIDLobby).c_str());
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "level_name", LevelEditorLayer::get()->m_level->m_levelName.c_str());
 	}
 	else {

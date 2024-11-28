@@ -7,14 +7,18 @@
 #include <isteamfriends.h>
 #include <steam_api_common.h>
 #include <steamnetworkingtypes.h>
+#include <isteamnetworkingmessages.h>
+
 
 using namespace geode::prelude;
 
 class CallbackManager {
 private:
-	STEAM_CALLBACK(CallbackManager, onGameJoinRequestWrapper, GameLobbyJoinRequested_t);
+	STEAM_CALLBACK(CallbackManager, onGameJoinRequest, GameLobbyJoinRequested_t);
 	STEAM_CALLBACK(CallbackManager, onLobbyChatUpdateWrapper, LobbyChatUpdate_t);
 	STEAM_CALLBACK(CallbackManager, onLobbyEnter, LobbyEnter_t);
+	STEAM_CALLBACK(CallbackManager, onNetworkingMessagesSessionRequest, SteamNetworkingMessagesSessionRequest_t);
+
 };
 
 class $modify(MyGameManager, GameManager) {
