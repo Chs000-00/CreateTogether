@@ -49,8 +49,6 @@ void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 	);
 }
 
-
-
 void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
@@ -69,7 +67,6 @@ void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 void CallbackManager::onNetworkingMessagesSessionRequest(SteamNetworkingMessagesSessionRequest_t* pCallback) {
 	SteamNetworkingMessages()->AcceptSessionWithUser(pCallback->m_identityRemote);
 }
-
 
 void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 
@@ -102,23 +99,20 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 }
 
 void MyGameManager::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure) {	
-	int friendsCount = SteamFriends()->GetFriendCount( k_EFriendFlagImmediate );
-	std::vector<lobbyData>* dataVector = this->m_fields->m_lobbyLayer->m_data;
+	auto lobbyCount = pLobbyMatchList->m_nLobbiesMatching;
 	lobbyData clobby;
 
-	for (int i = 0; i < friendsCount; i++) {
-		FriendGameInfo_t friendGameInfo;
-		CSteamID steamIDFriend = SteamFriends()->GetFriendByIndex( i, k_EFriendFlagImmediate );
+	for (int i = 0; i < lobbyCount; i++) {
+		CSteamID lobbyID = SteamMatchmaking()->GetLobbyByIndex(i);
 
+		SteamMatchmaking()->RequestLobbyData(lobbyID);
 
-		if (SteamFriends()->GetFriendGamePlayed( steamIDFriend, &friendGameInfo) || friendGameInfo.m_steamIDLobby.IsValid() ) { 
-			// auto data = SteamMatchmaking()->RequestLobbyData(friendGameInfo.m_steamIDLobby);
-			clobby.steamUserName = SteamFriends()->GetFriendPersonaName(steamIDFriend);
-			clobby.steamId = friendGameInfo.m_steamIDLobby;
+		clobby.levelName = SteamMatchmaking()->GetLobbyData(lobbyID, "level_name");
+		clobby.steamUserName = SteamMatchmaking()->GetLobbyData(lobbyID, "host_name");
+		clobby.steamId = lobbyID;
 
-			dataVector->push_back(clobby);   
-			log::info("Data stuff: {} | {}", clobby.steamId.ConvertToUint64(), steamIDFriend.ConvertToUint64());
-		} 
+		this->m_fields->m_lobbyLayer->m_data->push_back(clobby);   
+		// log::debug("Data stuff: {} | {}", clobby.steamId.ConvertToUint64(), steamIDFriend.ConvertToUint64());
 
 	}
 	this->m_fields->m_lobbyLayer->loadDataToList();
@@ -148,6 +142,10 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 		// SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "lobby_type", MOD_LOBBY_NAME); // TODO: Uncomment this
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "version", MOD_VERSION);
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "level_name", LevelEditorLayer::get()->m_level->m_levelName.c_str());
+		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "host_name", SteamFriends()->GetPersonaName());
+
+
+	
 	}
 	else {
 		log::warn("Failed to create lobby with error code {}!", fmt::underlying(pCallback->m_eResult));

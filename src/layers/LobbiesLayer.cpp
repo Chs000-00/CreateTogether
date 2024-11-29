@@ -83,7 +83,7 @@ void LobbiesLayer::onJoin(CCObject* sender) {
 
 void LobbiesLayer::loadDataToList() {
 
-    if (this->m_data) {
+    if (!this->m_data) {
         return;
     }
 

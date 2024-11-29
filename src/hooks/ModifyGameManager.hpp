@@ -23,7 +23,6 @@ private:
 };
 
 class $modify(MyGameManager, GameManager) {
-
     struct Fields {
         SteamAPICall_t m_lobbyCreated;
         SteamAPICall_t m_lobbyJoined;
