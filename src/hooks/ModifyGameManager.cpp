@@ -6,6 +6,8 @@
 #include <isteamnetworkingmessages.h>
 #include <isteamuser.h>
 #include "../ActionTypes.hpp"
+#include "../LobbyData.hpp"
+#include "../layers/LobbiesLayer.hpp"
 #include "ModifyEditorLayer.hpp"
 #include "ModifyGameObject.hpp"
 #include "ModifyGameManager.hpp"
@@ -13,7 +15,9 @@
 
 using namespace geode::prelude;
 
-#define GET_OBJECT_FROM_UID (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(unwrappedMessage["ObjectUID"].asInt().unwrap())
+#define GET_OBJECT_FROM_UID (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(unwrappedMessage["ObjectUID"].asInt().ok().value())
+#define GET_CCPOINT static_cast<float>(unwrappedMessage["x"].asInt().ok().value()), static_cast<float>(unwrappedMessage["y"].asInt().ok().value())
+#define VALIDATE_MESSAGE(key, type) if (unwrappedMessage[key].as ## type().isErr()) continue
 
 void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 
@@ -44,6 +48,8 @@ void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 		
 	);
 }
+
+
 
 void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
@@ -94,6 +100,30 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 		switchToScene(gameManager->m_fields->m_level);
 	}
 }
+
+void MyGameManager::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure) {	
+	int friendsCount = SteamFriends()->GetFriendCount( k_EFriendFlagImmediate );
+	std::vector<lobbyData>* dataVector = this->m_fields->m_lobbyLayer->m_data;
+	lobbyData clobby;
+
+	for (int i = 0; i < friendsCount; i++) {
+		FriendGameInfo_t friendGameInfo;
+		CSteamID steamIDFriend = SteamFriends()->GetFriendByIndex( i, k_EFriendFlagImmediate );
+
+
+		if (SteamFriends()->GetFriendGamePlayed( steamIDFriend, &friendGameInfo) || friendGameInfo.m_steamIDLobby.IsValid() ) { 
+			// auto data = SteamMatchmaking()->RequestLobbyData(friendGameInfo.m_steamIDLobby);
+			clobby.steamUserName = SteamFriends()->GetFriendPersonaName(steamIDFriend);
+			clobby.steamId = friendGameInfo.m_steamIDLobby;
+
+			dataVector->push_back(clobby);   
+			log::info("Data stuff: {} | {}", clobby.steamId.ConvertToUint64(), steamIDFriend.ConvertToUint64());
+		} 
+
+	}
+	this->m_fields->m_lobbyLayer->loadDataToList();
+}
+
 
 void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 	if (pCallback->m_eResult == k_EResultOK) {
@@ -158,30 +188,51 @@ void MyGameManager::sendDataToMembers(const char* data) {
 	// log::debug("Done sending messages");
 }
 
+bool MyGameManager::validateData(matjson::Value data) {
+
+	if (!data.contains("Type")) {
+		log::warn("Message does not contain a Type!");
+		return false;
+	}
+
+	return true;
+}
+
 void MyGameManager::receiveData() {
 	SteamNetworkingMessage_t* messageList[32];
 	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 32);
 	for (int i = 0; i < numMessages; i++) {
 		SteamNetworkingMessage_t* msg = messageList[i];
 		auto res = matjson::parse(static_cast<std::string>(static_cast<const char*>(msg->GetData())).append("\0"));
+		msg->Release();
 
 		log::debug("Data received: {} ", static_cast<const char*>(msg->GetData()));
 
 		if (!res) {
 			log::error("Failed to parse json: {}", res.unwrapErr());
-			return;
+			continue;
 		}
 
 		matjson::Value unwrappedMessage = res.unwrap();
+
+		if (!MyGameManager::validateData(unwrappedMessage)) {
+			continue;
+		}
 
 		auto level = static_cast<MyLevelEditorLayer*>(this->m_fields->m_level);
 
 		// TODO: Try using results instead
 		// TODO: Check amd validate the data 
-		switch ((int)unwrappedMessage["Type"].asInt().unwrapOr(-1)) {
+
+		auto type = (int)unwrappedMessage["Type"].asInt().unwrapOr(-1);
+		switch (type) {
 			case eActionPlacedObject: {
-				auto gameObjectID = (int)unwrappedMessage["ObjID"].asInt().unwrap();
-				cocos2d::CCPoint gameObjectPos = {(float)unwrappedMessage["x"].asInt().unwrap(), (float)unwrappedMessage["y"].asInt().unwrap()};
+				VALIDATE_MESSAGE("ObjID", UInt);
+				VALIDATE_MESSAGE("x", Int);
+				VALIDATE_MESSAGE("y", Int);
+				
+				auto gameObjectID = unwrappedMessage["ObjID"].asUInt().ok().value();
+				cocos2d::CCPoint gameObjectPos = {GET_CCPOINT};
 				
 				// TODO: Figure if a race condition is possible
 				level->m_fields->m_wasDataSent = true;
@@ -194,6 +245,8 @@ void MyGameManager::receiveData() {
 			
 			// TODO: Check if this works
 			case eActionUpdatedFont: {
+				VALIDATE_MESSAGE("FontID", Int);
+				
 				level->m_fields->m_wasDataSent = true;
 				level->updateLevelFont(unwrappedMessage["FontID"].asInt().unwrap());
 				level->m_fields->m_wasDataSent = false;
@@ -201,6 +254,8 @@ void MyGameManager::receiveData() {
 			}
 
 			case eActionDeletedObject: {
+				VALIDATE_MESSAGE("ObjectUID", Int);
+
 				auto deletedObject = GET_OBJECT_FROM_UID;
 				auto betterDeletedObject = static_cast<MyGameObject*>(deletedObject);
 				betterDeletedObject->m_fields->m_wasDataSent = true;
@@ -210,9 +265,13 @@ void MyGameManager::receiveData() {
 			}
 
 			case eActionMovedObject: {
+				VALIDATE_MESSAGE("ObjectUID", UInt);
+				VALIDATE_MESSAGE("x", Int);
+				VALIDATE_MESSAGE("y", Int);
+
 				auto movedObject = GET_OBJECT_FROM_UID;
 				auto betterDeletedObject = static_cast<MyGameObject*>(movedObject);
-				cocos2d::CCPoint newPos = {(float)unwrappedMessage["x"].asInt().unwrap(), (float)unwrappedMessage["y"].asInt().unwrap()};
+				cocos2d::CCPoint newPos = {GET_CCPOINT};
 				betterDeletedObject->m_fields->m_wasDataSent = true;
 				level->setPosition(newPos);
 				betterDeletedObject->m_fields->m_wasDataSent = false;
@@ -220,9 +279,8 @@ void MyGameManager::receiveData() {
 			}
 
 			default:
-				log::warn("No case switch found! Are you sure you are on the right version?");
+				log::warn("Type {} not found! Are you sure you're on the right version?", type);
 		}
-		msg->Release();
 	}
 }
 

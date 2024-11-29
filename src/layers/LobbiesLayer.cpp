@@ -1,15 +1,14 @@
 #include <Geode/Geode.hpp>
-#include <Geode/loader/Event.hpp>
 #include <Geode/ui/General.hpp>
 #include <Geode/ui/LoadingSpinner.hpp>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
 #include <isteammatchmaking.h>
 #include "LobbiesLayer.hpp"
 #include "../hooks/ModifyGameManager.hpp"
-#include "../LobbyData.hpp"
 #include "../ui/LevelListBorders.hpp"
 
 using namespace geode::prelude;
+
 
 bool LobbiesLayer::init() {
     if (!CCLayer::init()) {
@@ -46,68 +45,25 @@ bool LobbiesLayer::init() {
         menu_selector(LobbiesLayer::refreshLobbyList)
     );
 
-    auto menu = CCMenu::create();
+    auto m_menu = CCMenu::create();
 
-    menu->addChildAtPosition(backBtn, Anchor::TopLeft, {25, -25});
-    menu->addChildAtPosition(spinner, Anchor::Center);
-
-    // Couldn't some sort of race condition happen here if the user somehow presses the button before the bind happens?
-    menu->addChildAtPosition(refreshBtn, Anchor::BottomRight);
-
-
-    this->addChild(menu);
-
-    // Honestly I dont think im using tasks right here
-    // TODO: Use Steam Callbacks instead
-    m_fetchFriendsTaskListener.bind([menu, this](FetchFriendsTask::Event* event) {
-        this->m_data = event->getValue();
-        auto list = LobbiesLayer::createLobbyList(event->getValue());
-        auto listBorders = GDLevelListBorders::create();
-        listBorders->setContentSize({356, 220}); // TODO: list->getContentSize()
-        menu->addChildAtPosition(list, Anchor::Center, -list->getContentSize() / 2);
-        menu->addChildAtPosition(listBorders, Anchor::Center);
-    });
+    m_menu->addChildAtPosition(backBtn, Anchor::TopLeft, {25, -25});
+    m_menu->addChildAtPosition(spinner, Anchor::Center);
+    m_menu->addChildAtPosition(refreshBtn, Anchor::BottomRight, {-25, 25});
+    this->addChild(m_menu);
 
     this->refreshLobbyList(nullptr);
-
-    
 
     return true;
 }
 
+
 void LobbiesLayer::refreshLobbyList(CCObject* sender) {
-    // TODO: Fetch lobbies
-    m_fetchFriendsTaskListener.setFilter(loadLobbyList());
-    log::error("Feature not implemented yet! Might break!");
-}
-
-// TODO: Replace function with one that fetches current lobbies instead of friends!
-FetchFriendsTask LobbiesLayer::loadLobbyList() {
-    return FetchFriendsTask::run([](auto progress, auto hasBeenCancelled) -> std::vector<lobbyData> {
-
-        int friendsCount = SteamFriends()->GetFriendCount( k_EFriendFlagImmediate );
-        std::vector<lobbyData> dataVector;
-        lobbyData clobby;
-
-        for (int i = 0; i < friendsCount; i++)
-        {
-            FriendGameInfo_t friendGameInfo;
-            CSteamID steamIDFriend = SteamFriends()->GetFriendByIndex( i, k_EFriendFlagImmediate );
-
-
-            if (SteamFriends()->GetFriendGamePlayed( steamIDFriend, &friendGameInfo) || friendGameInfo.m_steamIDLobby.IsValid() ) { 
-                // auto data = SteamMatchmaking()->RequestLobbyData(friendGameInfo.m_steamIDLobby);
-                clobby.steamUserName = SteamFriends()->GetFriendPersonaName(steamIDFriend);
-                clobby.steamId = friendGameInfo.m_steamIDLobby;
-
-                dataVector.push_back(clobby);   
-                log::info("Data stuff: {} | {}", clobby.steamId.ConvertToUint64(), steamIDFriend.ConvertToUint64());
-            } 
-
-        }
-        return dataVector;
-
-    }, "Fetches current friends");
+	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
+    auto gameManagerCast = static_cast<MyGameManager*>(GameManager::get());
+    auto gameManagerFields = gameManagerCast->m_fields.self();
+    gameManagerFields->m_lobbyLayer = this;
+    gameManagerFields->m_lobbyMatchListCallResult.Set(hSteamAPICall, gameManagerCast, &MyGameManager::onLobbyMatchList);
 }
 
 
@@ -125,6 +81,28 @@ void LobbiesLayer::onJoin(CCObject* sender) {
 	gameManager->m_fields->m_lobbyJoined = SteamMatchmaking()->JoinLobby(lobbyID); 
 }
 
+void LobbiesLayer::loadDataToList() {
+
+    if (this->m_data) {
+        return;
+    }
+
+    if (this->m_scrollLayer) {
+        this->m_scrollLayer->removeFromParent();
+    }
+
+    this->m_scrollLayer = LobbiesLayer::createLobbyList(m_data);
+
+    m_menu->addChildAtPosition(this->m_scrollLayer, Anchor::Center, -this->m_scrollLayer->getContentSize() / 2);
+
+    if (!this->m_listBorders) {
+        this->m_listBorders = GDLevelListBorders::create();
+        this->m_listBorders->setContentSize({356, 270}); // TODO: list->getContentSize()
+        this->m_listBorders->setZOrder(5);
+        m_menu->addChildAtPosition(this->m_listBorders, Anchor::Center);
+    }
+
+}
 
 LobbiesLayer* LobbiesLayer::create() {
     auto ret = new LobbiesLayer;

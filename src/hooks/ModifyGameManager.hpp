@@ -8,6 +8,7 @@
 #include <steam_api_common.h>
 #include <steamnetworkingtypes.h>
 #include <isteamnetworkingmessages.h>
+#include "../layers/LobbiesLayer.hpp"
 
 
 using namespace geode::prelude;
@@ -30,19 +31,25 @@ class $modify(MyGameManager, GameManager) {
         bool m_isInLobby = false;
 		bool m_isHost = false; // TODO: use GetLobbyOwner instead? Possibly?
 		bool m_isInEditorLayer = false;
+
 		LevelEditorLayer* m_level;
+    	LobbiesLayer* m_lobbyLayer = nullptr;
 		CallbackManager m_callbackManager;
 
 		std::vector<SteamNetworkingIdentity> m_playersInLobby;
 
 		CCallResult< MyGameManager, LobbyCreated_t > m_isInLobbyCallResult;
 		CCallResult< MyGameManager, LobbyEnter_t > m_enterLobbyCallResult;
+		CCallResult< MyGameManager, LobbyMatchList_t  > m_lobbyMatchListCallResult;
+
     };
 
 	void update(float p0);
     void onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure);
 	void onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure);
+	void onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure);
 	void fetchMemberList();
 	void sendDataToMembers(const char* data);
 	void receiveData();
+	static bool validateData(matjson::Value data);
 };

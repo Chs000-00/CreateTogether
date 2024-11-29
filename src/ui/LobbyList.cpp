@@ -26,8 +26,8 @@ ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData>* lobbyList) {
         auto menu = CCMenu::create();
 
 
-        menu->setContentSize({ scrollLayer->getContentWidth(), 50 });
-        node->setContentSize({ scrollLayer->getContentWidth(), 50 });
+        menu->setContentSize({ scrollLayer->getContentWidth(), 30 });
+        node->setContentSize({ scrollLayer->getContentWidth(), 30 });
 
 
         auto color = ccc4(161, 88, 44, 255);
@@ -54,8 +54,9 @@ ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData>* lobbyList) {
       	// managed by the ColumnLayout
         
         auto steamUsernameLabel = CCLabelBMFont::create(lobby->steamUserName.c_str(), "bigFont.fnt");
+        steamUsernameLabel->setAnchorPoint({0, steamUsernameLabel->getScaleX()/2});
         steamUsernameLabel->setScale(0.5);
-        node->addChildAtPosition(steamUsernameLabel, Anchor::Center);
+        node->addChildAtPosition(steamUsernameLabel, Anchor::Left, {20, 0});
 
         auto joinBtn = CCMenuItemSpriteExtra::create(
           ButtonSprite::create("Join"),
@@ -63,12 +64,13 @@ ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData>* lobbyList) {
           menu_selector(LobbiesLayer::onJoin)
         );
 
-        node->setZOrder(9);
+        joinBtn->setScale(0.8f);
         joinBtn->setTag(std::distance(lobbyList->begin(), lobby));
-        menu->addChildAtPosition(joinBtn, Anchor::Right, {-30, 0});
+        menu->addChildAtPosition(joinBtn, Anchor::Right, {-40, 0});
 
       	
       	scrollLayer->m_contentLayer->addChild(node);
+        node->setZOrder(9);
         node->addChildAtPosition(menu, Anchor::Center);
       
         alternateColorBG = !alternateColorBG;
