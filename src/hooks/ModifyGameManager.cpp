@@ -25,11 +25,10 @@ void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 	callback->m_steamIDFriend = pCallback->m_steamIDFriend;
 	callback->m_steamIDLobby = pCallback->m_steamIDLobby;
 
-	// TODO: Remove this
 	geode::createQuickPopup(
-		"Lobby?",            // title
-		"Join Lobby?",   // content
-		"Nah", "Yeah",      // buttons
+		"Lobby",         
+		"Join Lobby?",
+		"Nah", "Yeah",
 		[callback](auto, bool btn2) {
 			if (btn2) {
 				// TODO: Remove this
@@ -75,7 +74,7 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 		FLAlertLayer::create(
 			"Lobby Error",  
 			fmt::format("Failed to enter lobby; <cr>Error {} </c>", pCallback->m_EChatRoomEnterResponse),
-			"OK"   
+			"Ok"   
 		)->show();
 		return;
 	}
@@ -105,6 +104,11 @@ void MyGameManager::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIO
 	for (int i = 0; i < lobbyCount; i++) {
 		CSteamID lobbyID = SteamMatchmaking()->GetLobbyByIndex(i);
 
+		if (SteamMatchmaking()->GetLobbyData(lobbyID, "level_name") != MOD_VERSION) {
+			clobby.isVersionMismatched = true;
+			continue;
+		}
+
 		SteamMatchmaking()->RequestLobbyData(lobbyID);
 
 		clobby.levelName = SteamMatchmaking()->GetLobbyData(lobbyID, "level_name");
@@ -122,6 +126,13 @@ void MyGameManager::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIO
 void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 	if (pCallback->m_eResult == k_EResultOK) {
 		log::info("Created Lobby with steamID {} !", pCallback->m_ulSteamIDLobby);
+
+
+		FLAlertLayer::create(
+			"Lobby host",
+			"Lobby created successfully!",
+			"Ok"
+		)->show();
 
 		// Although this would work, this shouldnt be relied on for checking if
 		// the player is in the editor layer.
@@ -144,8 +155,6 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "level_name", LevelEditorLayer::get()->m_level->m_levelName.c_str());
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "host_name", SteamFriends()->GetPersonaName());
 
-
-	
 	}
 	else {
 		log::warn("Failed to create lobby with error code {}!", fmt::underlying(pCallback->m_eResult));

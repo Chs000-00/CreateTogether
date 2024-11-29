@@ -41,19 +41,22 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 
 		if (!gameManagerFields->m_isInLobby) {
 			// TODO: Shorten this
-			if (!m_fields->m_lobbyPopup) {
-				m_fields->m_lobbyPopup = LobbyPopup::create();
-			}
+			m_fields->m_lobbyPopup = LobbyPopup::create(eLobbyHostPopup);
 			
-			// Make sure we really did in fact create a popup
-			if (m_fields->m_lobbyPopup) {
-				m_fields->m_lobbyPopup->show();
-			}
-		}
+		} 
+		else if (gameManagerFields->m_isHost) {
+			m_fields->m_lobbyPopup = LobbyPopup::create(eLobbyHostingPopup);
+		} 
 		else {
-			// TODO: Create diff popup or pass m_isInLobby as an argument
-			log::warn("Im too lazy to create a menu ):");
+			m_fields->m_lobbyPopup = LobbyPopup::create(eLobbyJoinedUserPopup);
 		}
+
+
+		// Make sure we really did in fact create a popup
+		if (m_fields->m_lobbyPopup) {
+			m_fields->m_lobbyPopup->show();
+		}
+
 	}
 
 	void onExitEditor(cocos2d::CCObject* sender) {

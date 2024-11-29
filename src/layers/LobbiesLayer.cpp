@@ -63,6 +63,7 @@ void LobbiesLayer::refreshLobbyList(CCObject* sender) {
     auto gameManagerCast = static_cast<MyGameManager*>(GameManager::get());
     auto gameManagerFields = gameManagerCast->m_fields.self();
     gameManagerFields->m_lobbyLayer = this;
+    // SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterFar);
     gameManagerFields->m_lobbyMatchListCallResult.Set(hSteamAPICall, gameManagerCast, &MyGameManager::onLobbyMatchList);
 }
 
@@ -92,6 +93,7 @@ void LobbiesLayer::loadDataToList() {
     }
 
     this->m_scrollLayer = LobbiesLayer::createLobbyList(m_data);
+    m_scrollLayer->setID("scroll-layer");
 
     m_menu->addChildAtPosition(this->m_scrollLayer, Anchor::Center, -this->m_scrollLayer->getContentSize() / 2);
 

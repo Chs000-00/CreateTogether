@@ -52,6 +52,19 @@ ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData>* lobbyList) {
       	// *content layer* - never the list directly!
         // We don't need to handle positioning here as the content layer is 
       	// managed by the ColumnLayout
+
+        if (lobby->isVersionMismatched) {
+          auto mismatchedVersionLabel = CCLabelBMFont::create("Mismatched version detected!", "bigFont.fnt");
+          mismatchedVersionLabel->setColor(ccc3(255, 49, 49));
+          mismatchedVersionLabel->setAnchorPoint({0, mismatchedVersionLabel->getScaleX()/2});
+          node->addChildAtPosition(mismatchedVersionLabel, Anchor::Left, {20, 0});
+          scrollLayer->m_contentLayer->addChild(node);
+          node->setZOrder(9);
+          node->addChildAtPosition(menu, Anchor::Center);
+        
+          alternateColorBG = !alternateColorBG;
+          continue;
+        }
         
         auto steamUsernameLabel = CCLabelBMFont::create(lobby->steamUserName.c_str(), "bigFont.fnt");
         steamUsernameLabel->setAnchorPoint({0, steamUsernameLabel->getScaleX()/2});

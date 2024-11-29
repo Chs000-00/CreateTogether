@@ -9,25 +9,41 @@ using namespace geode::prelude;
 
 
 // specify parameters for the setup function in the Popup<...> template
-bool LobbyPopup::setup() {
+bool LobbyPopup::setup(EPopupType type) {
     // convenience function provided by Popup
     // for adding/setting a title to the popup
-    this->setTitle("Create Lobby:");
 
-    auto startHostingButton = CCMenuItemSpriteExtra::create(
-        ButtonSprite::create("Host"), 
-        this, 
-        menu_selector(LobbyPopup::startHosting)
-    );
+    switch (type) {
+        case eLobbyHostPopup: {
+            this->setTitle("Create Lobby:");
 
-    auto inviteFriendsButton = CCMenuItemSpriteExtra::create(
-        ButtonSprite::create("Invite"), 
-        this, 
-        menu_selector(LobbyPopup::inviteFriends)
-    );
+            auto startHostingButton = CCMenuItemSpriteExtra::create(
+                ButtonSprite::create("Host"), 
+                this, 
+                menu_selector(LobbyPopup::startHosting)
+            );
 
-    this->m_buttonMenu->addChildAtPosition(startHostingButton, Anchor::Bottom, {0, 20});
-    this->m_buttonMenu->addChildAtPosition(inviteFriendsButton, Anchor::BottomLeft, {20, 20});
+            this->m_buttonMenu->addChildAtPosition(startHostingButton, Anchor::Bottom, {0, 20});
+
+            break;
+        }
+
+
+        case eLobbyHostingPopup: {
+            this->setTitle("Lobby settings:");
+
+            auto inviteFriendsButton = CCMenuItemSpriteExtra::create(
+                ButtonSprite::create("Invite"), 
+                this, 
+                menu_selector(LobbyPopup::inviteFriends)
+            );
+
+            this->m_buttonMenu->addChildAtPosition(inviteFriendsButton, Anchor::Bottom, {0, 20});
+
+            break;
+        }
+
+    }
 
     return true;
 }
@@ -37,6 +53,8 @@ void LobbyPopup::startHosting(CCObject* sender) {
 
     auto gameManagerCast = static_cast<MyGameManager*>(GameManager::get());
     auto gameManagerFields = gameManagerCast->m_fields.self();
+
+    this->onClose(nullptr);
 
     //gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
     gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
@@ -50,12 +68,12 @@ void LobbyPopup::inviteFriends(CCObject* sender) {
     SteamFriends()->ActivateGameOverlayInviteDialog(gameManagerFields->m_lobbyId);
 }
 
-LobbyPopup* LobbyPopup::create() {
+LobbyPopup* LobbyPopup::create(EPopupType type) {
     auto ret = new LobbyPopup();
 
     log::info("Creating popup...");
 
-    if (ret->initAnchored(300.f, 200.f)) {
+    if (ret->initAnchored(300.f, 200.f, type)) {
         ret->autorelease();
         return ret;
     }

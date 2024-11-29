@@ -4,13 +4,19 @@
 
 using namespace geode::prelude;
 
+enum EPopupType {
+    eLobbyHostPopup,
+    eLobbyHostingPopup,
+    eLobbyJoinedUserPopup
+};
+
 // specify parameters for the setup function in the Popup<...> template
-class LobbyPopup : public geode::Popup<> {
+class LobbyPopup : public geode::Popup<EPopupType> {
 private:
-    bool setup() override;
+    bool setup(EPopupType type) override;
 
 public:
-    static LobbyPopup* create();
+    static LobbyPopup* create(EPopupType type);
     void startHosting(CCObject* sender);
     void inviteFriends(CCObject* sender);
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-enum editor_action_types {
+enum EEditorActionType {
     eActionRequestLevel,       // Request level for synchronization
     eActionPlacedObject,       // Object was placed in level
     eActionMovedObject,        // Object was moved
@@ -16,3 +16,4 @@ enum editor_action_types {
     eActionUpdatedFont,        // Level's font was updated/changed
     eActionDeleteAllStartpos   // Delete all startpos was pressed
 };
+
