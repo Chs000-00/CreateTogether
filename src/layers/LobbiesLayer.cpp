@@ -84,7 +84,7 @@ void LobbiesLayer::onJoin(CCObject* sender) {
 
 void LobbiesLayer::loadDataToList() {
 
-    if (!this->m_data) {
+    if (!this->m_data || this->m_data->max_size() == 0) {
         return;
     }
 
@@ -92,7 +92,7 @@ void LobbiesLayer::loadDataToList() {
         this->m_scrollLayer->removeFromParent();
     }
 
-    this->m_scrollLayer = LobbiesLayer::createLobbyList(m_data);
+    this->m_scrollLayer = LobbiesLayer::createLobbyList(this->m_data);
     m_scrollLayer->setID("scroll-layer");
 
     m_menu->addChildAtPosition(this->m_scrollLayer, Anchor::Center, -this->m_scrollLayer->getContentSize() / 2);

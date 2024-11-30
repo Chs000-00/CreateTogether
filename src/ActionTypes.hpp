@@ -1,13 +1,14 @@
 #pragma once
 
 enum EEditorActionType {
-    eActionRequestLevel,       // Request level for synchronization
     eActionPlacedObject,       // Object was placed in level
     eActionMovedObject,        // Object was moved
-    eActionRotatedObject,        // Object was rotated
-    eActionPastedObjects,       // Objects were pasted
+    eActionRotatedObject,      // Object was rotated
     eActionDeletedObject,      // Object was deleted
-    eActionUpdatedColor,        // Color was updated
+    eActionPastedObjects,      // Objects were pasted
+    eActionRequestLevel,       // Request level for synchronization
+    eActionReturnLevelString,  // Return level string which was requested
+    eActionUpdatedColor,       // Color was updated
     eActionModifiedObject,     // Object data was changed
     eActionSongChanged,        // Level's song was changed
     eOptionSpeedChanged,       // Starting player speed was changed

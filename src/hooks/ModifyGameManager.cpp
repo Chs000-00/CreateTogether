@@ -109,6 +109,8 @@ void MyGameManager::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIO
 			continue;
 		}
 
+		clobby.isVersionMismatched = false;
+
 		SteamMatchmaking()->RequestLobbyData(lobbyID);
 
 		clobby.levelName = SteamMatchmaking()->GetLobbyData(lobbyID, "level_name");
@@ -176,6 +178,7 @@ void MyGameManager::fetchMemberList() {
 		CSteamID steamIDFriend = SteamMatchmaking()->GetLobbyMemberByIndex(m_fields->m_lobbyId, i);
 		if (steamIDFriend == SteamUser()->GetSteamID()) {
 			log::debug("(Self) - {} with SteamID: {}", SteamFriends()->GetPersonaName(), steamIDFriend.ConvertToUint64());
+			this->m_fields->m_indexInLobby = i;
 			continue;
 		}
 
@@ -187,7 +190,14 @@ void MyGameManager::fetchMemberList() {
 
 // TODO: EResult? Vectors?
 // Sends data to all members in current lobby
-void MyGameManager::sendDataToMembers(const char* data) {
+void MyGameManager::sendDataToMembers(const char* data, bool receiveData = false) {
+
+	// Make sure we didn't send before receiving data
+	// This most likely won't be needed
+	if (receiveData) {
+		this->receiveData();
+	}
+
 	for (auto const& member : this->m_fields->m_playersInLobby) {
         // log::debug("SendData called on {}", SteamFriends()->GetFriendPersonaName(member.GetSteamID()));
 		SteamNetworkingMessages()->SendMessageToUser(member, data, static_cast<uint32>(strlen(data)), k_nSteamNetworkingSend_Reliable, 0);
@@ -206,8 +216,8 @@ bool MyGameManager::validateData(matjson::Value data) {
 }
 
 void MyGameManager::receiveData() {
-	SteamNetworkingMessage_t* messageList[32];
-	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 32);
+	SteamNetworkingMessage_t* messageList[64];
+	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 64);
 	for (int i = 0; i < numMessages; i++) {
 		SteamNetworkingMessage_t* msg = messageList[i];
 		auto res = matjson::parse(static_cast<std::string>(static_cast<const char*>(msg->GetData())).append("\0"));
@@ -237,13 +247,30 @@ void MyGameManager::receiveData() {
 				VALIDATE_MESSAGE("ObjID", UInt);
 				VALIDATE_MESSAGE("x", Int);
 				VALIDATE_MESSAGE("y", Int);
-				
+				VALIDATE_MESSAGE("ObjectUID", Int);
+
 				auto gameObjectID = unwrappedMessage["ObjID"].asUInt().ok().value();
 				cocos2d::CCPoint gameObjectPos = {GET_CCPOINT};
 				
 				// TODO: Figure if a race condition is possible
 				level->m_fields->m_wasDataSent = true;
 				GameObject* placedGameObject = level->createObject(gameObjectID, gameObjectPos, false);
+
+				int uid = unwrappedMessage["UID"].asInt().ok().value();
+			
+				if (placedGameObject->m_uniqueID != uid) {
+					log::warn("Mismatched UID! {} != {}", placedGameObject->m_uniqueID, uid);
+				}
+
+				// This won't work if a player sends the message before recieving it.
+				// TODO: Fix that, if it's a problem.
+				if (level->m_fields->m_pUniqueIDOfGameObject->objectForKey(uid)) {
+					log::warn("UID Already exists!");
+					level->m_fields->m_pUniqueIDOfGameObject->setObject(GET_OBJECT_FROM_UID, uid + 1);
+				}
+
+				placedGameObject->m_uniqueID = uid;
+
 				level->m_fields->m_wasDataSent = false;
 				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, placedGameObject->m_uniqueID);
 
@@ -282,6 +309,16 @@ void MyGameManager::receiveData() {
 				betterDeletedObject->m_fields->m_wasDataSent = true;
 				level->setPosition(newPos);
 				betterDeletedObject->m_fields->m_wasDataSent = false;
+				break;
+			}
+
+			case eActionReturnLevelString: {
+				if (!this->m_fields->m_isHost) {
+					break;
+				}
+
+				sendDataToMembers(level->getLevelString().c_str());
+
 				break;
 			}
 

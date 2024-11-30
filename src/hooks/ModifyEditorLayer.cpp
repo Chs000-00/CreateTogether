@@ -39,7 +39,8 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
         {"Type", static_cast<int>(eActionPlacedObject)},
         {"x", p1.x},
         {"y", p1.y},
-        {"ObjID", p0}
+        {"ObjID", p0},
+        {"ObjectUID", createdGameObject->m_uniqueID}
     });
 
     gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
