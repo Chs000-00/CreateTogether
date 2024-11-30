@@ -59,6 +59,7 @@ bool LobbiesLayer::init() {
 
 
 void LobbiesLayer::refreshLobbyList(CCObject* sender) {
+    log::info("Refreshing lobby list");
 	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
     auto gameManagerCast = static_cast<MyGameManager*>(GameManager::get());
     auto gameManagerFields = gameManagerCast->m_fields.self();
@@ -83,8 +84,8 @@ void LobbiesLayer::onJoin(CCObject* sender) {
 }
 
 void LobbiesLayer::loadDataToList() {
-
-    if (!this->m_data || this->m_data->max_size() == 0) {
+    if (!this->m_data || this->m_data->size() == 0) {
+        log::info("No lobbies found!");
         return;
     }
 

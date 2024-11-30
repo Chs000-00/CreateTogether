@@ -99,6 +99,9 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 
 void MyGameManager::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure) {	
 	auto lobbyCount = pLobbyMatchList->m_nLobbiesMatching;
+	
+	std::shared_ptr<std::vector<lobbyData>> lobbyList;
+
 	lobbyData clobby;
 
 	for (int i = 0; i < lobbyCount; i++) {
@@ -117,10 +120,12 @@ void MyGameManager::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIO
 		clobby.steamUserName = SteamMatchmaking()->GetLobbyData(lobbyID, "host_name");
 		clobby.steamId = lobbyID;
 
-		this->m_fields->m_lobbyLayer->m_data->push_back(clobby);   
-		// log::debug("Data stuff: {} | {}", clobby.steamId.ConvertToUint64(), steamIDFriend.ConvertToUint64());
-
+		lobbyList->push_back(clobby);   
+		// log::debug("Data stuff: {} | {}", clobby.steamId.ConvertToUint64(), lobbyID.ConvertToUint64());
 	}
+
+	this->m_fields->m_lobbyLayer->m_data = lobbyList;
+
 	this->m_fields->m_lobbyLayer->loadDataToList();
 }
 
@@ -175,22 +180,22 @@ void MyGameManager::fetchMemberList() {
 	log::debug("FetchMemberList Called; Fetching {} users:", lobbyMemberCount);
 
 	for (int i = 0; i < lobbyMemberCount; i++) {
-		CSteamID steamIDFriend = SteamMatchmaking()->GetLobbyMemberByIndex(m_fields->m_lobbyId, i);
-		if (steamIDFriend == SteamUser()->GetSteamID()) {
-			log::debug("(Self) - {} with SteamID: {}", SteamFriends()->GetPersonaName(), steamIDFriend.ConvertToUint64());
+		CSteamID steamIDLobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex(m_fields->m_lobbyId, i);
+		if (steamIDLobbyMember == SteamUser()->GetSteamID()) {
+			log::debug("(Self) - {} with SteamID: {}", SteamFriends()->GetPersonaName(), steamIDLobbyMember.ConvertToUint64());
 			this->m_fields->m_indexInLobby = i;
 			continue;
 		}
 
-		member.SetSteamID(steamIDFriend);
-		log::debug("{} with SteamID: {}", SteamFriends()->GetFriendPersonaName(steamIDFriend), steamIDFriend.ConvertToUint64());
+		member.SetSteamID(steamIDLobbyMember);
+		log::debug("{} with SteamID: {}", SteamFriends()->GetFriendPersonaName(steamIDLobbyMember), steamIDLobbyMember.ConvertToUint64());
 		m_fields->m_playersInLobby.push_back(member);   
 	} 
 }
 
 // TODO: EResult? Vectors?
 // Sends data to all members in current lobby
-void MyGameManager::sendDataToMembers(const char* data, bool receiveData = false) {
+void MyGameManager::sendDataToMembers(const char* data, bool receiveData) {
 
 	// Make sure we didn't send before receiving data
 	// This most likely won't be needed
@@ -216,8 +221,8 @@ bool MyGameManager::validateData(matjson::Value data) {
 }
 
 void MyGameManager::receiveData() {
-	SteamNetworkingMessage_t* messageList[64];
-	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 64);
+	SteamNetworkingMessage_t* messageList[32];
+	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 32);
 	for (int i = 0; i < numMessages; i++) {
 		SteamNetworkingMessage_t* msg = messageList[i];
 		auto res = matjson::parse(static_cast<std::string>(static_cast<const char*>(msg->GetData())).append("\0"));

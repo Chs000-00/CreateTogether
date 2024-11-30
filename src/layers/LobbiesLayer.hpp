@@ -22,12 +22,12 @@ protected:
 public:
     ScrollLayer* m_scrollLayer = nullptr;
     GDLevelListBorders* m_listBorders = nullptr;
-    std::vector<lobbyData>* m_data;
+    std::shared_ptr<std::vector<lobbyData>> m_data;
 
 
     static LobbiesLayer* scene();
     static LobbiesLayer* create();
-    static ScrollLayer* createLobbyList(std::vector<lobbyData>* lobbyList);
+    static ScrollLayer* createLobbyList(std::shared_ptr<std::vector<lobbyData>> lobbyList);
     void refreshLobbyList(CCObject* sender);
     void onBack(CCObject* sender);
     void onJoin(CCObject* sender);
