@@ -226,9 +226,8 @@ void MyGameManager::receiveData() {
 	for (int i = 0; i < numMessages; i++) {
 		SteamNetworkingMessage_t* msg = messageList[i];
 		auto res = matjson::parse(static_cast<std::string>(static_cast<const char*>(msg->GetData())).append("\0"));
-		msg->Release();
-
-		log::debug("Data received: {} ", static_cast<const char*>(msg->GetData()));
+		log::debug("Data received: {}", static_cast<const char*>(msg->GetData()));
+  msg->Release();
 
 		if (!res) {
 			log::error("Failed to parse json: {}", res.unwrapErr());
