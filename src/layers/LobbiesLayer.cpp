@@ -33,6 +33,7 @@ bool LobbiesLayer::init() {
     this->addChild(background);
 
     auto spinner = LoadingSpinner::create(100);
+    spinner->setID("spinner");
 
     addSideArt(this, SideArt::All, SideArtStyle::Layer);
     
@@ -45,8 +46,18 @@ bool LobbiesLayer::init() {
         menu_selector(LobbiesLayer::refreshLobbyList)
     );
 
+
+    auto listBorders = GDLevelListBorders::create();
+    listBorders->setContentSize({356, 270}); // TODO: list->getContentSize()
+    listBorders->setZOrder(5);
+    listBorders->setVisible(false);
+    listBorders->setID("list-borders");
+
     auto m_menu = CCMenu::create();
 
+    m_menu->setID("menu");
+    
+    m_menu->addChildAtPosition(listBorders, Anchor::Center);
     m_menu->addChildAtPosition(backBtn, Anchor::TopLeft, {25, -25});
     m_menu->addChildAtPosition(spinner, Anchor::Center);
     m_menu->addChildAtPosition(refreshBtn, Anchor::BottomRight, {-25, 25});
@@ -60,6 +71,10 @@ bool LobbiesLayer::init() {
 
 void LobbiesLayer::refreshLobbyList(CCObject* sender) {
     log::info("Refreshing lobby list");
+
+
+    this->getChildByID("menu")->getChildByID("spinner")->setVisible(false);
+
 	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
     auto gameManagerCast = static_cast<MyGameManager*>(GameManager::get());
     auto gameManagerFields = gameManagerCast->m_fields.self();
@@ -77,34 +92,36 @@ void LobbiesLayer::onBack(CCObject* sender) {
 }
 
 void LobbiesLayer::onJoin(CCObject* sender) {
-    auto lobbyID = this->m_data->at(sender->getTag()).steamId;
+    auto lobbyID = this->m_data.at(sender->getTag()).steamId;
     log::info("Joining lobby with steamID: {}", lobbyID.ConvertToUint64());
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 	gameManager->m_fields->m_lobbyJoined = SteamMatchmaking()->JoinLobby(lobbyID); 
 }
 
 void LobbiesLayer::loadDataToList() {
-    if (!this->m_data) {
-        log::info("No lobbies found!");
-        return;
+    // if (!this->m_data) {
+    //     log::info("No lobbies found!");
+    //     return;
+    // }
+
+    auto menu = this->getChildByID("menu");
+
+    auto scrollLayer = menu->getChildByID("scroll-layer");
+    auto listBorders = menu->getChildByID("list-borders");
+
+    if (scrollLayer) {
+        scrollLayer->removeFromParent();
     }
 
-    if (this->m_scrollLayer) {
-        this->m_scrollLayer->removeFromParent();
+    scrollLayer = LobbiesLayer::createLobbyList(this->m_data);
+    scrollLayer->setID("scroll-layer");
+
+    menu->addChildAtPosition(scrollLayer, Anchor::Center, -scrollLayer->getContentSize() / 2);
+
+    if (this->m_data.size() != 0) {
+        listBorders->setVisible(true);
     }
-
-    this->m_scrollLayer = LobbiesLayer::createLobbyList(this->m_data);
-    m_scrollLayer->setID("scroll-layer");
-
-    m_menu->addChildAtPosition(this->m_scrollLayer, Anchor::Center, -this->m_scrollLayer->getContentSize() / 2);
-
-    if (!this->m_listBorders) {
-        this->m_listBorders = GDLevelListBorders::create();
-        this->m_listBorders->setContentSize({356, 270}); // TODO: list->getContentSize()
-        this->m_listBorders->setZOrder(5);
-        m_menu->addChildAtPosition(this->m_listBorders, Anchor::Center);
-    }
-
+    menu->getChildByID("spinner")->setVisible(false);
 }
 
 
@@ -113,12 +130,11 @@ void LobbiesLayer::fetchLobbies(unsigned int amountOfLobbiesFound) {
 
 	for (int i = 0; i < amountOfLobbiesFound; i++) {
 		CSteamID lobbyID = SteamMatchmaking()->GetLobbyByIndex(i);
-
-		log::info("lobbyf");
+        std::vector<lobbyData> dataVector;
 
 		if (SteamMatchmaking()->GetLobbyData(lobbyID, "version") != MOD_VERSION) {
 			clobby.isVersionMismatched = true;
-			this->m_data->push_back(clobby);  
+			dataVector.push_back(clobby);  
 			continue;
 		}
 
@@ -131,8 +147,10 @@ void LobbiesLayer::fetchLobbies(unsigned int amountOfLobbiesFound) {
 
 		clobby.steamId = lobbyID;
 
-		this->m_data->push_back(clobby);   
+		dataVector.push_back(clobby);   
 		log::debug("Data stuff: {} | {}", clobby.steamId.ConvertToUint64(), lobbyID.ConvertToUint64());
+
+        this->m_data = dataVector;
 	}
 }
 

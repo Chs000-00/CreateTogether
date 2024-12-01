@@ -13,6 +13,8 @@ using namespace geode::prelude;
 class LobbiesLayer : public cocos2d::CCLayer {
 protected:
 
+    // This causes crash ):
+    // TODO: Fix
     CCMenu* m_menu;
 
     bool init() override;
@@ -20,14 +22,12 @@ protected:
     void onLobbyListRetrieved( LobbyMatchList_t *pLobbyMatchList, bool bIOFailure );
 
 public:
-    ScrollLayer* m_scrollLayer = nullptr;
-    GDLevelListBorders* m_listBorders = nullptr;
-    std::vector<lobbyData>* m_data;
+    std::vector<lobbyData> m_data;
 
 
     static LobbiesLayer* scene();
     static LobbiesLayer* create();
-    static ScrollLayer* createLobbyList(std::vector<lobbyData>* lobbyList);
+    static ScrollLayer* createLobbyList(std::vector<lobbyData> lobbyList);
     void refreshLobbyList(CCObject* sender);
     void onBack(CCObject* sender);
     void onJoin(CCObject* sender);

@@ -7,7 +7,7 @@
 
 using namespace geode::prelude;
 
-ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData>* lobbyList) {
+ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData> lobbyList) {
     auto scrollLayer = ScrollLayer::create({ 356, 220 });
   
   	scrollLayer->m_contentLayer->setLayout(
@@ -21,7 +21,7 @@ ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData>* lobbyList) {
 
     bool alternateColorBG = false;
   
-    for (auto lobby = lobbyList->begin(); lobby != lobbyList->end(); ++lobby) {
+    for (auto lobby = lobbyList.begin(); lobby != lobbyList.end(); ++lobby) {
         auto node = CCNode::create();
         auto menu = CCMenu::create();
 
@@ -78,7 +78,7 @@ ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData>* lobbyList) {
         );
 
         joinBtn->setScale(0.8f);
-        joinBtn->setTag(std::distance(lobbyList->begin(), lobby));
+        joinBtn->setTag(std::distance(lobbyList.begin(), lobby));
         menu->addChildAtPosition(joinBtn, Anchor::Right, {-40, 0});
 
       	
