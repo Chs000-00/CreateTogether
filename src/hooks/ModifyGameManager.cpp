@@ -57,6 +57,13 @@ void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 		return;
 	}
 
+	if (pCallback->m_ulSteamIDUserChanged == gameManager->m_fields->m_hostID.ConvertToUint64()) {
+		if (pCallback->m_rgfChatMemberStateChange == k_EChatMemberStateChangeLeft || pCallback->m_rgfChatMemberStateChange == k_EChatMemberStateChangeDisconnected) {
+			log::info("Host left server! Leaving lobby.");
+			gameManager->leaveLobby();
+		}
+	}
+
 	log::debug("LobbyChatUpdateWrapper called. UserID: {} | UserName: {} | StateChange: {} | SteamIDMakingChange: {}", pCallback->m_ulSteamIDUserChanged, SteamFriends()->GetFriendPersonaName(pCallback->m_ulSteamIDUserChanged), pCallback->m_rgfChatMemberStateChange, pCallback->m_ulSteamIDMakingChange);
 
 
@@ -84,6 +91,7 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 	log::info("EnterLobby called with! SteamID: {} | ChatRoomEnterResponse: {}", pCallback->m_ulSteamIDLobby, pCallback->m_EChatRoomEnterResponse);
 
 	gameManager->m_fields->m_isInLobby = true;
+	
 
 	if (gameManager->m_fields->m_isHost) {
 		log::warn("onLobbyEntered called as host!");
@@ -95,37 +103,19 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 		gameManager->fetchMemberList();
 		switchToScene(gameManager->m_fields->m_level);
 	}
+
+	gameManager->m_fields->m_hostID = SteamMatchmaking()->GetLobbyOwner(gameManager->m_fields->m_lobbyId);
+
+	// Make sure we did become host of a level who's host already left.
+	if (!gameManager->m_fields->m_isHost && gameManager->m_fields->m_hostID == SteamUser()->GetSteamID()) {
+		log::warn("Invalid host! onLobbyEntered was not called as host yet hostID is your steamID");
+		gameManager->leaveLobby();
+	}
+
 }
 
 void MyGameManager::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure) {	
-	auto lobbyCount = pLobbyMatchList->m_nLobbiesMatching;
-	
-	std::shared_ptr<std::vector<lobbyData>> lobbyList;
-
-	lobbyData clobby;
-
-	for (int i = 0; i < lobbyCount; i++) {
-		CSteamID lobbyID = SteamMatchmaking()->GetLobbyByIndex(i);
-
-		if (SteamMatchmaking()->GetLobbyData(lobbyID, "level_name") != MOD_VERSION) {
-			clobby.isVersionMismatched = true;
-			continue;
-		}
-
-		clobby.isVersionMismatched = false;
-
-		SteamMatchmaking()->RequestLobbyData(lobbyID);
-
-		clobby.levelName = SteamMatchmaking()->GetLobbyData(lobbyID, "level_name");
-		clobby.steamUserName = SteamMatchmaking()->GetLobbyData(lobbyID, "host_name");
-		clobby.steamId = lobbyID;
-
-		lobbyList->push_back(clobby);   
-		// log::debug("Data stuff: {} | {}", clobby.steamId.ConvertToUint64(), lobbyID.ConvertToUint64());
-	}
-
-	this->m_fields->m_lobbyLayer->m_data = lobbyList;
-
+	this->m_fields->m_lobbyLayer->fetchLobbies(pLobbyMatchList->m_nLobbiesMatching);
 	this->m_fields->m_lobbyLayer->loadDataToList();
 }
 
@@ -161,7 +151,6 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "version", MOD_VERSION);
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "level_name", LevelEditorLayer::get()->m_level->m_levelName.c_str());
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "host_name", SteamFriends()->GetPersonaName());
-
 	}
 	else {
 		log::warn("Failed to create lobby with error code {}!", fmt::underlying(pCallback->m_eResult));
@@ -183,7 +172,6 @@ void MyGameManager::fetchMemberList() {
 		CSteamID steamIDLobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex(m_fields->m_lobbyId, i);
 		if (steamIDLobbyMember == SteamUser()->GetSteamID()) {
 			log::debug("(Self) - {} with SteamID: {}", SteamFriends()->GetPersonaName(), steamIDLobbyMember.ConvertToUint64());
-			this->m_fields->m_indexInLobby = i;
 			continue;
 		}
 
@@ -226,8 +214,8 @@ void MyGameManager::receiveData() {
 	for (int i = 0; i < numMessages; i++) {
 		SteamNetworkingMessage_t* msg = messageList[i];
 		auto res = matjson::parse(static_cast<std::string>(static_cast<const char*>(msg->GetData())).append("\0"));
-		log::debug("Data received: {}", static_cast<const char*>(msg->GetData()));
-  msg->Release();
+		log::debug("Data received: {} ", static_cast<const char*>(msg->GetData()));
+		msg->Release();
 
 		if (!res) {
 			log::error("Failed to parse json: {}", res.unwrapErr());
@@ -241,6 +229,8 @@ void MyGameManager::receiveData() {
 		}
 
 		auto level = static_cast<MyLevelEditorLayer*>(this->m_fields->m_level);
+
+		
 
 		// TODO: Try using results instead
 		// TODO: Check amd validate the data 
@@ -340,4 +330,20 @@ void MyGameManager::update(float p0) {
 	}
 
 	GameManager::update(p0);
+}
+
+void MyGameManager::leaveLobby() {
+	this->m_fields->m_isInEditorLayer = false;
+
+	if (this->m_fields->m_isInLobby) {
+		log::info("Leaving lobby with ID {}", this->m_fields->m_lobbyId);
+		SteamMatchmaking()->LeaveLobby(this->m_fields->m_lobbyId);
+		this->m_fields->m_lobbyCreated = 0;
+		this->m_fields->m_lobbyJoined = 0;
+		this->m_fields->m_lobbyId = 0;
+		this->m_fields->m_isInLobby = false;
+	}
+	else {
+		log::info("Can't leave lobby because not in lobby!");
+	}
 }

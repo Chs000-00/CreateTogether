@@ -27,7 +27,7 @@ class $modify(MyGameManager, GameManager) {
         SteamAPICall_t m_lobbyCreated;
         SteamAPICall_t m_lobbyJoined;
         uint64 m_lobbyId; // TODO: I probably shouldn't be using 0 as the lobbyID!
-		unsigned int m_indexInLobby;
+		CSteamID m_hostID;
         bool m_isInLobby = false;
 		bool m_isHost = false; // TODO: use GetLobbyOwner instead? Possibly?
 		bool m_isInEditorLayer = false;
@@ -51,5 +51,6 @@ class $modify(MyGameManager, GameManager) {
 	void fetchMemberList();
 	void sendDataToMembers(const char* data, bool receiveData = false);
 	void receiveData();
+	void leaveLobby();
 	static bool validateData(matjson::Value data);
 };

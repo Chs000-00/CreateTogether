@@ -84,7 +84,7 @@ void LobbiesLayer::onJoin(CCObject* sender) {
 }
 
 void LobbiesLayer::loadDataToList() {
-    if (!this->m_data || this->m_data->size() == 0) {
+    if (!this->m_data) {
         log::info("No lobbies found!");
         return;
     }
@@ -105,6 +105,35 @@ void LobbiesLayer::loadDataToList() {
         m_menu->addChildAtPosition(this->m_listBorders, Anchor::Center);
     }
 
+}
+
+
+void LobbiesLayer::fetchLobbies(unsigned int amountOfLobbiesFound) {
+	lobbyData clobby;
+
+	for (int i = 0; i < amountOfLobbiesFound; i++) {
+		CSteamID lobbyID = SteamMatchmaking()->GetLobbyByIndex(i);
+
+		log::info("lobbyf");
+
+		if (SteamMatchmaking()->GetLobbyData(lobbyID, "version") != MOD_VERSION) {
+			clobby.isVersionMismatched = true;
+			this->m_data->push_back(clobby);  
+			continue;
+		}
+
+		clobby.isVersionMismatched = false;
+
+		SteamMatchmaking()->RequestLobbyData(lobbyID);
+
+		clobby.levelName = SteamMatchmaking()->GetLobbyData(lobbyID, "level_name");
+		clobby.steamUserName = SteamMatchmaking()->GetLobbyData(lobbyID, "host_name");
+
+		clobby.steamId = lobbyID;
+
+		this->m_data->push_back(clobby);   
+		log::debug("Data stuff: {} | {}", clobby.steamId.ConvertToUint64(), lobbyID.ConvertToUint64());
+	}
 }
 
 LobbiesLayer* LobbiesLayer::create() {

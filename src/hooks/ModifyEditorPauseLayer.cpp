@@ -60,7 +60,8 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 	}
 
 	void onExitEditor(cocos2d::CCObject* sender) {
-		leaveLobby(); // Leave Lobby
+		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+		gameManager->leaveLobby(); // Leave Lobby
 		EditorPauseLayer::onExitEditor(sender); // And exit editor (whoops)
 	}
 
@@ -75,29 +76,30 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 	// }
 
 	void onSaveAndPlay(cocos2d::CCObject* sender) {
-		leaveLobby(); // Leave Lobby
+		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+		// gameManager->leaveLobby(); // Leave Lobby
 		EditorPauseLayer::onSaveAndPlay(sender); // And exit editor (whoops)
 	}
 
 
-	void leaveLobby() {
-		// TODO: add if condition over cast
-		auto gameManager = GameManager::get();
-		auto gameManagerFields = static_cast<MyGameManager*>(gameManager)->m_fields.self();
+	// void leaveLobby() {
+	// 	// TODO: add if condition over cast
+	// 	auto gameManager = GameManager::get();
+	// 	auto gameManagerFields = static_cast<MyGameManager*>(gameManager)->m_fields.self();
 
-		gameManagerFields->m_isInEditorLayer = false;
+	// 	gameManagerFields->m_isInEditorLayer = false;
 
-		if (gameManagerFields->m_isInLobby) {
-			log::info("Leaving lobby with ID {}", gameManagerFields->m_lobbyId);
-			SteamMatchmaking()->LeaveLobby(gameManagerFields->m_lobbyId);
-			gameManagerFields->m_lobbyCreated = 0;
-			gameManagerFields->m_lobbyJoined = 0;
-			gameManagerFields->m_lobbyId = 0;
-			gameManagerFields->m_isInLobby = false;
-		}
-		else {
-			log::info("Can't leave lobby because not in lobby!");
-		}
-    }
+	// 	if (gameManagerFields->m_isInLobby) {
+	// 		log::info("Leaving lobby with ID {}", gameManagerFields->m_lobbyId);
+	// 		SteamMatchmaking()->LeaveLobby(gameManagerFields->m_lobbyId);
+	// 		gameManagerFields->m_lobbyCreated = 0;
+	// 		gameManagerFields->m_lobbyJoined = 0;
+	// 		gameManagerFields->m_lobbyId = 0;
+	// 		gameManagerFields->m_isInLobby = false;
+	// 	}
+	// 	else {
+	// 		log::info("Can't leave lobby because not in lobby!");
+	// 	}
+    // }
 };
 
