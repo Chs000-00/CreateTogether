@@ -100,6 +100,8 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 		gameManager->m_fields->m_isInEditorLayer = true;
 		gameManager->m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
 		gameManager->m_fields->m_level = LevelEditorLayer::create(GJGameLevel::create(), false);
+		// TODO: Only send this to host!!!!!!!!!
+		gameManager->sendDataToMembers("{\"Type\": 6}");
 		gameManager->fetchMemberList();
 		switchToScene(gameManager->m_fields->m_level);
 	}
@@ -198,6 +200,7 @@ void MyGameManager::sendDataToMembers(const char* data, bool receiveData) {
 	// log::debug("Done sending messages");
 }
 
+
 bool MyGameManager::validateData(matjson::Value data) {
 
 	if (!data.contains("Type")) {
@@ -215,16 +218,18 @@ void MyGameManager::receiveData() {
 		SteamNetworkingMessage_t* msg = messageList[i];
 		auto res = matjson::parse(static_cast<std::string>(static_cast<const char*>(msg->GetData())).append("\0"));
 		log::debug("Data received: {} ", static_cast<const char*>(msg->GetData()));
-		msg->Release();
+		
 
 		if (!res) {
 			log::error("Failed to parse json: {}", res.unwrapErr());
+			msg->Release();
 			continue;
 		}
 
 		matjson::Value unwrappedMessage = res.unwrap();
 
 		if (!MyGameManager::validateData(unwrappedMessage)) {
+			msg->Release();
 			continue;
 		}
 
@@ -249,24 +254,23 @@ void MyGameManager::receiveData() {
 				// TODO: Figure if a race condition is possible
 				level->m_fields->m_wasDataSent = true;
 				GameObject* placedGameObject = level->createObject(gameObjectID, gameObjectPos, false);
+				MyGameObject* betterPlacedGameObject = static_cast<MyGameObject*>(placedGameObject);
 
-				int uid = unwrappedMessage["UID"].asInt().ok().value();
+				int uid = unwrappedMessage["ObjectUID"].asInt().ok().value();
 			
-				if (placedGameObject->m_uniqueID != uid) {
-					log::warn("Mismatched UID! {} != {}", placedGameObject->m_uniqueID, uid);
+				if (betterPlacedGameObject->m_fields->m_veryUniqueID != uid) {
+					log::warn("Mismatched UID! {} != {}", betterPlacedGameObject->m_fields->m_veryUniqueID, uid);
 				}
 
-				// This won't work if a player sends the message before recieving it.
-				// TODO: Fix that, if it's a problem.
 				if (level->m_fields->m_pUniqueIDOfGameObject->objectForKey(uid)) {
 					log::warn("UID Already exists!");
-					level->m_fields->m_pUniqueIDOfGameObject->setObject(GET_OBJECT_FROM_UID, uid + 1);
+					// level->m_fields->m_pUniqueIDOfGameObject->setObject(GET_OBJECT_FROM_UID, uid + 1);
 				}
 
-				placedGameObject->m_uniqueID = uid;
+				betterPlacedGameObject->m_fields->m_veryUniqueID = uid;
 
 				level->m_fields->m_wasDataSent = false;
-				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, placedGameObject->m_uniqueID);
+				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, betterPlacedGameObject->m_fields->m_veryUniqueID);
 
 				break;
 			}
@@ -306,12 +310,21 @@ void MyGameManager::receiveData() {
 				break;
 			}
 
-			case eActionReturnLevelString: {
-				if (!this->m_fields->m_isHost) {
+			case eActionRequestLevel: {
+				if (this->m_fields->m_hostID != msg->m_identityPeer.GetSteamID()) {
+					log::warn("??? Non-host is attempting to return the level string.");
 					break;
 				}
 
-				sendDataToMembers(level->getLevelString().c_str());
+				auto lvlString = level->getLevelString().c_str();
+
+				matjson::Value object = matjson::makeObject({
+					{"Type", static_cast<int>(eActionReturnLevelString)},
+					{"LevelString", lvlString}
+				});
+
+				SteamNetworkingMessages()->SendMessageToUser(msg->m_identityPeer, lvlString, static_cast<uint32>(strlen(lvlString)), k_nSteamNetworkingSend_Reliable, 0);
+
 
 				break;
 			}
@@ -319,6 +332,7 @@ void MyGameManager::receiveData() {
 			default:
 				log::warn("Type {} not found! Are you sure you're on the right version?", type);
 		}
+		msg->Release();
 	}
 }
 

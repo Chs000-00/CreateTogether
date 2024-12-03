@@ -4,10 +4,13 @@ enum EEditorActionType {
     eActionPlacedObject,       // Object was placed in level
     eActionMovedObject,        // Object was moved
     eActionRotatedObject,      // Object was rotated
+    eActionScaledObject,       // Object was scaled
     eActionDeletedObject,      // Object was deleted
     eActionPastedObjects,      // Objects were pasted
-    eActionRequestLevel,       // Request level for synchronization
+    // This should always equal to 6 or the hardcoded values would not like that!
+    eActionRequestLevel = 6,       // Request level for synchronization
     eActionReturnLevelString,  // Return level string which was requested
+    eActionReturnProperUID,    // Return UID to be used for a newly created gameObject. Not implemented yet!
     eActionUpdatedColor,       // Color was updated
     eActionModifiedObject,     // Object data was changed
     eActionSongChanged,        // Level's song was changed

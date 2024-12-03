@@ -19,4 +19,5 @@ public:
     static LobbyPopup* create(EPopupType type);
     void startHosting(CCObject* sender);
     void inviteFriends(CCObject* sender);
+    void onPublicToggle(CCMenuItemToggler* sender);
 };

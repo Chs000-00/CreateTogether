@@ -14,6 +14,7 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
         // Was the data sent from another user?
         bool m_wasDataSent = false;
         CCDictionary* m_pUniqueIDOfGameObject = CCDictionary::create();
+        unsigned int m_veryUniqueIDTotal = 0;
     };
 
 

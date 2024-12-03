@@ -23,6 +23,12 @@ bool LobbyPopup::setup(EPopupType type) {
                 menu_selector(LobbyPopup::startHosting)
             );
 
+            std::function<void(CCMenuItemToggler*)> func = LobbyPopup::onPublicToggle;
+
+            auto publicToggle = CCMenuItemExt::createTogglerWithStandardSprites(
+                1.0f,
+            );
+
             this->m_buttonMenu->addChildAtPosition(startHostingButton, Anchor::Bottom, {0, 20});
 
             break;
@@ -46,6 +52,10 @@ bool LobbyPopup::setup(EPopupType type) {
     }
 
     return true;
+}
+
+void LobbyPopup::onPublicToggle(CCMenuItemToggler* sender) {
+
 }
 
 

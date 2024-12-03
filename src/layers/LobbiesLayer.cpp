@@ -33,7 +33,7 @@ bool LobbiesLayer::init() {
     this->addChild(background);
 
     auto spinner = LoadingSpinner::create(100);
-    spinner->setID("spinner");
+    spinner->setID("loading-spinner");
 
     addSideArt(this, SideArt::All, SideArtStyle::Layer);
     
@@ -73,7 +73,7 @@ void LobbiesLayer::refreshLobbyList(CCObject* sender) {
     log::info("Refreshing lobby list");
 
 
-    this->getChildByID("menu")->getChildByID("spinner")->setVisible(false);
+    this->getChildByID("menu")->getChildByID("loading-spinner")->setVisible(true);
 
 	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
     auto gameManagerCast = static_cast<MyGameManager*>(GameManager::get());
@@ -121,7 +121,14 @@ void LobbiesLayer::loadDataToList() {
     if (this->m_data.size() != 0) {
         listBorders->setVisible(true);
     }
-    menu->getChildByID("spinner")->setVisible(false);
+    else {
+        FLAlertLayer::create(
+            "No lobbies",
+            "No one is hosting a lobby!",
+            "Ok"
+        )->show();
+    }
+    menu->getChildByID("loading-spinner")->setVisible(false);
 }
 
 
@@ -131,6 +138,8 @@ void LobbiesLayer::fetchLobbies(unsigned int amountOfLobbiesFound) {
 	for (int i = 0; i < amountOfLobbiesFound; i++) {
 		CSteamID lobbyID = SteamMatchmaking()->GetLobbyByIndex(i);
         std::vector<lobbyData> dataVector;
+
+        log::info("LOBBY");
 
 		if (SteamMatchmaking()->GetLobbyData(lobbyID, "version") != MOD_VERSION) {
 			clobby.isVersionMismatched = true;
