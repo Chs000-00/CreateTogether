@@ -16,6 +16,8 @@ file(GLOB SOURCES
     src/hooks/*.cpp
     src/layers/*.cpp
     src/ui/*.cpp
+    src/types/*.cpp
+    src/utils/*.cpp
 )
 # Set up the mod binary
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
