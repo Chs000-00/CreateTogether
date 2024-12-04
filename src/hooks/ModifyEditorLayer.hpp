@@ -2,7 +2,8 @@
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/binding/GameObject.hpp>
 #include <isteamnetworkingmessages.h>
-#include "../ActionTypes.hpp"
+#include "uuid_v4.h"
+#include "../types/ActionTypes.hpp"
 #include "ModifyGameManager.hpp"
 
 using namespace geode::prelude;
@@ -14,7 +15,7 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
         // Was the data sent from another user?
         bool m_wasDataSent = false;
         CCDictionary* m_pUniqueIDOfGameObject = CCDictionary::create();
-        unsigned int m_veryUniqueIDTotal = 0;
+        UUIDv4::UUIDGenerator<std::mt19937_64> uuidGenerator;
     };
 
 

@@ -3,7 +3,7 @@
 #include <isteammatchmaking.h>
 #include <isteamfriends.h>
 #include "../layers/LobbiesLayer.hpp"
-#include "../LobbyData.hpp"
+#include "../types/LobbyData.hpp"
 
 using namespace geode::prelude;
 

@@ -2,7 +2,8 @@
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/binding/GameObject.hpp>
 #include <Geode/binding/EditorUI.hpp>
-#include "../ActionTypes.hpp"
+#include <uuid_v4.h>
+#include "../types/ActionTypes.hpp"
 #include "ModifyGameManager.hpp"
 #include "ModifyGameObject.hpp"
 #include "ModifyEditorLayer.hpp"
@@ -18,7 +19,8 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
     auto objectArr = CCArrayExt<MyGameObject*>(m_objects);
 
     for (auto obj : objectArr) {
-        this->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID);
+        obj->m_fields->m_veryUniqueID = this->m_fields->uuidGenerator.getUUID();
+        this->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID.bytes());
     }
 
     return true;
@@ -29,10 +31,9 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     auto createdGameObject = static_cast<MyGameObject*>(LevelEditorLayer::createObject(p0, p1, p2));
-
-    this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, createdGameObject->m_fields->m_veryUniqueID);
-
-    createdGameObject->m_fields->m_veryUniqueID = this->m_fields->m_veryUniqueIDTotal + 1;
+    
+    createdGameObject->m_fields->m_veryUniqueID = this->m_fields->uuidGenerator.getUUID();
+    this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, createdGameObject->m_fields->m_veryUniqueID.bytes());
 
     if (!gameManager->m_fields->m_isInLobby || p2 || m_fields->m_wasDataSent) {
         return createdGameObject;
@@ -43,7 +44,7 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
         {"x", p1.x},
         {"y", p1.y},
         {"ObjID", p0},
-        {"ObjectUID", createdGameObject->m_fields->m_veryUniqueID}
+        {"ObjectUID", createdGameObject->m_fields->m_veryUniqueID.bytes()}
     });
 
     gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
@@ -73,7 +74,7 @@ void MyLevelEditorLayer::updateLevelFont(int p0) {
 void MyLevelEditorLayer::deleteObject(GameObject *obj) {
     auto betterGameObject = static_cast<MyGameObject*>(obj);
     EditorUI::get()->deselectObject(obj);
-    this->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(betterGameObject->m_fields->m_veryUniqueID);
+    this->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(betterGameObject->m_fields->m_veryUniqueID.bytes());
     obj->deactivateObject(true);
     LevelEditorLayer::removeObjectFromSection(obj);
     this->removeSpecial(obj);

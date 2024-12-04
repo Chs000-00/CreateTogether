@@ -3,7 +3,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
 #include <isteammatchmaking.h>
-#include "../LobbyData.hpp"
+#include "../types/LobbyData.hpp"
 #include "../ui/LevelListBorders.hpp"
 
 

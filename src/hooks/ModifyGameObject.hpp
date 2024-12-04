@@ -9,10 +9,9 @@ class $modify(MyGameObject, GameObject) {
         // Was the data sent from another user?
         bool m_wasDataSent = false;
 
-        unsigned int m_veryUniqueID = 0;
+        UUIDv4::UUID m_veryUniqueID;
     };
 
     void destroyObject();
     void setPosition(const CCPoint& p0);
-    bool initWithTexture(cocos2d::CCTexture2D* p0);
 };

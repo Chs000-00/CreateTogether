@@ -33,10 +33,12 @@ add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
-target_link_libraries(${PROJECT_NAME}
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/steam_api64.lib
-)
-
 # Set up dependencies, resources, and link Geode.
 setup_geode_mod(${PROJECT_NAME})
 
+CPMAddPackage("gh:crashoz/uuid_v4#41238a4")
+
+target_link_libraries(${PROJECT_NAME}
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/steam_api64.lib
+    uuid_v4::uuid_v4
+)

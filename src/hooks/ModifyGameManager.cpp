@@ -5,8 +5,9 @@
 #include <isteammatchmaking.h>
 #include <isteamnetworkingmessages.h>
 #include <isteamuser.h>
-#include "../ActionTypes.hpp"
-#include "../LobbyData.hpp"
+#include <uuid_v4.h>
+#include "../types/ActionTypes.hpp"
+#include "../types/LobbyData.hpp"
 #include "../layers/LobbiesLayer.hpp"
 #include "ModifyEditorLayer.hpp"
 #include "ModifyGameObject.hpp"
@@ -15,7 +16,7 @@
 
 using namespace geode::prelude;
 
-#define GET_OBJECT_FROM_UID (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(unwrappedMessage["ObjectUID"].asInt().ok().value())
+#define GET_OBJECT_FROM_UID (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(unwrappedMessage["ObjectUID"].asString().ok().value())
 #define GET_CCPOINT static_cast<float>(unwrappedMessage["x"].asInt().ok().value()), static_cast<float>(unwrappedMessage["y"].asInt().ok().value())
 #define VALIDATE_MESSAGE(key, type) if (unwrappedMessage[key].as ## type().isErr()) continue
 
@@ -256,21 +257,16 @@ void MyGameManager::receiveData() {
 				GameObject* placedGameObject = level->createObject(gameObjectID, gameObjectPos, false);
 				MyGameObject* betterPlacedGameObject = static_cast<MyGameObject*>(placedGameObject);
 
-				int uid = unwrappedMessage["ObjectUID"].asInt().ok().value();
-			
-				if (betterPlacedGameObject->m_fields->m_veryUniqueID != uid) {
-					log::warn("Mismatched UID! {} != {}", betterPlacedGameObject->m_fields->m_veryUniqueID, uid);
-				}
+				auto uid = unwrappedMessage["ObjectUID"].asString().ok().value();
 
 				if (level->m_fields->m_pUniqueIDOfGameObject->objectForKey(uid)) {
 					log::warn("UID Already exists!");
-					// level->m_fields->m_pUniqueIDOfGameObject->setObject(GET_OBJECT_FROM_UID, uid + 1);
 				}
 
-				betterPlacedGameObject->m_fields->m_veryUniqueID = uid;
+				betterPlacedGameObject->m_fields->m_veryUniqueID.bytes() = uid;
 
 				level->m_fields->m_wasDataSent = false;
-				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, betterPlacedGameObject->m_fields->m_veryUniqueID);
+				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, betterPlacedGameObject->m_fields->m_veryUniqueID.bytes());
 
 				break;
 			}
@@ -286,7 +282,7 @@ void MyGameManager::receiveData() {
 			}
 
 			case eActionDeletedObject: {
-				VALIDATE_MESSAGE("ObjectUID", Int);
+				VALIDATE_MESSAGE("ObjectUID", String);
 
 				auto deletedObject = GET_OBJECT_FROM_UID;
 				auto betterDeletedObject = static_cast<MyGameObject*>(deletedObject);
@@ -297,7 +293,7 @@ void MyGameManager::receiveData() {
 			}
 
 			case eActionMovedObject: {
-				VALIDATE_MESSAGE("ObjectUID", UInt);
+				VALIDATE_MESSAGE("ObjectUID", String);
 				VALIDATE_MESSAGE("x", Int);
 				VALIDATE_MESSAGE("y", Int);
 
