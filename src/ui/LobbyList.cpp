@@ -68,7 +68,7 @@ ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData> lobbyList) {
         
         auto steamUsernameLabel = CCLabelBMFont::create(lobby->steamUserName.c_str(), "bigFont.fnt");
         steamUsernameLabel->setAnchorPoint({0, steamUsernameLabel->getScaleX()/2});
-        steamUsernameLabel->setScale(0.5);
+        steamUsernameLabel->setScale(0.5f);
         node->addChildAtPosition(steamUsernameLabel, Anchor::Left, {20, 0});
 
         auto joinBtn = CCMenuItemSpriteExtra::create(

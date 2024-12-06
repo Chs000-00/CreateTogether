@@ -25,13 +25,24 @@ bool LobbyPopup::setup(EPopupType type) {
 
             std::function<void (CCMenuItemToggler *)> pfunc = std::bind(&LobbyPopup::onPublicToggle, this, std::placeholders::_1);
 
+            auto checkMarkMenu = CCMenu::create();
+            checkMarkMenu->setLayout(RowLayout::create());
+            checkMarkMenu->setContentSize(this->getContentSize());
+
+            auto publicText = CCLabelBMFont::create("Public Lobby", "bigFont.fnt");
             auto publicToggle = CCMenuItemExt::createTogglerWithStandardSprites(
                 1.0f,
                 pfunc
             );
 
+            checkMarkMenu->addChild(publicText);
+            checkMarkMenu->addChild(publicToggle);
+            checkMarkMenu->updateLayout();
+            checkMarkMenu->setScale(0.5f);
+
+
             this->m_buttonMenu->addChildAtPosition(startHostingButton, Anchor::Bottom, {0, 20});
-            this->m_buttonMenu->addChildAtPosition(publicToggle, Anchor::Left);
+            this->m_buttonMenu->addChildAtPosition(checkMarkMenu, Anchor::Center);
 
             break;
         }
@@ -68,8 +79,13 @@ void LobbyPopup::startHosting(CCObject* sender) {
 
     this->onClose(nullptr);
 
-    //gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
-    gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
+    if (this->isServerPublic) {
+        gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
+    }
+    else {
+        gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
+    }
+
     gameManagerFields->m_isHost = true;
     gameManagerFields->m_isInLobbyCallResult.Set(gameManagerFields->m_lobbyCreated, gameManagerCast, &MyGameManager::onLobbyCreated);
 
