@@ -8,10 +8,14 @@ using namespace geode::prelude;
 
 class $modify(MyEditorUI, EditorUI) {
 
-    // struct Fields {
-    //     // Was the data sent from another user?
-    //     bool m_wasDataSent = false;
-    // };
+    struct Fields {
+        // Was the data sent from another user?
+        bool m_wasDataSent = false;
+    };
 
+    void transformObject(GameObject* p0, EditCommand p1, bool p2);
     void onDeleteSelected(CCObject* sender);
+
+    // TODO: Figure out moveObjectCall
+    void moveObject(GameObject* p0, CCPoint p1);
 };

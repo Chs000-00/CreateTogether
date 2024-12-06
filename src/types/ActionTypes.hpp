@@ -2,8 +2,8 @@
 
 enum EEditorActionType {
     eActionPlacedObject,       // Object was placed in level
-    eActionMovedObject,        // Object was moved
-    eActionRotatedObject,      // Object was rotated
+    eActionTransformObject,    // TransformObject was called, so the object was moved, scaled, etc
+    eActionMovedObject,
     eActionScaledObject,       // Object was scaled
     eActionDeletedObject,      // Object was deleted
     eActionPastedObjects,      // Objects were pasted

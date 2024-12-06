@@ -57,7 +57,7 @@ bool LobbyPopup::setup(EPopupType type) {
 }
 
 void LobbyPopup::onPublicToggle(CCMenuItemToggler* sender) {
-
+    this->isServerPublic = sender->m_toggled;
 }
 
 

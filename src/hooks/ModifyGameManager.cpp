@@ -9,6 +9,7 @@
 #include "../types/ActionTypes.hpp"
 #include "../types/LobbyData.hpp"
 #include "../layers/LobbiesLayer.hpp"
+#include "ModifyEditorUI.hpp"
 #include "ModifyEditorLayer.hpp"
 #include "ModifyGameObject.hpp"
 #include "ModifyGameManager.hpp"
@@ -236,11 +237,7 @@ void MyGameManager::receiveData() {
 
 		auto level = static_cast<MyLevelEditorLayer*>(this->m_fields->m_level);
 
-		
-
-		// TODO: Try using results instead
-		// TODO: Check amd validate the data 
-
+		// Use GEODE_UNWRAP_INTO
 		auto type = (int)unwrappedMessage["Type"].asInt().unwrapOr(-1);
 		switch (type) {
 			case eActionPlacedObject: {
@@ -285,24 +282,37 @@ void MyGameManager::receiveData() {
 				VALIDATE_MESSAGE("ObjectUID", String);
 
 				auto deletedObject = GET_OBJECT_FROM_UID;
-				auto betterDeletedObject = static_cast<MyGameObject*>(deletedObject);
-				betterDeletedObject->m_fields->m_wasDataSent = true;
 				level->deleteObject(deletedObject);
-				betterDeletedObject->m_fields->m_wasDataSent = false;
+				break;
+			}
+
+			case eActionTransformObject: {
+				VALIDATE_MESSAGE("ObjectUID", String);
+				VALIDATE_MESSAGE("x", Int);
+				VALIDATE_MESSAGE("y", Int);
+				VALIDATE_MESSAGE("EditCommand", Int);
+
+				auto transformedObject = GET_OBJECT_FROM_UID;
+				auto betterTransformedObject = static_cast<MyGameObject*>(transformedObject);
+				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
+				cocos2d::CCPoint newPos = {GET_CCPOINT};
+				cEditorUI->m_fields->m_wasDataSent = true;
+				cEditorUI->moveObject(transformedObject, newPos);
+				cEditorUI->m_fields->m_wasDataSent = false;
 				break;
 			}
 
 			case eActionMovedObject: {
 				VALIDATE_MESSAGE("ObjectUID", String);
-				VALIDATE_MESSAGE("x", Int);
-				VALIDATE_MESSAGE("y", Int);
+				VALIDATE_MESSAGE("EditCommand", Int);
 
-				auto movedObject = GET_OBJECT_FROM_UID;
-				auto betterDeletedObject = static_cast<MyGameObject*>(movedObject);
-				cocos2d::CCPoint newPos = {GET_CCPOINT};
-				betterDeletedObject->m_fields->m_wasDataSent = true;
-				level->setPosition(newPos);
-				betterDeletedObject->m_fields->m_wasDataSent = false;
+				auto transformedObject = GET_OBJECT_FROM_UID;
+				auto betterTransformedObject = static_cast<MyGameObject*>(transformedObject);
+				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
+				cEditorUI->m_fields->m_wasDataSent = true;
+				auto command = unwrappedMessage["EditCommand"].asInt().ok().value();
+				cEditorUI->transformObject(transformedObject, EditCommand(command), false);
+				cEditorUI->m_fields->m_wasDataSent = false;
 				break;
 			}
 
