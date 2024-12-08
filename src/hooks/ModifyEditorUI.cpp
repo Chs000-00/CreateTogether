@@ -11,17 +11,16 @@ void MyEditorUI::onDeleteSelected(CCObject* sender) {
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
-    // log::debug("destoryed object");
+    log::debug("destoryed selected object");
 
-    // TODO: Add deleting more then 1 object at a time
-    auto obj = static_cast<MyGameObject*>(this->m_selectedObject);
+    // log::debug("Obj with uuid {}", obj->m_fields->m_veryUniqueID.str());
 
 
     // TODO: Check gamemanager->m_level
     // and use that
     if (auto editor = LevelEditorLayer::get()) {
         auto editorButBetter = static_cast<MyLevelEditorLayer*>(editor);
-        editorButBetter->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(obj->m_fields->m_veryUniqueID.bytes());
+        removeSelectedObjects();
         EditorUI::onDeleteSelected(sender);
     }
 
@@ -30,13 +29,32 @@ void MyEditorUI::onDeleteSelected(CCObject* sender) {
         return;
     }
 
+    auto editUUID = removeSelectedObjectsWithMatjson();
+
     matjson::Value object = matjson::makeObject({
         {"Type", static_cast<int>(eActionDeletedObject)},
-        {"ObjectUID", obj->m_fields->m_veryUniqueID.bytes()}
+        {"EditUUIDs", editUUID},
     });
 
     gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
     EditorUI::onDeleteSelected(sender);
+}
+
+void MyEditorUI::removeSelectedObjects() {
+    auto editor = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
+    for (auto obj : CCArrayExt<MyGameObject*>(this->m_selectedObjects)) {
+        editor->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(obj->m_fields->m_veryUniqueID.bytes());
+    }
+}
+
+matjson::Value MyEditorUI::removeSelectedObjectsWithMatjson() {
+    auto editor = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
+    auto ret = matjson::Value::array();
+    for (auto obj : CCArrayExt<MyGameObject*>(this->m_selectedObjects)) {
+        editor->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(obj->m_fields->m_veryUniqueID.bytes());
+        ret[obj->m_fields->m_veryUniqueID.bytes()];
+    }
+    return ret;
 }
 
 void MyEditorUI::transformObject(GameObject* p0, EditCommand p1, bool p2) {
@@ -44,7 +62,7 @@ void MyEditorUI::transformObject(GameObject* p0, EditCommand p1, bool p2) {
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     auto betterObject = static_cast<MyGameObject*>(p0);
 
-    log::debug("TRANSFORM OBJECT CALLLED");
+    log::debug("TransformObject called with command {}", fmt::underlying(p1));
 
     if (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent) {
         EditorUI::transformObject(p0, p1, p2);
@@ -56,6 +74,8 @@ void MyEditorUI::transformObject(GameObject* p0, EditCommand p1, bool p2) {
         {"EditCommand", static_cast<int>(p1)},
         {"ObjectUID", betterObject->m_fields->m_veryUniqueID.bytes()}
     });
+    
+    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
 
     EditorUI::transformObject(p0, p1, p2);
 }
@@ -65,10 +85,13 @@ void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     auto betterObject = static_cast<MyGameObject*>(p0);
 
-    if (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent) {
+
+    if (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent || !this->m_fields->m_loadingFinished) {
         EditorUI::moveObject(p0, p1);
         return;
     }
+
+    log::info("MoveObjectCalled");
 
     matjson::Value object = matjson::makeObject({
         {"Type", static_cast<int>(eActionMovedObject)},
@@ -77,5 +100,15 @@ void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
         {"ObjectUID", betterObject->m_fields->m_veryUniqueID.bytes()}
     });
 
+    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
+
     EditorUI::moveObject(p0, p1);
+}
+
+bool MyEditorUI::init(LevelEditorLayer* editorLayer) {
+    if (!EditorUI::init(editorLayer)) {
+        return false;
+    }
+    this->m_fields->m_loadingFinished = true;
+    return true;
 }

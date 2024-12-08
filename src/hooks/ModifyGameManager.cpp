@@ -62,6 +62,14 @@ void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 	if (pCallback->m_ulSteamIDUserChanged == gameManager->m_fields->m_hostID.ConvertToUint64()) {
 		if (pCallback->m_rgfChatMemberStateChange == k_EChatMemberStateChangeLeft || pCallback->m_rgfChatMemberStateChange == k_EChatMemberStateChangeDisconnected) {
 			log::info("Host left server! Leaving lobby.");
+			FLAlertLayer::create(
+				"Host left server",    
+				"The host has left the server!",  
+				"Ok"
+			)->show();
+
+			LobbiesLayer::scene();
+
 			gameManager->leaveLobby();
 		}
 	}
@@ -214,8 +222,8 @@ bool MyGameManager::validateData(matjson::Value data) {
 }
 
 void MyGameManager::receiveData() {
-	SteamNetworkingMessage_t* messageList[32];
-	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 32);
+	SteamNetworkingMessage_t* messageList[64];
+	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 64);
 	for (int i = 0; i < numMessages; i++) {
 		SteamNetworkingMessage_t* msg = messageList[i];
 		auto res = matjson::parse(static_cast<std::string>(static_cast<const char*>(msg->GetData())).append("\0"));
@@ -241,10 +249,11 @@ void MyGameManager::receiveData() {
 		auto type = (int)unwrappedMessage["Type"].asInt().unwrapOr(-1);
 		switch (type) {
 			case eActionPlacedObject: {
+				log::debug("obj placed called");
 				VALIDATE_MESSAGE("ObjID", UInt);
 				VALIDATE_MESSAGE("x", Int);
 				VALIDATE_MESSAGE("y", Int);
-				VALIDATE_MESSAGE("ObjectUID", Int);
+				VALIDATE_MESSAGE("ObjectUID", String);
 
 				auto gameObjectID = unwrappedMessage["ObjID"].asUInt().ok().value();
 				cocos2d::CCPoint gameObjectPos = {GET_CCPOINT};
@@ -252,6 +261,7 @@ void MyGameManager::receiveData() {
 				// TODO: Figure if a race condition is possible
 				level->m_fields->m_wasDataSent = true;
 				GameObject* placedGameObject = level->createObject(gameObjectID, gameObjectPos, false);
+				
 				MyGameObject* betterPlacedGameObject = static_cast<MyGameObject*>(placedGameObject);
 
 				auto uid = unwrappedMessage["ObjectUID"].asString().ok().value();
@@ -260,10 +270,13 @@ void MyGameManager::receiveData() {
 					log::warn("UID Already exists!");
 				}
 
-				betterPlacedGameObject->m_fields->m_veryUniqueID.bytes() = uid;
+				
+
+				betterPlacedGameObject->m_fields->m_veryUniqueID = UUIDv4::UUID(uid);
 
 				level->m_fields->m_wasDataSent = false;
 				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, betterPlacedGameObject->m_fields->m_veryUniqueID.bytes());
+
 
 				break;
 			}
@@ -280,17 +293,36 @@ void MyGameManager::receiveData() {
 
 			case eActionDeletedObject: {
 				VALIDATE_MESSAGE("ObjectUID", String);
+				log::debug("ObjectUID Validated.");
 
 				auto deletedObject = GET_OBJECT_FROM_UID;
+				log::debug("Got object with UID {} UUID {} and objectID {}.", deletedObject->m_uniqueID, static_cast<MyGameObject*>(deletedObject)->m_fields->m_veryUniqueID.str(), deletedObject->m_objectID);
 				level->deleteObject(deletedObject);
 				break;
 			}
 
 			case eActionTransformObject: {
 				VALIDATE_MESSAGE("ObjectUID", String);
+				VALIDATE_MESSAGE("EditCommand", Int);
+				log::info("GotTransformedObject");
+
+
+				auto transformedObject = GET_OBJECT_FROM_UID;
+				auto betterTransformedObject = static_cast<MyGameObject*>(transformedObject);
+				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
+				cEditorUI->m_fields->m_wasDataSent = true;
+				auto command = unwrappedMessage["EditCommand"].asInt().ok().value();
+				// TODO: Check command range
+				cEditorUI->transformObject(transformedObject,  static_cast<EditCommand>(command), false);
+				cEditorUI->m_fields->m_wasDataSent = false;
+				break;
+			}
+
+			case eActionMovedObject: {
+				VALIDATE_MESSAGE("ObjectUID", String);
 				VALIDATE_MESSAGE("x", Int);
 				VALIDATE_MESSAGE("y", Int);
-				VALIDATE_MESSAGE("EditCommand", Int);
+				// VALIDATE_MESSAGE("EditCommand", Int);
 
 				auto transformedObject = GET_OBJECT_FROM_UID;
 				auto betterTransformedObject = static_cast<MyGameObject*>(transformedObject);
@@ -298,20 +330,6 @@ void MyGameManager::receiveData() {
 				cocos2d::CCPoint newPos = {GET_CCPOINT};
 				cEditorUI->m_fields->m_wasDataSent = true;
 				cEditorUI->moveObject(transformedObject, newPos);
-				cEditorUI->m_fields->m_wasDataSent = false;
-				break;
-			}
-
-			case eActionMovedObject: {
-				VALIDATE_MESSAGE("ObjectUID", String);
-				VALIDATE_MESSAGE("EditCommand", Int);
-
-				auto transformedObject = GET_OBJECT_FROM_UID;
-				auto betterTransformedObject = static_cast<MyGameObject*>(transformedObject);
-				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
-				cEditorUI->m_fields->m_wasDataSent = true;
-				auto command = unwrappedMessage["EditCommand"].asInt().ok().value();
-				cEditorUI->transformObject(transformedObject, EditCommand(command), false);
 				cEditorUI->m_fields->m_wasDataSent = false;
 				break;
 			}

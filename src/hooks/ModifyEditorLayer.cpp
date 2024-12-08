@@ -72,6 +72,7 @@ void MyLevelEditorLayer::updateLevelFont(int p0) {
 }
 
 void MyLevelEditorLayer::deleteObject(GameObject *obj) {
+    log::debug("Cleaning up.. Deleting sent object!");
     auto betterGameObject = static_cast<MyGameObject*>(obj);
     EditorUI::get()->deselectObject(obj);
     this->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(betterGameObject->m_fields->m_veryUniqueID.bytes());
