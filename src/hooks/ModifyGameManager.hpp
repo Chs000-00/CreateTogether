@@ -26,7 +26,7 @@ class $modify(MyGameManager, GameManager) {
     struct Fields {
         SteamAPICall_t m_lobbyCreated;
         SteamAPICall_t m_lobbyJoined;
-        uint64 m_lobbyId; // TODO: I probably shouldn't be using 0 as the lobbyID!
+        uint64 m_lobbyId;
 		CSteamID m_hostID;
         bool m_isInLobby = false;
 		bool m_isHost = false; // TODO: use GetLobbyOwner instead? Possibly?
@@ -52,5 +52,8 @@ class $modify(MyGameManager, GameManager) {
 	void sendDataToMembers(const char* data, bool receiveData = false);
 	void receiveData();
 	void leaveLobby();
+	matjson::Value MyGameManager::getLevelStringMatjson();
+
 	static bool validateData(matjson::Value data);
+
 };

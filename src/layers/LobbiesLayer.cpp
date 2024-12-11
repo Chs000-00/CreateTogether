@@ -99,10 +99,6 @@ void LobbiesLayer::onJoin(CCObject* sender) {
 }
 
 void LobbiesLayer::loadDataToList() {
-    // if (!this->m_data) {
-    //     log::info("No lobbies found!");
-    //     return;
-    // }
 
     auto menu = this->getChildByID("menu");
 
@@ -122,6 +118,7 @@ void LobbiesLayer::loadDataToList() {
         listBorders->setVisible(true);
     }
     else {
+        log::info("No lobbies found!");
         FLAlertLayer::create(
             "No lobbies",
             "No one is hosting a lobby!",
@@ -133,11 +130,12 @@ void LobbiesLayer::loadDataToList() {
 
 
 void LobbiesLayer::fetchLobbies(unsigned int amountOfLobbiesFound) {
+    std::vector<lobbyData> dataVector;
 	lobbyData clobby;
 
 	for (int i = 0; i < amountOfLobbiesFound; i++) {
 		CSteamID lobbyID = SteamMatchmaking()->GetLobbyByIndex(i);
-        std::vector<lobbyData> dataVector;
+        
 
         log::info("LOBBY");
 

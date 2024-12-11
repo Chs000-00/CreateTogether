@@ -111,7 +111,11 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 		gameManager->m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
 		gameManager->m_fields->m_level = LevelEditorLayer::create(GJGameLevel::create(), false);
 		// TODO: Only send this to host!!!!!!!!!
-		gameManager->sendDataToMembers("{\"Type\": 6}");
+		auto msg = "{\"Type\": 6}";
+		auto host SteamNetworkingIdentity;
+		host.SetSteamID(this->m_fields->m_hostID);
+		SteamNetworkingMessages()->SendMessageToUser(host, msg, static_cast<uint32>(strlen(msg)), k_nSteamNetworkingSend_Reliable, 0);
+
 		gameManager->fetchMemberList();
 		switchToScene(gameManager->m_fields->m_level);
 	}
@@ -261,7 +265,8 @@ void MyGameManager::receiveData() {
 				// TODO: Figure if a race condition is possible
 				level->m_fields->m_wasDataSent = true;
 				GameObject* placedGameObject = level->createObject(gameObjectID, gameObjectPos, false);
-				
+				level->m_fields->m_wasDataSent = false;
+
 				MyGameObject* betterPlacedGameObject = static_cast<MyGameObject*>(placedGameObject);
 
 				auto uid = unwrappedMessage["ObjectUID"].asString().ok().value();
@@ -275,7 +280,6 @@ void MyGameManager::receiveData() {
 
 				betterPlacedGameObject->m_fields->m_veryUniqueID = UUIDv4::UUID(uid);
 
-				level->m_fields->m_wasDataSent = false;
 				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, betterPlacedGameObject->m_fields->m_veryUniqueID.bytes());
 
 
@@ -291,9 +295,10 @@ void MyGameManager::receiveData() {
 				level->m_fields->m_wasDataSent = false;
 				break;
 			}
-
+			
+			// FIXME: This uses the old deleting logic, which is incompatible with the new one!
 			case eActionDeletedObject: {
-				VALIDATE_MESSAGE("ObjectUID", String);
+				VALIDATE_MESSAGE("EditUUIDs", Array);
 				log::debug("ObjectUID Validated.");
 
 				auto deletedObject = GET_OBJECT_FROM_UID;
@@ -310,9 +315,9 @@ void MyGameManager::receiveData() {
 
 				auto transformedObject = GET_OBJECT_FROM_UID;
 				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
-				cEditorUI->m_fields->m_wasDataSent = true;
 				auto command = unwrappedMessage["EditCommand"].asInt().ok().value();
 				// TODO: Check command range
+				cEditorUI->m_fields->m_wasDataSent = true;
 				cEditorUI->transformObject(transformedObject,  static_cast<EditCommand>(command), false);
 				cEditorUI->m_fields->m_wasDataSent = false;
 				break;
@@ -336,13 +341,9 @@ void MyGameManager::receiveData() {
 			case eActionRequestLevel: {
 
 				auto lvlString = level->getLevelString().c_str();
-
-				matjson::Value object = matjson::makeObject({
-					{"Type", static_cast<int>(eActionReturnLevelString)},
-					{"LevelString", lvlString}
-				});
-
-				SteamNetworkingMessages()->SendMessageToUser(msg->m_identityPeer, lvlString, static_cast<uint32>(strlen(lvlString)), k_nSteamNetworkingSend_Reliable, 0);
+				matjson::Value lvlStringJson = this->getLevelStringMatjson();
+				
+				SteamNetworkingMessages()->SendMessageToUser(msg->m_identityPeer, lvlStringJson, static_cast<uint32>(strlen(lvlStringJson)), k_nSteamNetworkingSend_Reliable, 0);
 
 
 				break;
@@ -353,6 +354,11 @@ void MyGameManager::receiveData() {
 					log::warn("Non-host is attempting to return the level string.");
 					break;
 				}
+
+				VALIDATE_MESSAGE("EditUUIDs", Array);
+				VALIDATE_MESSAGE("EditCommand", String);
+
+
 			}
 
 			default:
@@ -360,6 +366,18 @@ void MyGameManager::receiveData() {
 		}
 		msg->Release();
 	}
+}
+
+// TODO: Finish this
+matjson::Value MyGameManager::getLevelStringMatjson() {
+
+    matjson::Value rjson = matjson::makeObject({
+        {"Type", static_cast<int>(eActionMovedObject)},
+		{"EditUUIDs", 0}, 
+        {"LevelString", this->m_fields->m_level->GetLevelString()}
+    });
+
+	return rjson;
 }
 
 void MyGameManager::update(float p0) {

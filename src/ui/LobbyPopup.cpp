@@ -23,26 +23,8 @@ bool LobbyPopup::setup(EPopupType type) {
                 menu_selector(LobbyPopup::startHosting)
             );
 
-            std::function<void (CCMenuItemToggler *)> pfunc = std::bind(&LobbyPopup::onPublicToggle, this, std::placeholders::_1);
-
-            auto checkMarkMenu = CCMenu::create();
-            checkMarkMenu->setLayout(RowLayout::create());
-            checkMarkMenu->setContentSize(this->getContentSize());
-
-            auto publicText = CCLabelBMFont::create("Public Lobby", "bigFont.fnt");
-            auto publicToggle = CCMenuItemExt::createTogglerWithStandardSprites(
-                1.0f,
-                pfunc
-            );
-
-            checkMarkMenu->addChild(publicText);
-            checkMarkMenu->addChild(publicToggle);
-            checkMarkMenu->updateLayout();
-            checkMarkMenu->setScale(0.5f);
-
 
             this->m_buttonMenu->addChildAtPosition(startHostingButton, Anchor::Bottom, {0, 20});
-            this->m_buttonMenu->addChildAtPosition(checkMarkMenu, Anchor::Center);
 
             break;
         }
@@ -64,11 +46,44 @@ bool LobbyPopup::setup(EPopupType type) {
 
     }
 
+    if(ELobbyType != eLobbyJoinedUserPopup) {
+        std::function<void (CCMenuItemToggler *)> pfunc = std::bind(&LobbyPopup::onPublicToggle, this, std::placeholders::_1);
+
+        auto checkMarkMenu = CCMenu::create();
+        checkMarkMenu->setLayout(RowLayout::create());
+        checkMarkMenu->setContentSize(this->getContentSize());
+
+        auto publicText = CCLabelBMFont::create("Public Lobby", "bigFont.fnt");
+        auto publicToggle = CCMenuItemExt::createTogglerWithStandardSprites(
+            1.0f,
+            pfunc
+        );
+
+        checkMarkMenu->addChild(publicText);
+        checkMarkMenu->addChild(publicToggle);
+        checkMarkMenu->updateLayout();
+        checkMarkMenu->setScale(0.5f);
+        this->m_buttonMenu->addChildAtPosition(checkMarkMenu, Anchor::Center);
+
+    }
+
     return true;
 }
 
 void LobbyPopup::onPublicToggle(CCMenuItemToggler* sender) {
-    this->isServerPublic = sender->m_toggled;
+    this->isServerPublic = sender->m_toggled; 
+    auto gameManager = static_cast<MyGameManager>(GameManager::get());
+    if(gameManager->m_fields->m_isInLobby) {
+        log::debug("Setting isPublic to {}", sender->m_toggled);
+        // TODO: Check if this code works
+
+        if this->isServerPublic {
+            SteamMatchmaking()->SetLobbyType(gameManager->m_fields->m_lobbyId, k_ELobbyTypePublic);
+        }
+        else {
+            SteamMatchmaking()->SetLobbyType(gameManager->m_fields->m_lobbyId, k_ELobbyTypeFriendsOnly);
+        }
+    }
 }
 
 
