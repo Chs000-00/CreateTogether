@@ -19,7 +19,7 @@ using namespace geode::prelude;
 
 #define GET_OBJECT_FROM_UID (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(unwrappedMessage["ObjectUID"].asString().ok().value())
 #define GET_CCPOINT static_cast<float>(unwrappedMessage["x"].asInt().ok().value()), static_cast<float>(unwrappedMessage["y"].asInt().ok().value())
-#define VALIDATE_MESSAGE(key, type) if (unwrappedMessage[key].as ## type().isErr()) continue
+#define VALIDATE_MESSAGE(key, type) if (unwrappedMessage[key].as ## type().isErr()) {msg->Release();continue;}
 
 void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 
@@ -268,6 +268,7 @@ void MyGameManager::receiveData() {
 
 				if (level->m_fields->m_pUniqueIDOfGameObject->objectForKey(uid)) {
 					log::warn("UID Already exists!");
+					continue;
 				}
 
 				
@@ -286,7 +287,7 @@ void MyGameManager::receiveData() {
 				VALIDATE_MESSAGE("FontID", Int);
 				
 				level->m_fields->m_wasDataSent = true;
-				level->updateLevelFont(unwrappedMessage["FontID"].asInt().unwrap());
+				level->updateLevelFont(unwrappedMessage["FontID"].asInt().ok().value());
 				level->m_fields->m_wasDataSent = false;
 				break;
 			}
@@ -308,7 +309,6 @@ void MyGameManager::receiveData() {
 
 
 				auto transformedObject = GET_OBJECT_FROM_UID;
-				auto betterTransformedObject = static_cast<MyGameObject*>(transformedObject);
 				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
 				cEditorUI->m_fields->m_wasDataSent = true;
 				auto command = unwrappedMessage["EditCommand"].asInt().ok().value();
@@ -325,7 +325,6 @@ void MyGameManager::receiveData() {
 				// VALIDATE_MESSAGE("EditCommand", Int);
 
 				auto transformedObject = GET_OBJECT_FROM_UID;
-				auto betterTransformedObject = static_cast<MyGameObject*>(transformedObject);
 				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
 				cocos2d::CCPoint newPos = {GET_CCPOINT};
 				cEditorUI->m_fields->m_wasDataSent = true;
@@ -335,10 +334,6 @@ void MyGameManager::receiveData() {
 			}
 
 			case eActionRequestLevel: {
-				if (this->m_fields->m_hostID != msg->m_identityPeer.GetSteamID()) {
-					log::warn("??? Non-host is attempting to return the level string.");
-					break;
-				}
 
 				auto lvlString = level->getLevelString().c_str();
 
@@ -351,6 +346,13 @@ void MyGameManager::receiveData() {
 
 
 				break;
+			}
+
+			case eActionReturnLevelString {
+				if (this->m_fields->m_hostID != msg->m_identityPeer.GetSteamID()) {
+					log::warn("Non-host is attempting to return the level string.");
+					break;
+				}
 			}
 
 			default:
