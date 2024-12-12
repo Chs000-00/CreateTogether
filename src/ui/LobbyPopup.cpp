@@ -46,7 +46,7 @@ bool LobbyPopup::setup(EPopupType type) {
 
     }
 
-    if(ELobbyType != eLobbyJoinedUserPopup) {
+    if (type != eLobbyJoinedUserPopup) {
         std::function<void (CCMenuItemToggler *)> pfunc = std::bind(&LobbyPopup::onPublicToggle, this, std::placeholders::_1);
 
         auto checkMarkMenu = CCMenu::create();
@@ -72,12 +72,12 @@ bool LobbyPopup::setup(EPopupType type) {
 
 void LobbyPopup::onPublicToggle(CCMenuItemToggler* sender) {
     this->isServerPublic = sender->m_toggled; 
-    auto gameManager = static_cast<MyGameManager>(GameManager::get());
-    if(gameManager->m_fields->m_isInLobby) {
+    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+    if (gameManager->m_fields->m_isInLobby) {
         log::debug("Setting isPublic to {}", sender->m_toggled);
         // TODO: Check if this code works
 
-        if this->isServerPublic {
+        if (this->isServerPublic) {
             SteamMatchmaking()->SetLobbyType(gameManager->m_fields->m_lobbyId, k_ELobbyTypePublic);
         }
         else {

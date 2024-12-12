@@ -62,15 +62,16 @@ void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 	if (pCallback->m_ulSteamIDUserChanged == gameManager->m_fields->m_hostID.ConvertToUint64()) {
 		if (pCallback->m_rgfChatMemberStateChange == k_EChatMemberStateChangeLeft || pCallback->m_rgfChatMemberStateChange == k_EChatMemberStateChangeDisconnected) {
 			log::info("Host left server! Leaving lobby.");
+
+			LobbiesLayer::scene();
+			gameManager->leaveLobby();
+
 			FLAlertLayer::create(
 				"Host left server",    
 				"The host has left the server!",  
 				"Ok"
 			)->show();
 
-			LobbiesLayer::scene();
-
-			gameManager->leaveLobby();
 		}
 	}
 
@@ -112,8 +113,8 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 		gameManager->m_fields->m_level = LevelEditorLayer::create(GJGameLevel::create(), false);
 		// TODO: Only send this to host!!!!!!!!!
 		auto msg = "{\"Type\": 6}";
-		auto host SteamNetworkingIdentity;
-		host.SetSteamID(this->m_fields->m_hostID);
+		SteamNetworkingIdentity host;
+		host.SetSteamID(gameManager->m_fields->m_hostID);
 		SteamNetworkingMessages()->SendMessageToUser(host, msg, static_cast<uint32>(strlen(msg)), k_nSteamNetworkingSend_Reliable, 0);
 
 		gameManager->fetchMemberList();
@@ -342,14 +343,15 @@ void MyGameManager::receiveData() {
 
 				auto lvlString = level->getLevelString().c_str();
 				matjson::Value lvlStringJson = this->getLevelStringMatjson();
+				auto out = lvlStringJson.dump(matjson::NO_INDENTATION).c_str();
 				
-				SteamNetworkingMessages()->SendMessageToUser(msg->m_identityPeer, lvlStringJson, static_cast<uint32>(strlen(lvlStringJson)), k_nSteamNetworkingSend_Reliable, 0);
+				SteamNetworkingMessages()->SendMessageToUser(msg->m_identityPeer, out, static_cast<uint32>(strlen(out)), k_nSteamNetworkingSend_Reliable, 0);
 
 
 				break;
 			}
 
-			case eActionReturnLevelString {
+			case eActionReturnLevelString: {
 				if (this->m_fields->m_hostID != msg->m_identityPeer.GetSteamID()) {
 					log::warn("Non-host is attempting to return the level string.");
 					break;
@@ -374,7 +376,7 @@ matjson::Value MyGameManager::getLevelStringMatjson() {
     matjson::Value rjson = matjson::makeObject({
         {"Type", static_cast<int>(eActionMovedObject)},
 		{"EditUUIDs", 0}, 
-        {"LevelString", this->m_fields->m_level->GetLevelString()}
+        {"LevelString", this->m_fields->m_level->getLevelString()}
     });
 
 	return rjson;

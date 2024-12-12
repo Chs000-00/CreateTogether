@@ -24,7 +24,7 @@ void MyEditorUI::onDeleteSelected(CCObject* sender) {
         EditorUI::onDeleteSelected(sender);
     }
 
-    if (!gameManager->m_fields->m_isInLobby) {
+    if (!gameManager->m_fields->m_isInLobby || this->m_selectedObjects) {
         EditorUI::onDeleteSelected(sender);
         return;
     }
@@ -42,6 +42,7 @@ void MyEditorUI::onDeleteSelected(CCObject* sender) {
 
 void MyEditorUI::removeSelectedObjects() {
     auto editor = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
+
     for (auto obj : CCArrayExt<MyGameObject*>(this->m_selectedObjects)) {
         editor->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(obj->m_fields->m_veryUniqueID.bytes());
     }
@@ -52,7 +53,7 @@ matjson::Value MyEditorUI::removeSelectedObjectsWithMatjson() {
     auto ret = matjson::Value::array();
     for (auto obj : CCArrayExt<MyGameObject*>(this->m_selectedObjects)) {
         editor->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(obj->m_fields->m_veryUniqueID.bytes());
-        ret[obj->m_fields->m_veryUniqueID.bytes()];
+        ret.push(obj->m_fields->m_veryUniqueID.bytes());
     }
     return ret;
 }
