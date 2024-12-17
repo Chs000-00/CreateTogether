@@ -19,7 +19,7 @@ using namespace geode::prelude;
 
 #define GET_OBJECT_FROM_UID (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(unwrappedMessage["ObjectUID"].asString().ok().value())
 #define GET_CCPOINT static_cast<float>(unwrappedMessage["x"].asInt().ok().value()), static_cast<float>(unwrappedMessage["y"].asInt().ok().value())
-#define VALIDATE_MESSAGE(key, type) if (unwrappedMessage[key].as ## type().isErr()) {msg->Release();continue;}
+#define VALIDATE_MESSAGE(key, type) if (!unwrappedMessage.contains(## key) || unwrappedMessage[key].as ## type().isErr()) {msg->Release();continue;}
 
 void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 
@@ -302,9 +302,14 @@ void MyGameManager::receiveData() {
 				VALIDATE_MESSAGE("EditUUIDs", Array);
 				log::debug("ObjectUID Validated.");
 
-				auto deletedObject = GET_OBJECT_FROM_UID;
-				log::debug("Got object with UID {} UUID {} and objectID {}.", deletedObject->m_uniqueID, static_cast<MyGameObject*>(deletedObject)->m_fields->m_veryUniqueID.str(), deletedObject->m_objectID);
-				level->deleteObject(deletedObject);
+				auto deletedObjects = unwrappedMessage["EditCommand"].asArray().ok().value();
+
+				for (auto obj : deletedObjects) {
+					auto dObj = (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(obj.asString().ok().value());
+					level->deleteObject(dObj);
+				}
+
+
 				break;
 			}
 

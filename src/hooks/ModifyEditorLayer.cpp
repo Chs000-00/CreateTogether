@@ -43,17 +43,17 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
         {"Type", static_cast<int>(eActionPlacedObject)},
         {"x", p1.x},
         {"y", p1.y},
-        {"Layer", createdGameObject->m_editorLayer()}
+        {"Layer", createdGameObject->m_editorLayer},
         {"ObjID", p0},
         {"ObjectUID", createdGameObject->m_fields->m_veryUniqueID.bytes()},
 
         // Extra values which are copied to a new object when created
         // TODO: Add these values in
         {"Rot", createdGameObject->getRotation()},
-        {"LDM", false},
+        {"HD", createdGameObject->m_isHighDetail},
         {"NoGlow", createdGameObject->m_hasNoGlow},
         {"NoEnter", createdGameObject->m_isDontEnter}, // Fade in
-        {"NoFade", createdGameObject->m_isDontFade}     // Fade out
+        {"NoFade", createdGameObject->m_isDontFade},   // Fade out
         {"FlipX", createdGameObject->m_isFlipX},
         {"FlipY", createdGameObject->m_isFlipY}
 
