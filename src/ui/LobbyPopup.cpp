@@ -58,6 +58,7 @@ bool LobbyPopup::setup(EPopupType type) {
             1.0f,
             pfunc
         );
+        publicToggle->m_bEnabled = this->m_isServerPublic;
 
         checkMarkMenu->addChild(publicText);
         checkMarkMenu->addChild(publicToggle);
@@ -71,13 +72,13 @@ bool LobbyPopup::setup(EPopupType type) {
 }
 
 void LobbyPopup::onPublicToggle(CCMenuItemToggler* sender) {
-    this->isServerPublic = sender->m_toggled; 
+    this->m_isServerPublic = sender->m_toggled; 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     if (gameManager->m_fields->m_isInLobby) {
         log::debug("Setting isPublic to {}", sender->m_toggled);
         // TODO: Check if this code works
 
-        if (this->isServerPublic) {
+        if (this->m_isServerPublic) {
             SteamMatchmaking()->SetLobbyType(gameManager->m_fields->m_lobbyId, k_ELobbyTypePublic);
         }
         else {
@@ -94,7 +95,7 @@ void LobbyPopup::startHosting(CCObject* sender) {
 
     this->onClose(nullptr);
 
-    if (this->isServerPublic) {
+    if (this->m_isServerPublic) {
         gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
     }
     else {

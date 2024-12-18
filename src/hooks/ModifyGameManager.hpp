@@ -52,7 +52,7 @@ class $modify(MyGameManager, GameManager) {
 	void sendDataToMembers(const char* data, bool receiveData = false);
 	void receiveData();
 	void leaveLobby();
-	matjson::Value MyGameManager::getLevelStringMatjson();
+	matjson::Value getLevelStringMatjson();
 
 	static bool validateData(matjson::Value data);
 

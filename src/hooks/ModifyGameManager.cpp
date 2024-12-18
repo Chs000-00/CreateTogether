@@ -302,11 +302,13 @@ void MyGameManager::receiveData() {
 				VALIDATE_MESSAGE("EditUUIDs", Array);
 				log::debug("ObjectUID Validated.");
 
-				auto deletedObjects = unwrappedMessage["EditCommand"].asArray().ok().value();
+				auto deletedObjects = unwrappedMessage["EditUUIDs"].asArray().unwrap();
 
 				for (auto obj : deletedObjects) {
-					auto dObj = (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(obj.asString().ok().value());
-					level->deleteObject(dObj);
+					if (obj.isString()) {
+						auto dObj = (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(obj.asString().ok().value());
+						level->deleteObject(dObj);
+					}
 				}
 
 
@@ -346,7 +348,6 @@ void MyGameManager::receiveData() {
 
 			case eActionRequestLevel: {
 
-				auto lvlString = level->getLevelString().c_str();
 				matjson::Value lvlStringJson = this->getLevelStringMatjson();
 				auto out = lvlStringJson.dump(matjson::NO_INDENTATION).c_str();
 				
