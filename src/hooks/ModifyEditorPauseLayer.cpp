@@ -1,11 +1,4 @@
-#include <Geode/Geode.hpp>
-#include <Geode/modify/EditorPauseLayer.hpp>
-#include <isteammatchmaking.h>
-#include "ModifyGameManager.hpp"
-#include "../ui/LobbyPopup.hpp"
-
-using namespace geode::prelude;
-
+#include "../include.hpp"
 
 class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 

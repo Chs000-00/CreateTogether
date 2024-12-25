@@ -1,13 +1,6 @@
 #pragma once
+#include "../include.hpp"
 
-#include <Geode/Geode.hpp>
-#include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
-#include <isteammatchmaking.h>
-#include "../types/LobbyData.hpp"
-#include "../ui/LevelListBorders.hpp"
-
-
-using namespace geode::prelude;
 
 
 class LobbiesLayer : public cocos2d::CCLayer {

@@ -1,10 +1,4 @@
-#include <Geode/Geode.hpp>
-#include <Geode/modify/LevelBrowserLayer.hpp>
-#include <isteammatchmaking.h>
-#include "../layers/LobbiesLayer.hpp"
-
-
-using namespace geode::prelude;
+#include "../include.hpp"
 
 
 class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
@@ -36,6 +30,16 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 	}		
 
 	void onLobbySearchButton(cocos2d::CCObject* sender) {
-		LobbiesLayer::scene();
+
+        // If the test server is enabled, connect to it instead.
+        #ifdef USE_TEST_SERVER
+            auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+            gameManager->m_fields->m_socket = INVALID_SOCKET;
+
+            gameManager->enterLevelEditor();
+        
+        #else
+            LobbiesLayer::scene();
+        #endif
 	}
 };

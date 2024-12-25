@@ -4,13 +4,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(CreateTogether VERSION 0.1.1)
-
-add_compile_definitions(
-    MOD_LOBBY_NAME="${PROJECT_NAME}"
-    MOD_VERSION="${PROJECT_VERSION}"
-)
-
+project(CreateTogether VERSION 0.2.0)
 
 file(GLOB SOURCES
     src/hooks/*.cpp

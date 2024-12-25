@@ -1,13 +1,4 @@
-#include <Geode/Geode.hpp>
-#include <Geode/modify/LevelEditorLayer.hpp>
-#include <Geode/binding/GameObject.hpp>
-#include <isteamnetworkingmessages.h>
-#include "uuid_v4.h"
-#include "../types/ActionTypes.hpp"
-#include "ModifyGameManager.hpp"
-
-using namespace geode::prelude;
-
+#include "../include.hpp"
 
 class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 

@@ -1,14 +1,4 @@
-#include <Geode/Geode.hpp>
-#include <Geode/modify/LevelEditorLayer.hpp>
-#include <Geode/binding/GameObject.hpp>
-#include <Geode/binding/EditorUI.hpp>
-#include <uuid_v4.h>
-#include "../types/ActionTypes.hpp"
-#include "ModifyGameManager.hpp"
-#include "ModifyGameObject.hpp"
-#include "ModifyEditorLayer.hpp"
-
-using namespace geode::prelude;
+#include "../include.hpp"
 
 bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
 

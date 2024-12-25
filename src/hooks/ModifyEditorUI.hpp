@@ -1,7 +1,4 @@
-#include <Geode/Geode.hpp>
-#include <Geode/modify/EditorUI.hpp>
-#include <Geode/binding/GameObject.hpp>
-#include "ModifyGameManager.hpp"
+#include "../include.hpp"
 
 using namespace geode::prelude;
 

@@ -1,26 +1,4 @@
-#include <Geode/Geode.hpp>
-#include <Geode/modify/GameManager.hpp>
-#include <Geode/binding/GameObject.hpp>
-#include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
-#include <isteammatchmaking.h>
-#include <isteamnetworkingmessages.h>
-#include <isteamuser.h>
-#include <uuid_v4.h>
-#include "../types/ActionTypes.hpp"
-#include "../types/LobbyData.hpp"
-#include "../layers/LobbiesLayer.hpp"
-#include "ModifyEditorUI.hpp"
-#include "ModifyEditorLayer.hpp"
-#include "ModifyGameObject.hpp"
-#include "ModifyGameManager.hpp"
-
-
-using namespace geode::prelude;
-
-#define GET_OBJECT_FROM_UID (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(unwrappedMessage["ObjectUID"].asString().ok().value())
-#define GET_CCPOINT static_cast<float>(unwrappedMessage["x"].asInt().ok().value()), static_cast<float>(unwrappedMessage["y"].asInt().ok().value())
-#define VALIDATE_MESSAGE(key, type) if (!unwrappedMessage.contains(## key) || unwrappedMessage[key].as ## type().isErr()) {msg->Release();continue;}
-
+#include "../include.hpp"
 void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 
 	auto callback = new GameLobbyJoinRequested_t;
@@ -108,17 +86,8 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 		log::warn("onLobbyEntered called as host!");
 		gameManager->m_fields->m_level = LevelEditorLayer::get();
 	} else {
-		gameManager->m_fields->m_isInEditorLayer = true;
 		gameManager->m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
-		gameManager->m_fields->m_level = LevelEditorLayer::create(GJGameLevel::create(), false);
-		// TODO: Only send this to host!!!!!!!!!
-		auto msg = "{\"Type\": 6}";
-		SteamNetworkingIdentity host;
-		host.SetSteamID(gameManager->m_fields->m_hostID);
-		SteamNetworkingMessages()->SendMessageToUser(host, msg, static_cast<uint32>(strlen(msg)), k_nSteamNetworkingSend_Reliable, 0);
-
-		gameManager->fetchMemberList();
-		switchToScene(gameManager->m_fields->m_level);
+		gameManager->enterLevelEditor();
 	}
 
 	gameManager->m_fields->m_hostID = SteamMatchmaking()->GetLobbyOwner(gameManager->m_fields->m_lobbyId);
@@ -130,6 +99,20 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 	}
 
 }
+
+void MyGameManager::enterLevelEditor() {
+	this->m_fields->m_isInEditorLayer = true;
+	this->m_fields->m_level = LevelEditorLayer::create(GJGameLevel::create(), false);
+	// TODO: Only send this to host!!!!!!!!!
+	auto msg = "{\"Type\": 7}";
+	SteamNetworkingIdentity host;
+	host.SetSteamID(this->m_fields->m_hostID);
+	SteamNetworkingMessages()->SendMessageToUser(host, msg, static_cast<uint32>(strlen(msg)), k_nSteamNetworkingSend_Reliable, 0);
+
+	this->fetchMemberList();
+	switchToScene(this->m_fields->m_level);
+}
+
 
 void MyGameManager::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure) {	
 	this->m_fields->m_lobbyLayer->fetchLobbies(pLobbyMatchList->m_nLobbiesMatching);
@@ -208,11 +191,18 @@ void MyGameManager::sendDataToMembers(const char* data, bool receiveData) {
 		this->receiveData();
 	}
 
-	for (auto const& member : this->m_fields->m_playersInLobby) {
-        // log::debug("SendData called on {}", SteamFriends()->GetFriendPersonaName(member.GetSteamID()));
-		SteamNetworkingMessages()->SendMessageToUser(member, data, static_cast<uint32>(strlen(data)), k_nSteamNetworkingSend_Reliable, 0);
-	}
-	// log::debug("Done sending messages");
+
+	#ifndef USE_TEST_SERVER
+
+		for (auto const& member : this->m_fields->m_playersInLobby) {
+			// log::debug("SendData called on {}", SteamFriends()->GetFriendPersonaName(member.GetSteamID()));
+			SteamNetworkingMessages()->SendMessageToUser(member, data, static_cast<uint32>(strlen(data)), k_nSteamNetworkingSend_Reliable, 0);
+		}
+		// log::debug("Done sending messages");
+
+	#else
+		send(this->m_fields->m_socket, data, strlen(data), 0);
+	#endif
 }
 
 
@@ -227,10 +217,25 @@ bool MyGameManager::validateData(matjson::Value data) {
 }
 
 void MyGameManager::receiveData() {
-	SteamNetworkingMessage_t* messageList[64];
-	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 64);
+
+	#ifndef USE_TEST_SERVER
+		SteamNetworkingMessage_t* messageList[64];
+		auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 64);
+	#else USE_TEST_SERVER
+		// Compat with for loop
+		auto numMessages = 1;
+		char tserverdat[1024] = {0};
+		recv(this->m_fields->m_socket, tserverdat, sizeof(tserverdat), 0);
+		TestServerMsg* msg;
+
+	#endif
+
 	for (int i = 0; i < numMessages; i++) {
-		SteamNetworkingMessage_t* msg = messageList[i];
+		
+		#ifndef USE_TEST_SERVER
+			SteamNetworkingMessage_t* msg = messageList[i];
+		#endif
+
 		auto res = matjson::parse(static_cast<std::string>(static_cast<const char*>(msg->GetData())).append("\0"));
 		log::debug("Data received: {} ", static_cast<const char*>(msg->GetData()));
 		
@@ -350,18 +355,20 @@ void MyGameManager::receiveData() {
 
 				matjson::Value lvlStringJson = this->getLevelStringMatjson();
 				auto out = lvlStringJson.dump(matjson::NO_INDENTATION).c_str();
-				
-				SteamNetworkingMessages()->SendMessageToUser(msg->m_identityPeer, out, static_cast<uint32>(strlen(out)), k_nSteamNetworkingSend_Reliable, 0);
 
+				sendDataToUser(msg->m_identityPeer, out);
 
 				break;
 			}
 
 			case eActionReturnLevelString: {
-				if (this->m_fields->m_hostID != msg->m_identityPeer.GetSteamID()) {
-					log::warn("Non-host is attempting to return the level string.");
-					break;
-				}
+
+				#ifndef USE_TEST_SERVER
+					if (this->m_fields->m_hostID != msg->m_identityPeer.GetSteamID()) {
+						log::warn("Non-host is attempting to return the level string.");
+						break;
+					}
+				#endif
 
 				VALIDATE_MESSAGE("EditUUIDs", Array);
 				VALIDATE_MESSAGE("EditCommand", String);
@@ -388,6 +395,12 @@ matjson::Value MyGameManager::getLevelStringMatjson() {
 	return rjson;
 }
 
+void MyGameManager::sendDataToUser(SteamNetworkingIdentity usr, const char* out) {
+	#ifndef USE_TEST_SERVER
+		SteamNetworkingMessages()->SendMessageToUser(usr, out, static_cast<uint32>(strlen(out)), k_nSteamNetworkingSend_Reliable, 0);
+	#endif
+}
+
 void MyGameManager::update(float p0) {
 	SteamAPI_RunCallbacks();
 
@@ -400,16 +413,20 @@ void MyGameManager::update(float p0) {
 
 void MyGameManager::leaveLobby() {
 	this->m_fields->m_isInEditorLayer = false;
+		if (this->m_fields->m_isInLobby) {
+			#ifndef USE_TEST_SERVER
 
-	if (this->m_fields->m_isInLobby) {
-		log::info("Leaving lobby with ID {}", this->m_fields->m_lobbyId);
-		SteamMatchmaking()->LeaveLobby(this->m_fields->m_lobbyId);
-		this->m_fields->m_lobbyCreated = 0;
-		this->m_fields->m_lobbyJoined = 0;
-		this->m_fields->m_lobbyId = 0;
-		this->m_fields->m_isInLobby = false;
-	}
-	else {
-		log::info("Can't leave lobby because not in lobby!");
-	}
+				log::info("Leaving lobby with ID {}", this->m_fields->m_lobbyId);
+				SteamMatchmaking()->LeaveLobby(this->m_fields->m_lobbyId);
+				this->m_fields->m_lobbyCreated = 0;
+				this->m_fields->m_lobbyJoined = 0;
+				this->m_fields->m_lobbyId = 0;
+				this->m_fields->m_isInLobby = false;
+			#else
+				close(this->m_fields->m_socket);
+			#endif
+		}
+		else {
+			log::info("Can't leave lobby because not in lobby!");
+		}
 }

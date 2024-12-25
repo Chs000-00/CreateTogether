@@ -1,13 +1,4 @@
-#include <Geode/Geode.hpp>
-#include <Geode/ui/General.hpp>
-#include <Geode/ui/LoadingSpinner.hpp>
-#include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
-#include <isteammatchmaking.h>
-#include "LobbiesLayer.hpp"
-#include "../hooks/ModifyGameManager.hpp"
-#include "../ui/LevelListBorders.hpp"
-
-using namespace geode::prelude;
+#include "../include.hpp"
 
 
 bool LobbiesLayer::init() {
@@ -53,7 +44,7 @@ bool LobbiesLayer::init() {
     listBorders->setVisible(false);
     listBorders->setID("list-borders");
 
-    auto m_menu = CCMenu::create();
+    this->m_menu = CCMenu::create();
 
     m_menu->setID("menu");
     
@@ -100,7 +91,7 @@ void LobbiesLayer::onJoin(CCObject* sender) {
 
 void LobbiesLayer::loadDataToList() {
 
-    auto menu = this->getChildByID("menu");
+    auto menu = this->m_menu;
 
     auto scrollLayer = menu->getChildByID("scroll-layer");
     auto listBorders = menu->getChildByID("list-borders");

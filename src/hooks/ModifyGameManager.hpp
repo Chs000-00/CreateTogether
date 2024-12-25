@@ -1,17 +1,6 @@
 #pragma once
 
-#include <Geode/Geode.hpp>
-#include <Geode/modify/GameManager.hpp>
-#include <Geode/binding/GJGameLevel.hpp>
-#include <isteammatchmaking.h>
-#include <isteamfriends.h>
-#include <steam_api_common.h>
-#include <steamnetworkingtypes.h>
-#include <isteamnetworkingmessages.h>
-#include "../layers/LobbiesLayer.hpp"
-
-
-using namespace geode::prelude;
+#include "../include.hpp"
 
 class CallbackManager {
 private:
@@ -38,6 +27,11 @@ class $modify(MyGameManager, GameManager) {
 
 		std::vector<SteamNetworkingIdentity> m_playersInLobby;
 
+
+        #ifdef USE_TEST_SERVER
+			SOCKET m_socket;
+        #endif
+
 		CCallResult< MyGameManager, LobbyCreated_t > m_isInLobbyCallResult;
 		CCallResult< MyGameManager, LobbyEnter_t > m_enterLobbyCallResult;
 		CCallResult< MyGameManager, LobbyMatchList_t  > m_lobbyMatchListCallResult;
@@ -48,6 +42,8 @@ class $modify(MyGameManager, GameManager) {
     void onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure);
 	void onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure);
 	void onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure);
+	void enterLevelEditor();
+	void sendDataToUser(SteamNetworkingIdentity usr, const char* out);
 	void fetchMemberList();
 	void sendDataToMembers(const char* data, bool receiveData = false);
 	void receiveData();
