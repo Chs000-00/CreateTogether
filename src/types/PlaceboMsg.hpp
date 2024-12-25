@@ -7,7 +7,9 @@
 struct TestServerMsg {
     char m_data[1024];
     SteamNetworkingIdentity m_identityPeer; // DO NOT ACCESS!!!!
-    void Release() {};
+    inline void Release() {
+        delete this;
+    };
 
     const char* GetData() {
         return this->m_data;

@@ -23,12 +23,21 @@ else()
 endif()
 
 set(GEODE_LINK_NIGHTLY ON)
+set(USE_TEST_SERVER ON)
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 # Thankye globed
 # Can *Safely* be commented out when not compiling with test server
-if (WIN32)
-    add_compile_definitions(WIN32_LEAN_AND_MEAN=1) # geode moment
+if (WIN32 AND USE_TEST_SERVER)
+    message(STATUS "Compiling with test server")
+
+    # geode moment
+    # Enable experimental support for a server at 24018, '127.0.0.1'
+    # Incase you dont have friends and need to test this app out
+    add_compile_definitions(
+        WIN32_LEAN_AND_MEAN=1
+        USE_TEST_SERVER=1
+    ) 
     target_link_libraries(${PROJECT_NAME} ws2_32)
 endif()
 

@@ -13,7 +13,10 @@ connectedSockets.broadcast = function(data, except) {
 }
 
 const server = net.createServer(function(sock){
-    console.log('New client connected');
+    console.log('New client connected address:' + sock.address());
+    sock.setEncoding('utf-8');
+    sock.setTimeout(10000);
+
     connectedSockets.add(sock);
 
     sock.on('end', function() {
@@ -27,5 +30,6 @@ const server = net.createServer(function(sock){
     });
 
 }); 
+
 
 server.listen(24018, '127.0.0.1');

@@ -10,6 +10,9 @@
 #include <isteamnetworkingmessages.h>
 #include "../layers/LobbiesLayer.hpp"
 
+#ifdef USE_TEST_SERVER
+	#include <WinSock2.h>
+#endif
 
 using namespace geode::prelude;
 

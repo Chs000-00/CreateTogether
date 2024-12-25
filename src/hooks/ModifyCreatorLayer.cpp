@@ -3,6 +3,11 @@
 #include <isteammatchmaking.h>
 #include "../layers/LobbiesLayer.hpp"
 
+#ifdef USE_TEST_SERVER
+    #include "ModifyGameManager.hpp"
+	#include <WinSock2.h>
+#endif
+
 
 using namespace geode::prelude;
 
@@ -39,10 +44,19 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
         // If the test server is enabled, connect to it instead.
         #ifdef USE_TEST_SERVER
             auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-            gameManager->m_fields->m_socket = INVALID_SOCKET;
+            gameManager->m_fields->m_socket = socket(AF_INET, SOCK_STREAM, 0);
+            sockaddr_in serverAddress;
+            serverAddress.sin_family = AF_INET;
+            serverAddress.sin_port = htons(24018);
+            serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
+            connect(gameManager->m_fields->m_socket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 
+            u_long mode = 1;  // 1 to enable non-blocking socket
+            ioctlsocket(gameManager->m_fields->m_socket, FIONBIO, &mode);
+
+
+            gameManager->m_fields->m_isInLobby = true;
             gameManager->enterLevelEditor();
-        
         #else
             LobbiesLayer::scene();
         #endif

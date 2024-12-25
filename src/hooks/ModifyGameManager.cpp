@@ -251,9 +251,9 @@ void MyGameManager::receiveData() {
 		// Compat with for loop
 		auto numMessages = 1;
 		char tserverdat[1024] = {0};
-		recv(this->m_fields->m_socket, tserverdat, sizeof(tserverdat), 0);
-		TestServerMsg* msg;
-
+		TestServerMsg* msg = new TestServerMsg;
+		auto outrec = recv(this->m_fields->m_socket, msg->m_data, sizeof(msg->m_data), 0);
+		log::debug("Recv stat: {}", outrec);
 	#endif
 
 	for (int i = 0; i < numMessages; i++) {
@@ -439,20 +439,23 @@ void MyGameManager::update(float p0) {
 
 void MyGameManager::leaveLobby() {
 	this->m_fields->m_isInEditorLayer = false;
-		if (this->m_fields->m_isInLobby) {
-			#ifndef USE_TEST_SERVER
+	if (this->m_fields->m_isInLobby) {
+		#ifndef USE_TEST_SERVER
 
-				log::info("Leaving lobby with ID {}", this->m_fields->m_lobbyId);
-				SteamMatchmaking()->LeaveLobby(this->m_fields->m_lobbyId);
-				this->m_fields->m_lobbyCreated = 0;
-				this->m_fields->m_lobbyJoined = 0;
-				this->m_fields->m_lobbyId = 0;
-				this->m_fields->m_isInLobby = false;
-			#else
-				close(this->m_fields->m_socket);
-			#endif
-		}
-		else {
-			log::info("Can't leave lobby because not in lobby!");
-		}
+			log::info("Leaving lobby with ID {}", this->m_fields->m_lobbyId);
+			SteamMatchmaking()->LeaveLobby(this->m_fields->m_lobbyId);
+
+		#else
+			close(this->m_fields->m_socket);
+		#endif
+
+		this->m_fields->m_lobbyCreated = 0;
+		this->m_fields->m_lobbyJoined = 0;
+		this->m_fields->m_lobbyId = 0;
+		this->m_fields->m_isInLobby = false;
+
+	}
+	else {
+		log::info("Can't leave lobby because not in lobby!");
+	}
 }
