@@ -1,6 +1,17 @@
 #pragma once
 
-#include "../include.hpp"
+#include <Geode/Geode.hpp>
+#include <Geode/modify/GameManager.hpp>
+#include <Geode/binding/GJGameLevel.hpp>
+#include <isteammatchmaking.h>
+#include <isteamfriends.h>
+#include <steam_api_common.h>
+#include <steamnetworkingtypes.h>
+#include <isteamnetworkingmessages.h>
+#include "../layers/LobbiesLayer.hpp"
+
+
+using namespace geode::prelude;
 
 class CallbackManager {
 private:

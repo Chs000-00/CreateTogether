@@ -1,6 +1,11 @@
-#include "../include.hpp"
+#include <Geode/Geode.hpp>
+#include <Geode/modify/EditorUI.hpp>
+#include <Geode/binding/GameObject.hpp>
+#include "ModifyGameManager.hpp"
 
 using namespace geode::prelude;
+
+
 
 
 class $modify(MyEditorUI, EditorUI) {

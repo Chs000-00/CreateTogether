@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../include.hpp"
-
+#include <Geode/Geode.hpp>
+#include <Geode/ui/ScrollLayer.hpp>
+#include <isteammatchmaking.h>
 
 using namespace geode::prelude;
 

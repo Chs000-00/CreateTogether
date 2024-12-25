@@ -1,4 +1,30 @@
-#include "../include.hpp"
+
+#include "../config.hpp"
+
+#ifdef USE_TEST_SERVER
+	#include <WinSock2.h>
+	#include "../types/PlaceboMsg.hpp"
+#endif
+
+#include <Geode/Geode.hpp>
+#include <Geode/modify/GameManager.hpp>
+#include <Geode/binding/GameObject.hpp>
+#include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
+#include <isteammatchmaking.h>
+#include <isteamnetworkingmessages.h>
+#include <isteamuser.h>
+#include <uuid_v4.h>
+#include "../types/ActionTypes.hpp"
+#include "../types/LobbyData.hpp"
+#include "../layers/LobbiesLayer.hpp"
+#include "ModifyEditorUI.hpp"
+#include "ModifyEditorLayer.hpp"
+#include "ModifyGameObject.hpp"
+#include "ModifyGameManager.hpp"
+#include "../UtilMacros.hpp"
+
+
+using namespace geode::prelude;
 void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 
 	auto callback = new GameLobbyJoinRequested_t;

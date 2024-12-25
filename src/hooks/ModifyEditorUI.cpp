@@ -1,4 +1,13 @@
-#include "../include.hpp"
+#include <Geode/Geode.hpp>
+#include <Geode/modify/EditorUI.hpp>
+#include <Geode/binding/GameObject.hpp>
+#include "ModifyGameManager.hpp"
+#include "ModifyEditorLayer.hpp"
+#include "ModifyGameObject.hpp"
+#include "ModifyEditorUI.hpp"
+
+using namespace geode::prelude;
+
 
 // TODO: test out shouldDeleteObject
 void MyEditorUI::onDeleteSelected(CCObject* sender) {

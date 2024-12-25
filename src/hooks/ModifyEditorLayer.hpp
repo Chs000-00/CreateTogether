@@ -1,5 +1,12 @@
-#include "../include.hpp"
+#include <Geode/Geode.hpp>
+#include <Geode/modify/LevelEditorLayer.hpp>
+#include <Geode/binding/GameObject.hpp>
+#include <isteamnetworkingmessages.h>
+#include "uuid_v4.h"
+#include "../types/ActionTypes.hpp"
+#include "ModifyGameManager.hpp"
 
+using namespace geode::prelude;
 class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 
     struct Fields {

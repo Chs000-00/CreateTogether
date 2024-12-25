@@ -25,6 +25,14 @@ endif()
 set(GEODE_LINK_NIGHTLY ON)
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
+# Thankye globed
+# Can *Safely* be commented out when not compiling with test server
+if (WIN32)
+    add_compile_definitions(WIN32_LEAN_AND_MEAN=1) # geode moment
+    target_link_libraries(${PROJECT_NAME} ws2_32)
+endif()
+
+
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 # Set up dependencies, resources, and link Geode.

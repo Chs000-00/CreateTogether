@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../include.hpp"
+#include <Geode/Geode.hpp>
+
+using namespace geode::prelude;
 
 enum EPopupType {
     eLobbyHostPopup,

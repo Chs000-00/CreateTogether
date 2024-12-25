@@ -1,6 +1,10 @@
 #pragma once
 
-#include "../include.hpp"
+#include <Geode/Geode.hpp>
+#include <Geode/ui/General.hpp>
+#include "LevelListBorders.hpp"
+
+using namespace geode::prelude;
 
 
 using namespace geode::prelude;

@@ -1,4 +1,11 @@
-#include "../include.hpp"
+#include <Geode/Geode.hpp>
+#include <Geode/ui/ScrollLayer.hpp>
+#include <isteammatchmaking.h>
+#include <isteamfriends.h>
+#include "../layers/LobbiesLayer.hpp"
+#include "../types/LobbyData.hpp"
+
+using namespace geode::prelude;
 
 ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData> lobbyList) {
     auto scrollLayer = ScrollLayer::create({ 356, 220 });

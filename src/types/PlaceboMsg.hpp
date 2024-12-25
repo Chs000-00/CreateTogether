@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../include.hpp"
+#include <isteamnetworkingmessages.h>
 
 // Because it is so easy to test steam p2p applications, here is a "fake" msg class
 // To be used with the test server

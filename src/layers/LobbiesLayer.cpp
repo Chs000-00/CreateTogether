@@ -1,5 +1,13 @@
-#include "../include.hpp"
-
+#include <Geode/Geode.hpp>
+#include <Geode/ui/General.hpp>
+#include <Geode/ui/LoadingSpinner.hpp>
+#include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
+#include <isteammatchmaking.h>
+#include "LobbiesLayer.hpp"
+#include "../hooks/ModifyGameManager.hpp"
+#include "../ui/LevelListBorders.hpp"
+#include "../config.hpp"
+using namespace geode::prelude;
 
 bool LobbiesLayer::init() {
     if (!CCLayer::init()) {
