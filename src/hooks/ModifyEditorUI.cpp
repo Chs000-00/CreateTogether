@@ -18,16 +18,7 @@ void MyEditorUI::onDeleteSelected(CCObject* sender) {
 
     // log::debug("Obj with uuid {}", obj->m_fields->m_veryUniqueID.str());
 
-
-    // TODO: Check gamemanager->m_level
-    // and use that
-    if (auto editor = LevelEditorLayer::get()) {
-        auto editorButBetter = static_cast<MyLevelEditorLayer*>(editor);
-        removeSelectedObjects();
-        EditorUI::onDeleteSelected(sender);
-    }
-
-    if (!gameManager->m_fields->m_isInLobby || this->m_selectedObjects) {
+    if (!gameManager->m_fields->m_isInLobby || this->m_selectedObjects || this->m_fields->m_wasDataSent) {
         EditorUI::onDeleteSelected(sender);
         return;
     }

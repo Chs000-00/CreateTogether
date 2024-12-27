@@ -247,13 +247,22 @@ void MyGameManager::receiveData() {
 	#ifndef USE_TEST_SERVER
 		SteamNetworkingMessage_t* messageList[64];
 		auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 64);
-	#else USE_TEST_SERVER
+	#else
 		// Compat with for loop
 		auto numMessages = 1;
-		char tserverdat[1024] = {0};
+		char tserverdat[1024];
+		memset(tserverdat, 0, sizeof(tserverdat)); 
 		TestServerMsg* msg = new TestServerMsg;
 		auto outrec = recv(this->m_fields->m_socket, msg->m_data, sizeof(msg->m_data), 0);
-		log::debug("Recv stat: {}", outrec);
+
+		if (outrec == -1) {
+			msg->Release();
+			return;
+		}
+
+
+		log::debug("OutRec stat: {} MsgData: {}", outrec, msg->m_data);
+		log::debug("OutRecVal: {}", tserverdat[outrec-1]);
 	#endif
 
 	for (int i = 0; i < numMessages; i++) {
