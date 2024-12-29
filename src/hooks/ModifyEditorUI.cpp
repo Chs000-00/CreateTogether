@@ -60,6 +60,7 @@ void MyEditorUI::transformObject(GameObject* p0, EditCommand p1, bool p2) {
     log::debug("TransformObject called with command {}", fmt::underlying(p1));
 
     if (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent) {
+        log::debug("TransformObjCalling...");
         EditorUI::transformObject(p0, p1, p2);
         return;
     }
@@ -69,6 +70,8 @@ void MyEditorUI::transformObject(GameObject* p0, EditCommand p1, bool p2) {
         {"EditCommand", static_cast<int>(p1)},
         {"ObjectUID", betterObject->m_fields->m_veryUniqueID.bytes()}
     });
+
+    log::info("Sending data: {}", object.dump(matjson::NO_INDENTATION));
     
     gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
 
@@ -81,12 +84,13 @@ void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
     auto betterObject = static_cast<MyGameObject*>(p0);
 
 
+    log::info("MoveObjectCalled");
+
     if (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent || !this->m_fields->m_loadingFinished) {
         EditorUI::moveObject(p0, p1);
         return;
     }
 
-    log::info("MoveObjectCalled");
 
     matjson::Value object = matjson::makeObject({
         {"Type", static_cast<int>(eActionMovedObject)},

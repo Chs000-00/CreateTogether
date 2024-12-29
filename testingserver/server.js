@@ -6,17 +6,20 @@ const connectedSockets = new Set();
 const PORT = 24018;
 const ADDRESS = '127.0.0.1';
 const TIMEOUT = 10000;
+const USE_ENCODING = true;
 const ENCODING = 'utf-8'
 
 console.log("Starting test server...");
 
 // broadcast to all connected sockets except one
 connectedSockets.broadcast = function(data, except) {
+
+    var bufferNull = new Buffer([0x00])
+    buf = new Buffer(data)
+    buffer = Buffer.concat([buf, bufferNull]);
+
     for (let sock of this) {
         if (sock !== except) {
-            var bufferNull = new Buffer([0x00])
-            buf = new Buffer(data)
-            buffer = Buffer.concat([buf, bufferNull]);
             sock.write(buffer);   
         }
     }
@@ -24,7 +27,11 @@ connectedSockets.broadcast = function(data, except) {
 
 const server = net.createServer(function(sock){
     console.log('New client connected address:' + sock.address().address);
-    sock.setEncoding(ENCODING);
+
+    if (USE_ENCODING) {
+        sock.setEncoding(ENCODING);
+    }
+    
     sock.setTimeout(TIMEOUT);
 
     connectedSockets.add(sock);

@@ -259,10 +259,6 @@ void MyGameManager::receiveData() {
 			msg->Release();
 			return;
 		}
-
-
-		log::debug("OutRec stat: {} MsgData: {}", outrec, msg->m_data);
-		log::debug("OutRecVal: {}", tserverdat[outrec-1]);
 	#endif
 
 	for (int i = 0; i < numMessages; i++) {
@@ -300,6 +296,10 @@ void MyGameManager::receiveData() {
 				VALIDATE_MESSAGE("y", Int);
 				VALIDATE_MESSAGE("ObjectUID", String);
 
+				// TODO: ADD THESE IN!
+				VALIDATE_MESSAGE("Rot", Int);
+
+
 				auto gameObjectID = unwrappedMessage["ObjID"].asUInt().ok().value();
 				cocos2d::CCPoint gameObjectPos = {GET_CCPOINT};
 				
@@ -316,10 +316,11 @@ void MyGameManager::receiveData() {
 					log::warn("UID Already exists!");
 					continue;
 				}
-
 				
 
 				betterPlacedGameObject->m_fields->m_veryUniqueID = UUIDv4::UUID(uid);
+
+				log::info("BYTESTRING: {}", uid);
 
 				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, betterPlacedGameObject->m_fields->m_veryUniqueID.bytes());
 
@@ -362,9 +363,16 @@ void MyGameManager::receiveData() {
 
 
 				auto transformedObject = GET_OBJECT_FROM_UID;
+
+
+				log::debug("Got Transformed Object from UID1");
+
 				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
 				auto command = unwrappedMessage["EditCommand"].asInt().ok().value();
 				// TODO: Check command range
+
+				log::debug("Calling TransformObject");
+
 				cEditorUI->m_fields->m_wasDataSent = true;
 				cEditorUI->transformObject(transformedObject,  static_cast<EditCommand>(command), false);
 				cEditorUI->m_fields->m_wasDataSent = false;
