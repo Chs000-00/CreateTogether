@@ -310,20 +310,17 @@ void MyGameManager::receiveData() {
 
 				MyGameObject* betterPlacedGameObject = static_cast<MyGameObject*>(placedGameObject);
 
-				auto uid = unwrappedMessage["ObjectUID"].asString().ok().value();
+				betterPlacedGameObject->m_fields->m_veryUniqueID = unwrappedMessage["ObjectUID"].asString().ok().value();
 
-				if (level->m_fields->m_pUniqueIDOfGameObject->objectForKey(uid)) {
+				if (level->m_fields->m_pUniqueIDOfGameObject->objectForKey(betterPlacedGameObject->m_fields->m_veryUniqueID)) {
 					log::warn("UID Already exists!");
 					continue;
 				}
+
+				betterPlacedGameObject->setRotation(unwrappedMessage["Rot"].asInt().ok().value());
 				
 
-				betterPlacedGameObject->m_fields->m_veryUniqueID = UUIDv4::UUID(uid);
-
-				log::info("BYTESTRING: {}", uid);
-
-				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, betterPlacedGameObject->m_fields->m_veryUniqueID.bytes());
-
+				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, betterPlacedGameObject->m_fields->m_veryUniqueID);
 
 				break;
 			}
@@ -364,7 +361,6 @@ void MyGameManager::receiveData() {
 
 				auto transformedObject = GET_OBJECT_FROM_UID;
 
-
 				log::debug("Got Transformed Object from UID1");
 
 				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
@@ -374,7 +370,7 @@ void MyGameManager::receiveData() {
 				log::debug("Calling TransformObject");
 
 				cEditorUI->m_fields->m_wasDataSent = true;
-				cEditorUI->transformObject(transformedObject,  static_cast<EditCommand>(command), false);
+				cEditorUI->transformObject(transformedObject, static_cast<EditCommand>(command), false);
 				cEditorUI->m_fields->m_wasDataSent = false;
 				break;
 			}
@@ -466,8 +462,8 @@ void MyGameManager::leaveLobby() {
 			close(this->m_fields->m_socket);
 		#endif
 
-		this->m_fields->m_lobbyCreated = 0;
-		this->m_fields->m_lobbyJoined = 0;
+		// this->m_fields->m_lobbyCreated = 0;
+		// this->m_fields->m_lobbyJoined = 0;
 		this->m_fields->m_lobbyId = 0;
 		this->m_fields->m_isInLobby = false;
 

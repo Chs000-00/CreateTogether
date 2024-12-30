@@ -38,7 +38,7 @@ void MyEditorUI::removeSelectedObjects() {
     auto editor = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
 
     for (auto obj : CCArrayExt<MyGameObject*>(this->m_selectedObjects)) {
-        editor->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(obj->m_fields->m_veryUniqueID.bytes());
+        editor->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(obj->m_fields->m_veryUniqueID);
     }
 }
 
@@ -46,8 +46,8 @@ matjson::Value MyEditorUI::removeSelectedObjectsWithMatjson() {
     auto editor = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
     auto ret = matjson::Value::array();
     for (auto obj : CCArrayExt<MyGameObject*>(this->m_selectedObjects)) {
-        editor->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(obj->m_fields->m_veryUniqueID.bytes());
-        ret.push(obj->m_fields->m_veryUniqueID.bytes());
+        editor->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(obj->m_fields->m_veryUniqueID);
+        ret.push(obj->m_fields->m_veryUniqueID);
     }
     return ret;
 }
@@ -68,10 +68,10 @@ void MyEditorUI::transformObject(GameObject* p0, EditCommand p1, bool p2) {
     matjson::Value object = matjson::makeObject({
         {"Type", static_cast<int>(eActionTransformObject)},
         {"EditCommand", static_cast<int>(p1)},
-        {"ObjectUID", betterObject->m_fields->m_veryUniqueID.bytes()}
+        {"ObjectUID", betterObject->m_fields->m_veryUniqueID}
     });
 
-    log::info("Sending data: {}", object.dump(matjson::NO_INDENTATION));
+    log::debug("Sending data: {}", object.dump(matjson::NO_INDENTATION));
     
     gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
 
@@ -84,7 +84,7 @@ void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
     auto betterObject = static_cast<MyGameObject*>(p0);
 
 
-    log::info("MoveObjectCalled");
+    // log::info("MoveObjectCalled");
 
     if (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent || !this->m_fields->m_loadingFinished) {
         EditorUI::moveObject(p0, p1);
@@ -96,7 +96,7 @@ void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
         {"Type", static_cast<int>(eActionMovedObject)},
         {"x", p1.x},
         {"y", p1.y},
-        {"ObjectUID", betterObject->m_fields->m_veryUniqueID.bytes()}
+        {"ObjectUID", betterObject->m_fields->m_veryUniqueID}
     });
 
     gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());

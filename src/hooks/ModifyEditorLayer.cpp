@@ -19,8 +19,8 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
     auto objectArr = CCArrayExt<MyGameObject*>(m_objects);
 
     for (auto obj : objectArr) {
-        obj->m_fields->m_veryUniqueID = this->m_fields->uuidGenerator.getUUID();
-        this->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID.bytes());
+        obj->m_fields->m_veryUniqueID = this->m_fields->uuidGenerator.getUUID().str();
+        this->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID);
     }
 
     return true;
@@ -30,22 +30,25 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
 GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p2) {
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-    auto createdGameObject = static_cast<MyGameObject*>(LevelEditorLayer::createObject(p0, p1, p2));
+    MyGameObject* createdGameObject = static_cast<MyGameObject*>(LevelEditorLayer::createObject(p0, p1, p2));
     
-    createdGameObject->m_fields->m_veryUniqueID = this->m_fields->uuidGenerator.getUUID();
-    this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, createdGameObject->m_fields->m_veryUniqueID.bytes());
+    // So for some weird and stupid reason this has to run before the if statement with the return
+    if (!(!gameManager->m_fields->m_isInLobby || p2 || m_fields->m_wasDataSent)) {
+        createdGameObject->m_fields->m_veryUniqueID = this->m_fields->uuidGenerator.getUUID().str();
+        this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, createdGameObject->m_fields->m_veryUniqueID);
+    }
 
     if (!gameManager->m_fields->m_isInLobby || p2 || m_fields->m_wasDataSent) {
         return createdGameObject;
     }
-
+     
     matjson::Value object = matjson::makeObject({
         {"Type", static_cast<int>(eActionPlacedObject)},
         {"x", p1.x},
         {"y", p1.y},
         {"Layer", createdGameObject->m_editorLayer},
         {"ObjID", p0},
-        {"ObjectUID", createdGameObject->m_fields->m_veryUniqueID.bytes()},
+        {"ObjectUID", createdGameObject->m_fields->m_veryUniqueID},
 
         // Extra values which are copied to a new object when created
         // TODO: Add these values in
@@ -58,6 +61,9 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
         {"FlipY", createdGameObject->m_isFlipY}
 
     });
+
+    log::debug("Sending data: {}", object.dump(matjson::NO_INDENTATION));
+
 
     gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
     
@@ -87,7 +93,7 @@ void MyLevelEditorLayer::deleteObject(GameObject *obj) {
     log::debug("Cleaning up.. Deleting sent object!");
     auto betterGameObject = static_cast<MyGameObject*>(obj);
     EditorUI::get()->deselectObject(obj);
-    this->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(betterGameObject->m_fields->m_veryUniqueID.bytes());
+    this->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(betterGameObject->m_fields->m_veryUniqueID);
     obj->deactivateObject(true);
     LevelEditorLayer::removeObjectFromSection(obj);
     this->removeSpecial(obj);
