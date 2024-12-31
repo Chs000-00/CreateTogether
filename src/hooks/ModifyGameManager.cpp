@@ -385,7 +385,11 @@ void MyGameManager::receiveData() {
 				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
 				cocos2d::CCPoint newPos = {GET_CCPOINT};
 				cEditorUI->m_fields->m_wasDataSent = true;
-				cEditorUI->moveObject(transformedObject, newPos);
+
+				transformedObject->setPosition(newPos);
+
+				// Although this code might work better, it causes to desync issues
+				// cEditorUI->moveObject(transformedObject, newPos);
 				cEditorUI->m_fields->m_wasDataSent = false;
 				break;
 			}

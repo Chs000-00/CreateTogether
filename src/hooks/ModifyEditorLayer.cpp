@@ -33,14 +33,15 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
     MyGameObject* createdGameObject = static_cast<MyGameObject*>(LevelEditorLayer::createObject(p0, p1, p2));
     
     // So for some weird and stupid reason this has to run before the if statement with the return
-    if (!(!gameManager->m_fields->m_isInLobby || p2 || m_fields->m_wasDataSent)) {
-        createdGameObject->m_fields->m_veryUniqueID = this->m_fields->uuidGenerator.getUUID().str();
-        this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, createdGameObject->m_fields->m_veryUniqueID);
-    }
+    auto uid = this->m_fields->uuidGenerator.getUUID().str();
+
 
     if (!gameManager->m_fields->m_isInLobby || p2 || m_fields->m_wasDataSent) {
         return createdGameObject;
     }
+    
+    createdGameObject->m_fields->m_veryUniqueID = uid;
+    this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, uid);
      
     matjson::Value object = matjson::makeObject({
         {"Type", static_cast<int>(eActionPlacedObject)},

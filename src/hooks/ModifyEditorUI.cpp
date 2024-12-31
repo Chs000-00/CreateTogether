@@ -83,25 +83,26 @@ void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     auto betterObject = static_cast<MyGameObject*>(p0);
 
-
-    // log::info("MoveObjectCalled");
+    EditorUI::moveObject(p0, p1);
 
     if (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent || !this->m_fields->m_loadingFinished) {
-        EditorUI::moveObject(p0, p1);
+
+        // if (this->m_fields->m_loadingFinished) {
+        //     log::info("MoveObjectCalled x:{} y:{}", p1.x, p1.y);
+        // }
+
         return;
     }
 
 
     matjson::Value object = matjson::makeObject({
         {"Type", static_cast<int>(eActionMovedObject)},
-        {"x", p1.x},
-        {"y", p1.y},
+        {"x", p0->getPositionX()},
+        {"y", p0->getPositionY()},
         {"ObjectUID", betterObject->m_fields->m_veryUniqueID}
     });
 
     gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
-
-    EditorUI::moveObject(p0, p1);
 }
 
 bool MyEditorUI::init(LevelEditorLayer* editorLayer) {
