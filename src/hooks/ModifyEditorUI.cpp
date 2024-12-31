@@ -14,13 +14,14 @@ void MyEditorUI::onDeleteSelected(CCObject* sender) {
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
-    log::debug("destoryed selected object");
-
-    // log::debug("Obj with uuid {}", obj->m_fields->m_veryUniqueID.str());
-
-    if (!gameManager->m_fields->m_isInLobby || this->m_selectedObjects || this->m_fields->m_wasDataSent) {
+    if (this->m_fields->m_wasDataSent) {
         EditorUI::onDeleteSelected(sender);
         return;
+    }
+
+    if (this->m_selectedObject) {
+        this->deleteSingleObject(this->m_selectedObject);
+        EditorUI::onDeleteSelected(sender);
     }
 
     auto editUUID = removeSelectedObjectsWithMatjson();
@@ -34,12 +35,26 @@ void MyEditorUI::onDeleteSelected(CCObject* sender) {
     EditorUI::onDeleteSelected(sender);
 }
 
+// Possibly unused
 void MyEditorUI::removeSelectedObjects() {
     auto editor = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
 
     for (auto obj : CCArrayExt<MyGameObject*>(this->m_selectedObjects)) {
         editor->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(obj->m_fields->m_veryUniqueID);
     }
+}
+
+void MyEditorUI::deleteSingleObject(GameObject* dObj) {
+    auto editUUID = matjson::Value::array();
+    auto obj = static_cast<MyGameObject*>(dObj);
+    editUUID.push(obj->m_fields->m_veryUniqueID);
+    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+    matjson::Value object = matjson::makeObject({
+        {"Type", static_cast<int>(eActionDeletedObject)},
+        {"EditUUIDs", editUUID},
+    });
+
+    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
 }
 
 matjson::Value MyEditorUI::removeSelectedObjectsWithMatjson() {

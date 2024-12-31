@@ -25,6 +25,7 @@ class $modify(MyEditorUI, EditorUI) {
     void moveObject(GameObject* p0, CCPoint p1);
 
     void removeSelectedObjects();
+    void deleteSingleObject(GameObject* dObj);
     matjson::Value removeSelectedObjectsWithMatjson();
 
 

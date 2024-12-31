@@ -9,7 +9,7 @@ const TIMEOUT = 10000;
 const USE_ENCODING = true;
 const ENCODING = 'utf-8'
 
-console.log("Starting test server...");
+console.log("Starting test server at port " + PORT);
 
 // broadcast to all connected sockets except one
 connectedSockets.broadcast = function(data, except) {
@@ -26,7 +26,7 @@ connectedSockets.broadcast = function(data, except) {
 }
 
 const server = net.createServer(function(sock){
-    console.log('New client connected address:' + sock.address().address);
+    console.log('New client connected address: ' + sock.address().address);
 
     if (USE_ENCODING) {
         sock.setEncoding(ENCODING);
