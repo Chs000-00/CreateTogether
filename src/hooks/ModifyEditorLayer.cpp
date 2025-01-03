@@ -41,6 +41,7 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
     }
     
     createdGameObject->m_fields->m_veryUniqueID = uid;
+
     this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, uid);
      
     matjson::Value object = matjson::makeObject({
@@ -49,24 +50,22 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
         {"y", p1.y},
         {"Layer", createdGameObject->m_editorLayer},
         {"ObjID", p0},
-        {"ObjectUID", createdGameObject->m_fields->m_veryUniqueID},
-
-        // Extra values which are copied to a new object when created
-        // TODO: Add these values in
-        {"Rot", createdGameObject->getRotation()},
-        {"HD", createdGameObject->m_isHighDetail},
-        {"NoGlow", createdGameObject->m_hasNoGlow},
-        {"NoEnter", createdGameObject->m_isDontEnter}, // Fade in
-        {"NoFade", createdGameObject->m_isDontFade},   // Fade out
-        {"FlipX", createdGameObject->m_isFlipX},
-        {"FlipY", createdGameObject->m_isFlipY}
-
+        {"ObjectUID", createdGameObject->m_fields->m_veryUniqueID}
     });
 
-    log::debug("Sending data: {}", object.dump(matjson::NO_INDENTATION));
-
-
-    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
+     // Extra values which are copied to a new object when created
+    if (auto selected = this->m_editorUI->m_selectedObject) {
+        object.set("UseExtra", true);
+        object.set("Rot", selected->getRotation());
+        object.set("HD", selected->m_isHighDetail);
+        object.set("NoGlow", selected->m_hasNoGlow);
+        object.set("NoEnter", selected->m_isDontEnter);
+        object.set("NoFade", selected->m_isDontFade);
+        object.set("FlipX", selected->m_isFlipX);
+        object.set("FlipY", selected->m_isFlipY);
+    }
+    
+    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
     
     return createdGameObject;
 }
@@ -85,13 +84,13 @@ void MyLevelEditorLayer::updateLevelFont(int p0) {
         {"FontID", p0}
     });
 
-    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
+    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
 
     return LevelEditorLayer::updateLevelFont(p0);
 }
 
 void MyLevelEditorLayer::deleteObject(GameObject *obj) {
-    log::debug("Cleaning up.. Deleting sent object!");
+    // log::debug("Cleaning up.. Deleting sent object!");
     auto betterGameObject = static_cast<MyGameObject*>(obj);
     EditorUI::get()->deselectObject(obj);
     this->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(betterGameObject->m_fields->m_veryUniqueID);

@@ -5,6 +5,7 @@
 #include "ModifyEditorLayer.hpp"
 #include "ModifyGameObject.hpp"
 #include "ModifyEditorUI.hpp"
+#include "../types/ActionTypes.hpp"
 
 using namespace geode::prelude;
 
@@ -31,7 +32,7 @@ void MyEditorUI::onDeleteSelected(CCObject* sender) {
         {"EditUUIDs", editUUID},
     });
 
-    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
+    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
     EditorUI::onDeleteSelected(sender);
 }
 
@@ -54,7 +55,7 @@ void MyEditorUI::deleteSingleObject(GameObject* dObj) {
         {"EditUUIDs", editUUID},
     });
 
-    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
+    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
 }
 
 matjson::Value MyEditorUI::removeSelectedObjectsWithMatjson() {
@@ -72,10 +73,7 @@ void MyEditorUI::transformObject(GameObject* p0, EditCommand p1, bool p2) {
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     auto betterObject = static_cast<MyGameObject*>(p0);
 
-    log::debug("TransformObject called with command {}", fmt::underlying(p1));
-
     if (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent) {
-        log::debug("TransformObjCalling...");
         EditorUI::transformObject(p0, p1, p2);
         return;
     }
@@ -85,14 +83,13 @@ void MyEditorUI::transformObject(GameObject* p0, EditCommand p1, bool p2) {
         {"EditCommand", static_cast<int>(p1)},
         {"ObjectUID", betterObject->m_fields->m_veryUniqueID}
     });
-
-    log::debug("Sending data: {}", object.dump(matjson::NO_INDENTATION));
     
-    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
+    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
 
     EditorUI::transformObject(p0, p1, p2);
 }
 
+// TODO: Figure out if I can use
 void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
@@ -101,23 +98,30 @@ void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
     EditorUI::moveObject(p0, p1);
 
     if (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent || !this->m_fields->m_loadingFinished) {
-
-        // if (this->m_fields->m_loadingFinished) {
-        //     log::info("MoveObjectCalled x:{} y:{}", p1.x, p1.y);
-        // }
-
         return;
     }
 
 
-    matjson::Value object = matjson::makeObject({
-        {"Type", static_cast<int>(eActionMovedObject)},
-        {"x", p0->getPositionX()},
-        {"y", p0->getPositionY()},
-        {"ObjectUID", betterObject->m_fields->m_veryUniqueID}
-    });
+    if (!gameManager->m_fields->m_sendMoveList) {
+        gameManager->m_fields->m_sendMoveList = true;
+        gameManager->m_fields->m_moveList = matjson::Value();
+    }
 
-    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
+    if (gameManager->m_fields->m_sendMoveList) {
+        matjson::Value pos = matjson::Value();
+        pos.set("x", p0->getPositionX());
+        pos.set("y", p0->getPositionY());
+        gameManager->m_fields->m_moveList[betterObject->m_fields->m_veryUniqueID] = pos;
+    }
+
+    // matjson::Value object = matjson::makeObject({
+    //     {"Type", static_cast<int>(eActionMovedObject)},
+    //     {"x", p0->getPositionX()},
+    //     {"y", p0->getPositionY()},
+    //     {"ObjectUID", betterObject->m_fields->m_veryUniqueID}
+    // });
+
+    // gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION).c_str());
 }
 
 bool MyEditorUI::init(LevelEditorLayer* editorLayer) {

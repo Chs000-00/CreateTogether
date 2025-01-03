@@ -35,6 +35,9 @@ class $modify(MyGameManager, GameManager) {
 		bool m_isHost = false; // TODO: use GetLobbyOwner instead? Possibly?
 		bool m_isInEditorLayer = false;
 
+		matjson::Value m_moveList;
+		bool m_sendMoveList;
+
 		LevelEditorLayer* m_level;
     	LobbiesLayer* m_lobbyLayer = nullptr;
 		CallbackManager m_callbackManager;
@@ -59,8 +62,9 @@ class $modify(MyGameManager, GameManager) {
 	void enterLevelEditor();
 	void sendDataToUser(SteamNetworkingIdentity usr, const char* out);
 	void fetchMemberList();
-	void sendDataToMembers(const char* data, bool receiveData = false);
+	void sendDataToMembers(std::string data, bool receiveData = false);
 	void receiveData();
+	void lateSendData();
 	void leaveLobby();
 	matjson::Value getLevelStringMatjson();
 

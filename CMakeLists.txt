@@ -8,6 +8,7 @@ project(CreateTogether VERSION 0.2.0)
 
 file(GLOB SOURCES
     src/hooks/*.cpp
+    src/hooks/EditorOptions/*.cpp
     src/layers/*.cpp
     src/ui/*.cpp
     src/types/*.cpp
@@ -23,7 +24,7 @@ else()
 endif()
 
 set(GEODE_LINK_NIGHTLY ON)
-set(USE_TEST_SERVER ON)
+#set(USE_TEST_SERVER ON)
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 # Thankye globed

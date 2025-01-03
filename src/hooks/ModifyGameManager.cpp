@@ -128,7 +128,11 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 
 void MyGameManager::enterLevelEditor() {
 	this->m_fields->m_isInEditorLayer = true;
-	this->m_fields->m_level = LevelEditorLayer::create(GJGameLevel::create(), false);
+	auto gameLevel = GJGameLevel::create();
+	gameLevel->m_isEditable = true;
+	gameLevel->m_levelType = GJLevelType::Editor;
+	gameLevel->m_levelDesc = "Created with createTogether";
+	this->m_fields->m_level = LevelEditorLayer::create(gameLevel, false);
 	// TODO: Only send this to host!!!!!!!!!
 	auto msg = "{\"Type\": 7}";
 	SteamNetworkingIdentity host;
@@ -208,11 +212,13 @@ void MyGameManager::fetchMemberList() {
 }
 
 // TODO: EResult? Vectors?
+// TODO: std::string
 // Sends data to all members in current lobby
-void MyGameManager::sendDataToMembers(const char* data, bool receiveData) {
+void MyGameManager::sendDataToMembers(std::string data, bool receiveData) {
 
 	// Make sure we didn't send before receiving data
 	// This most likely won't be needed
+	// TODO: Check if I can remove this
 	if (receiveData) {
 		this->receiveData();
 	}
@@ -220,14 +226,17 @@ void MyGameManager::sendDataToMembers(const char* data, bool receiveData) {
 
 	#ifndef USE_TEST_SERVER
 
+        auto fixedData = (data).c_str();
+        log::info("Sending MSG {} {}", fixedData, static_cast<uint32>(strlen(fixedData)));
+
 		for (auto const& member : this->m_fields->m_playersInLobby) {
 			// log::debug("SendData called on {}", SteamFriends()->GetFriendPersonaName(member.GetSteamID()));
-			SteamNetworkingMessages()->SendMessageToUser(member, data, static_cast<uint32>(strlen(data)), k_nSteamNetworkingSend_Reliable, 0);
+			SteamNetworkingMessages()->SendMessageToUser(member, fixedData, static_cast<uint32>(strlen(fixedData)), k_nSteamNetworkingSend_Reliable, 0);
 		}
 		// log::debug("Done sending messages");
 
 	#else
-		send(this->m_fields->m_socket, data, strlen(data), 0);
+		send(this->m_fields->m_socket, data.c_str(), strlen(data.c_str()), 0);
 	#endif
 }
 
@@ -267,7 +276,7 @@ void MyGameManager::receiveData() {
 			SteamNetworkingMessage_t* msg = messageList[i];
 		#endif
 
-		auto res = matjson::parse(static_cast<std::string>(static_cast<const char*>(msg->GetData())).append("\0"));
+		auto res = matjson::parse(static_cast<std::string>(static_cast<const char*>(msg->GetData())));
 		log::debug("Data received: {} ", static_cast<const char*>(msg->GetData()));
 		
 
@@ -287,7 +296,7 @@ void MyGameManager::receiveData() {
 		auto level = static_cast<MyLevelEditorLayer*>(this->m_fields->m_level);
 
 		// Use GEODE_UNWRAP_INTO
-		auto type = (int)unwrappedMessage["Type"].asInt().unwrapOr(-1);
+		auto type = unwrappedMessage["Type"].asInt().unwrapOr(-1);
 		switch (type) {
 			case eActionPlacedObject: {
 				log::debug("obj placed called");
@@ -295,10 +304,6 @@ void MyGameManager::receiveData() {
 				VALIDATE_MESSAGE("x", Int);
 				VALIDATE_MESSAGE("y", Int);
 				VALIDATE_MESSAGE("ObjectUID", String);
-
-				// TODO: ADD THESE IN!
-				VALIDATE_MESSAGE("Rot", Int);
-
 
 				auto gameObjectID = unwrappedMessage["ObjID"].asUInt().ok().value();
 				cocos2d::CCPoint gameObjectPos = {GET_CCPOINT};
@@ -317,8 +322,26 @@ void MyGameManager::receiveData() {
 					continue;
 				}
 
-				betterPlacedGameObject->setRotation(unwrappedMessage["Rot"].asInt().ok().value());
-				
+				// Works the same with asBool as UseExtra is not part of the json when it is false
+				if (unwrappedMessage.contains("UseExtra")) {
+					if (unwrappedMessage.contains("Rot") && unwrappedMessage["Rot"].asInt().isOk())
+						betterPlacedGameObject->setRotation(unwrappedMessage["Rot"].asInt().ok().value());
+
+					if (unwrappedMessage.contains("HD") && unwrappedMessage["HD"].asBool().isOk())
+						betterPlacedGameObject->m_isHighDetail = unwrappedMessage["HD"].asBool().ok().value();
+
+					if (unwrappedMessage.contains("NoGlow") && unwrappedMessage["NoGlow"].asBool().isOk())
+						betterPlacedGameObject->m_hasNoGlow = unwrappedMessage["NoGlow"].asBool().ok().value();
+
+					if (unwrappedMessage.contains("NoEnter") && unwrappedMessage["NoEnter"].asBool().isOk())
+						betterPlacedGameObject->m_isDontEnter = unwrappedMessage["NoEnter"].asBool().ok().value();
+						
+					if (unwrappedMessage.contains("FlipX") && unwrappedMessage["FlipX"].asBool().isOk())
+						betterPlacedGameObject->setFlipX(unwrappedMessage["FlipX"].asBool().ok().value());
+
+					if (unwrappedMessage.contains("FlipY") && unwrappedMessage["FlipY"].asBool().isOk())
+						betterPlacedGameObject->setFlipY(unwrappedMessage["FlipY"].asBool().ok().value());	
+				}				
 
 				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, betterPlacedGameObject->m_fields->m_veryUniqueID);
 
@@ -338,8 +361,6 @@ void MyGameManager::receiveData() {
 			// FIXME: This uses the old deleting logic, which is incompatible with the new one!
 			case eActionDeletedObject: {
 				VALIDATE_MESSAGE("EditUUIDs", Array);
-				log::debug("ObjectUID Validated.");
-
 				auto deletedObjects = unwrappedMessage["EditUUIDs"].asArray().unwrap();
 
 				for (auto obj : deletedObjects) {
@@ -356,12 +377,8 @@ void MyGameManager::receiveData() {
 			case eActionTransformObject: {
 				VALIDATE_MESSAGE("ObjectUID", String);
 				VALIDATE_MESSAGE("EditCommand", Int);
-				log::info("GotTransformedObject");
-
 
 				auto transformedObject = GET_OBJECT_FROM_UID;
-
-				log::debug("Got Transformed Object from UID1");
 
 				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
 				auto command = unwrappedMessage["EditCommand"].asInt().ok().value();
@@ -376,21 +393,35 @@ void MyGameManager::receiveData() {
 			}
 
 			case eActionMovedObject: {
-				VALIDATE_MESSAGE("ObjectUID", String);
-				VALIDATE_MESSAGE("x", Int);
-				VALIDATE_MESSAGE("y", Int);
-				// VALIDATE_MESSAGE("EditCommand", Int);
+				// VALIDATE_MESSAGE("EditUUIDs", Array);
 
-				auto transformedObject = GET_OBJECT_FROM_UID;
-				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
-				cocos2d::CCPoint newPos = {GET_CCPOINT};
-				cEditorUI->m_fields->m_wasDataSent = true;
+				auto movedObjects = unwrappedMessage["EditUUIDs"];
 
-				transformedObject->setPosition(newPos);
+                // Questionabel 
+				for (auto obj = movedObjects.begin(); obj != movedObjects.end(); ++obj) {
+
+                    log::info("OBJ {} {} {}", obj->isObject(), obj->isString(), obj->getKey().value_or("None"));
+
+                    // Very Questionabel code, TODO: REWRITE THIS!
+					if (obj->isObject()) {
+						auto dObj = (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(obj->getKey().value());
+
+                        if (!dObj) {
+                            continue;
+                        }
+
+                        auto pos = unwrappedMessage["EditUUIDs"][obj->getKey().value()];
+                        CCPoint newPos = {static_cast<float>(pos["x"].asInt().ok().value()), static_cast<float>(pos["y"].asInt().ok().value())};
+						dObj->setPosition(newPos);
+					}
+				}
+
+				//auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
+				//cEditorUI->m_fields->m_wasDataSent = true;
 
 				// Although this code might work better, it causes to desync issues
 				// cEditorUI->moveObject(transformedObject, newPos);
-				cEditorUI->m_fields->m_wasDataSent = false;
+				//cEditorUI->m_fields->m_wasDataSent = false;
 				break;
 			}
 
@@ -419,6 +450,12 @@ void MyGameManager::receiveData() {
 
 			}
 
+            case eActionSongChanged: {
+                VALIDATE_MESSAGE("SongID", UInt);
+                auto songID = unwrappedMessage["SongID"].asUInt().ok().value();
+                level->m_level->m_songID = songID;
+            }
+
 			default:
 				log::warn("Type {} not found! Are you sure you're on the right version?", type);
 		}
@@ -444,12 +481,31 @@ void MyGameManager::sendDataToUser(SteamNetworkingIdentity usr, const char* out)
 	#endif
 }
 
+void MyGameManager::lateSendData() {
+
+    //log::info("LSendData");
+
+	if (m_fields->m_sendMoveList) {
+
+		matjson::Value object = matjson::makeObject({
+			{"Type", static_cast<int>(eActionMovedObject)},
+			{"EditUUIDs", this->m_fields->m_moveList}
+		});
+
+		this->sendDataToMembers(object.dump(matjson::NO_INDENTATION), false);
+	}
+
+	this->m_fields->m_sendMoveList = false;
+
+}
+
 void MyGameManager::update(float p0) {
 	SteamAPI_RunCallbacks();
 
 	if (this->m_fields->m_isInLobby) {
 		this->receiveData();
 	}
+	this->lateSendData();
 
 	GameManager::update(p0);
 }
@@ -457,10 +513,15 @@ void MyGameManager::update(float p0) {
 void MyGameManager::leaveLobby() {
 	this->m_fields->m_isInEditorLayer = false;
 	if (this->m_fields->m_isInLobby) {
+
+        m_fields->m_isInLobby = false;
+
 		#ifndef USE_TEST_SERVER
 
 			log::info("Leaving lobby with ID {}", this->m_fields->m_lobbyId);
 			SteamMatchmaking()->LeaveLobby(this->m_fields->m_lobbyId);
+			this->m_fields->m_lobbyId = 0;
+
 
 		#else
 			close(this->m_fields->m_socket);
@@ -468,8 +529,6 @@ void MyGameManager::leaveLobby() {
 
 		// this->m_fields->m_lobbyCreated = 0;
 		// this->m_fields->m_lobbyJoined = 0;
-		this->m_fields->m_lobbyId = 0;
-		this->m_fields->m_isInLobby = false;
 
 	}
 	else {
