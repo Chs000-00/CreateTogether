@@ -58,7 +58,9 @@ bool LobbyPopup::setup(EPopupType type) {
             1.0f,
             pfunc
         );
-        publicToggle->setEnabled(this->m_isServerPublic);
+
+        if (this->m_isServerPublic)
+            publicToggle->activate();
 
         checkMarkMenu->addChild(publicText);
         checkMarkMenu->addChild(publicToggle);

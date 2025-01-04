@@ -135,9 +135,15 @@ void MyGameManager::enterLevelEditor() {
 	this->m_fields->m_level = LevelEditorLayer::create(gameLevel, false);
 	// TODO: Only send this to host!!!!!!!!!
 	auto msg = "{\"Type\": 7}";
-	SteamNetworkingIdentity host;
-	host.SetSteamID(this->m_fields->m_hostID);
-	SteamNetworkingMessages()->SendMessageToUser(host, msg, static_cast<uint32>(strlen(msg)), k_nSteamNetworkingSend_Reliable, 0);
+
+
+    #ifndef USE_TEST_SERVER
+        SteamNetworkingIdentity host;
+        host.SetSteamID(this->m_fields->m_hostID);
+        SteamNetworkingMessages()->SendMessageToUser(host, msg, static_cast<uint32>(strlen(msg)), k_nSteamNetworkingSend_Reliable, 0);
+    #else
+        sendDataToMembers(msg, false);
+    #endif
 
 	this->fetchMemberList();
 	switchToScene(this->m_fields->m_level);
@@ -259,7 +265,7 @@ void MyGameManager::receiveData() {
 	#else
 		// Compat with for loop
 		auto numMessages = 1;
-		char tserverdat[2048];
+		char tserverdat[8192];
 		memset(tserverdat, 0, sizeof(tserverdat)); 
 		TestServerMsg* msg = new TestServerMsg;
 		auto outrec = recv(this->m_fields->m_socket, msg->m_data, sizeof(msg->m_data), 0);
@@ -348,16 +354,6 @@ void MyGameManager::receiveData() {
 				break;
 			}
 			
-			// TODO: Check out SelectFontLayer
-			case eActionUpdatedFont: {
-				VALIDATE_MESSAGE("FontID", Int);
-				
-				level->m_fields->m_wasDataSent = true;
-				level->updateLevelFont(unwrappedMessage["FontID"].asInt().ok().value());
-				level->m_fields->m_wasDataSent = false;
-				break;
-			}
-			
 			// FIXME: This uses the old deleting logic, which is incompatible with the new one!
 			case eActionDeletedObject: {
 				VALIDATE_MESSAGE("EditUUIDs", Array);
@@ -427,6 +423,10 @@ void MyGameManager::receiveData() {
 
 			case eActionRequestLevel: {
 
+                if (!this->m_fields->m_isHost) {
+                    continue;
+                }
+
 				matjson::Value lvlStringJson = this->getLevelStringMatjson();
 				auto out = lvlStringJson.dump(matjson::NO_INDENTATION).c_str();
 
@@ -439,15 +439,29 @@ void MyGameManager::receiveData() {
 
 				#ifndef USE_TEST_SERVER
 					if (this->m_fields->m_hostID != msg->m_identityPeer.GetSteamID()) {
-						log::warn("Non-host is attempting to return the level string.");
+						log::warn("Non-host is attempting to return the level string. Wtf?");
 						break;
 					}
 				#endif
 
-				VALIDATE_MESSAGE("EditUUIDs", Array);
-				VALIDATE_MESSAGE("EditCommand", String);
+				// VALIDATE_MESSAGE("EditUUIDs", Array);
+				VALIDATE_MESSAGE("LevelString", String);
+                // IDkf what the args do
+                auto arr = level->createObjectsFromString(unwrappedMessage["LevelString"].asString().ok().value(), false, false);
 
+			}
 
+			// TODO: Check out SelectFontLayer
+			case eActionUpdatedFont: {
+				VALIDATE_MESSAGE("FontID", Int);
+
+                auto fontID = unwrappedMessage["FontID"].asInt().ok().value();
+
+				level->m_fields->m_wasDataSent = true;
+				level->updateLevelFont(fontID);
+				level->m_fields->m_wasDataSent = false;
+
+				break;
 			}
 
             case eActionSongChanged: {
@@ -500,7 +514,9 @@ matjson::Value MyGameManager::getLevelStringMatjson() {
 void MyGameManager::sendDataToUser(SteamNetworkingIdentity usr, const char* out) {
 	#ifndef USE_TEST_SERVER
 		SteamNetworkingMessages()->SendMessageToUser(usr, out, static_cast<uint32>(strlen(out)), k_nSteamNetworkingSend_Reliable, 0);
-	#endif
+	#else
+        this->sendDataToMembers(out, false);
+    #endif
 }
 
 void MyGameManager::lateSendData() {

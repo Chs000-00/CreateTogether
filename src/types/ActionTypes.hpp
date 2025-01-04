@@ -17,7 +17,7 @@ enum EEditorActionType {
     eOptionSpeedChanged,       // Starting player speed was changed
     eOptionGameTypeChanged,    // Classic or platformer was changed
     // Line change might be moved to another action type.
-    eActionArtSelected,        // Background art, ground art, or line was changed. 
+    eActionArtSelected,        // Background art, ground art, or line was changed. (Needs testing)
     eOptionGameModeChanged,    // Starting GameMode was changed
     eActionUpdatedFont,        // Level's font was updated/changed (Implemented)
     eActionDeleteAllStartpos,  // Delete all startpos was pressed
