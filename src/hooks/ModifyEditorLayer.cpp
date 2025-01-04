@@ -55,14 +55,16 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
 
      // Extra values which are copied to a new object when created
     if (auto selected = this->m_editorUI->m_selectedObject) {
-        object.set("UseExtra", true);
-        object.set("Rot", selected->getRotation());
-        object.set("HD", selected->m_isHighDetail);
-        object.set("NoGlow", selected->m_hasNoGlow);
-        object.set("NoEnter", selected->m_isDontEnter);
-        object.set("NoFade", selected->m_isDontFade);
-        object.set("FlipX", selected->m_isFlipX);
-        object.set("FlipY", selected->m_isFlipY);
+        if (selected->m_objectID == p0) {
+            object.set("UseExtra", true);
+            object.set("Rot", selected->getRotation());
+            object.set("HD", selected->m_isHighDetail);
+            object.set("NoGlow", selected->m_hasNoGlow);
+            object.set("NoEnter", selected->m_isDontEnter);
+            object.set("NoFade", selected->m_isDontFade);
+            object.set("FlipX", selected->m_isFlipX);
+            object.set("FlipY", selected->m_isFlipY);
+        }
     }
     
     gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));

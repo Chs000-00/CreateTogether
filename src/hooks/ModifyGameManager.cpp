@@ -259,7 +259,7 @@ void MyGameManager::receiveData() {
 	#else
 		// Compat with for loop
 		auto numMessages = 1;
-		char tserverdat[1024];
+		char tserverdat[2048];
 		memset(tserverdat, 0, sizeof(tserverdat)); 
 		TestServerMsg* msg = new TestServerMsg;
 		auto outrec = recv(this->m_fields->m_socket, msg->m_data, sizeof(msg->m_data), 0);
@@ -348,7 +348,7 @@ void MyGameManager::receiveData() {
 				break;
 			}
 			
-			// TODO: Check if this works
+			// TODO: Check out SelectFontLayer
 			case eActionUpdatedFont: {
 				VALIDATE_MESSAGE("FontID", Int);
 				
@@ -454,6 +454,28 @@ void MyGameManager::receiveData() {
                 VALIDATE_MESSAGE("SongID", UInt);
                 auto songID = unwrappedMessage["SongID"].asUInt().ok().value();
                 level->m_level->m_songID = songID;
+            }
+
+            case eActionArtSelected: {
+                VALIDATE_MESSAGE("ArtType", Int);
+				VALIDATE_MESSAGE("Art", Int);
+                
+
+                // TODO: Check SelectArtType range
+                auto artType = static_cast<SelectArtType>(unwrappedMessage["EditCommand"].asInt().ok().value());
+
+                if (artType == SelectArtType::Ground) {
+                    VALIDATE_MESSAGE("Line", Int);
+                    level->createGroundLayer(unwrappedMessage["Art"].asInt().ok().value(), unwrappedMessage["Line"].asInt().ok().value());
+
+                }
+
+
+                if (artType == SelectArtType::Background) {
+                    level->createBackground(unwrappedMessage["Art"].asInt().ok().value());
+                }
+            
+            
             }
 
 			default:
