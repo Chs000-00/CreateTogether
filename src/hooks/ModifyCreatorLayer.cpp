@@ -63,7 +63,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
             LobbiesLayer::scene();
         #endif
 	}
-
+    #ifdef USE_TEST_SERVER
 	void onJoinServerAsHost(cocos2d::CCObject* sender) {
         // If the test server is enabled, connect to it instead.
         joinServer(true);
@@ -87,4 +87,6 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
         gameManager->m_fields->m_isHost = asHost;
         gameManager->enterLevelEditor();
     }
+    #endif
+    
 };

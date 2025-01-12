@@ -18,8 +18,9 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
 
     auto objectArr = CCArrayExt<MyGameObject*>(m_objects);
 
+    // This might be inefficient as this requires looping over the arr twice.
     for (auto obj : objectArr) {
-        obj->m_fields->m_veryUniqueID = this->m_fields->uuidGenerator.getUUID().str();
+        obj->m_fields->m_veryUniqueID = this->m_fields->uuidGenerator.getUUID().bytes();
         this->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID);
     }
 
@@ -29,11 +30,13 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
 
 GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p2) {
 
+    log::info("CreatedGOBJ1");
+
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     MyGameObject* createdGameObject = static_cast<MyGameObject*>(LevelEditorLayer::createObject(p0, p1, p2));
     
     // So for some weird and stupid reason this has to run before the if statement with the return
-    auto uid = this->m_fields->uuidGenerator.getUUID().str();
+    auto uid = this->m_fields->uuidGenerator.getUUID().bytes();
 
 
     if (!gameManager->m_fields->m_isInLobby || p2 || m_fields->m_wasDataSent) {
