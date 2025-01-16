@@ -11,7 +11,9 @@ We recommend heading over to [the getting started section on our docs](https://d
 ## Build instructions
 For more info, see [our docs](https://docs.geode-sdk.org/getting-started/create-mod#build)
 
-This project requires steamworks sdk! Install `steam_api64.dll` and `steam_api64.lib` into the `lib/` folder!
+This project requires steamworks sdk! Install `steam_api64.dll` and `steam_api64.lib` into the `lib/` folder!  
+
+For testing localy you can enable USE_TEST_SERVER in CmakeLists to enable experimental server support. This has limitations however!
 
 ```sh
 # Assuming you have the Geode CLI set up already
