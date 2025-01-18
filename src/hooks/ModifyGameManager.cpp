@@ -232,7 +232,7 @@ void MyGameManager::sendDataToMembers(std::string data, bool receiveData) {
 
 	#ifndef USE_TEST_SERVER
 
-        auto fixedData = (data).c_str();
+        auto fixedData = data.c_str();
         log::info("Sending MSG {} {}", fixedData, static_cast<uint32>(strlen(fixedData)));
 
 		for (auto const& member : this->m_fields->m_playersInLobby) {
@@ -282,8 +282,12 @@ void MyGameManager::receiveData() {
 			SteamNetworkingMessage_t* msg = messageList[i];
 		#endif
 
-		auto res = matjson::parse(static_cast<std::string>(static_cast<const char*>(msg->GetData())));
-		log::debug("Data received: {} ", static_cast<const char*>(msg->GetData()));
+		// Fix weird issue with incorrect str termination
+		auto fixedData = static_cast<std::string>(static_cast<const char*>(msg->GetData()));
+		fixedData.resize(msg->GetSize());
+
+		auto res = matjson::parse(fixedData);
+		log::info("Data received: {} {} ", fixedData, msg->GetSize());
 		
 
 		if (!res) {

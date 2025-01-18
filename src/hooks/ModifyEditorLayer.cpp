@@ -30,8 +30,6 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
 
 GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p2) {
 
-    log::info("CreatedGOBJ1");
-
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     MyGameObject* createdGameObject = static_cast<MyGameObject*>(LevelEditorLayer::createObject(p0, p1, p2));
     
