@@ -13,7 +13,6 @@
 #include <isteammatchmaking.h>
 #include <isteamnetworkingmessages.h>
 #include <isteamuser.h>
-#include <uuid_v4.h>
 #include "../types/ActionTypes.hpp"
 #include "../types/LobbyData.hpp"
 #include "../layers/LobbiesLayer.hpp"

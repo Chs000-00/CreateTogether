@@ -2,7 +2,7 @@
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/binding/GameObject.hpp>
 #include <Geode/binding/EditorUI.hpp>
-#include <uuid_v4.h>
+#include <isteamuser.h>
 #include "../types/ActionTypes.hpp"
 #include "ModifyGameManager.hpp"
 #include "ModifyGameObject.hpp"
@@ -18,9 +18,13 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
 
     auto objectArr = CCArrayExt<MyGameObject*>(m_objects);
 
+    auto stringSteamID = std::to_string(SteamUser()->GetSteamID().ConvertToUint64());
+
     // This might be inefficient as this requires looping over the arr twice.
     for (auto obj : objectArr) {
-        obj->m_fields->m_veryUniqueID = this->m_fields->uuidGenerator.getUUID().bytes();
+        auto uid = stringSteamID + std::to_string(this->m_fields->m_blocksPlaced);
+        obj->m_fields->m_veryUniqueID = uid;
+        this->m_fields->m_blocksPlaced += 1;
         this->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID);
     }
 
@@ -32,18 +36,25 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     MyGameObject* createdGameObject = static_cast<MyGameObject*>(LevelEditorLayer::createObject(p0, p1, p2));
-    
-    // So for some weird and stupid reason this has to run before the if statement with the return
-    auto uid = this->m_fields->uuidGenerator.getUUID().bytes();
 
 
-    if (!gameManager->m_fields->m_isInLobby || p2 || m_fields->m_wasDataSent) {
+    if (p2 || m_fields->m_wasDataSent) {
         return createdGameObject;
     }
     
+    auto stringSteamID = std::to_string(SteamUser()->GetSteamID().ConvertToUint64());
+    // This string should be unique for every user
+    auto uid = stringSteamID + "!" + std::to_string(this->m_fields->m_blocksPlaced);
+    this->m_fields->m_blocksPlaced += 1;
+
     createdGameObject->m_fields->m_veryUniqueID = uid;
 
     this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, uid);
+
+    // Assign UUIds when a user is not in lobby
+    if (gameManager->m_fields->m_isInLobby) {
+        return createdGameObject;
+    }
      
     matjson::Value object = matjson::makeObject({
         {"Type", static_cast<int>(eActionPlacedObject)},
