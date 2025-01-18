@@ -328,7 +328,7 @@ void MyGameManager::receiveData() {
 
 				if (level->m_fields->m_pUniqueIDOfGameObject->objectForKey(betterPlacedGameObject->m_fields->m_veryUniqueID)) {
 					log::warn("UID Already exists!");
-					continue;
+					break;
 				}
 
 				// Works the same with asBool as UseExtra is not part of the json when it is false
@@ -410,7 +410,7 @@ void MyGameManager::receiveData() {
 						auto dObj = (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(obj->getKey().value());
 
                         if (!dObj) {
-                            continue;
+                            break;
                         }
 
                         auto pos = unwrappedMessage["EditUUIDs"][obj->getKey().value()];
@@ -431,7 +431,7 @@ void MyGameManager::receiveData() {
 			case eActionRequestLevel: {
 
                 if (!this->m_fields->m_isHost) {
-                    continue;
+                    break;
                 }
 
 				matjson::Value lvlStringJson = this->getLevelStringMatjson();
@@ -455,6 +455,7 @@ void MyGameManager::receiveData() {
 				VALIDATE_MESSAGE("LevelString", String);
                 // IDkf what the args do
                 auto arr = level->createObjectsFromString(unwrappedMessage["LevelString"].asString().ok().value(), false, false);
+				break;
 
 			}
 
@@ -475,6 +476,7 @@ void MyGameManager::receiveData() {
                 VALIDATE_MESSAGE("SongID", UInt);
                 auto songID = unwrappedMessage["SongID"].asUInt().ok().value();
                 level->m_level->m_songID = songID;
+				break;
             }
 
             case eActionArtSelected: {
@@ -495,8 +497,7 @@ void MyGameManager::receiveData() {
                 if (artType == SelectArtType::Background) {
                     level->createBackground(unwrappedMessage["Art"].asInt().ok().value());
                 }
-            
-            
+				break;
             }
 
 			default:
