@@ -380,6 +380,10 @@ void MyGameManager::receiveData() {
 
 				auto transformedObject = GET_OBJECT_FROM_UID;
 
+				if (!transformedObject) {
+					log::warn("Warning: ObjectUID not found!");
+				}
+
 				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
 				auto command = unwrappedMessage["EditCommand"].asInt().ok().value();
 				// TODO: Check command range
