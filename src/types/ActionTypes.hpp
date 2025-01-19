@@ -13,7 +13,7 @@ enum EEditorActionType {
     eActionReturnLevelString,  // Return level string which was requested. Only host should be sending this!
     eActionUpdatedColor,       // Color was updated
     eActionModifiedObject,     // Object data was changed, used for triggers
-    eActionSongChanged,        // Level's song was changed (Almost Implemented)
+    eActionSongChanged,        // Level's song was changed (Implemented)
     eOptionSpeedChanged,       // Starting player speed was changed
     eOptionGameTypeChanged,    // Classic or platformer was changed
     // Line change might be moved to another action type.

@@ -52,7 +52,7 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
     this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, uid);
 
     // Assign UUIds when a user is not in lobby
-    if (gameManager->m_fields->m_isInLobby) {
+    if (!gameManager->m_fields->m_isInLobby) {
         return createdGameObject;
     }
      

@@ -490,7 +490,6 @@ void MyGameManager::receiveData() {
                 if (artType == SelectArtType::Ground) {
                     VALIDATE_MESSAGE("Line", Int);
                     level->createGroundLayer(unwrappedMessage["Art"].asInt().ok().value(), unwrappedMessage["Line"].asInt().ok().value());
-
                 }
 
 
@@ -499,6 +498,14 @@ void MyGameManager::receiveData() {
                 }
 				break;
             }
+
+			case eOptionSpeedChanged: {
+				VALIDATE_MESSAGE("GameMode", Int);
+
+				// TODO: Check gameMode range
+				auto speed = static_cast<SelectArtType>(unwrappedMessage["Speed"].asInt().ok().value());
+				level->m_levelSettings->m_startSpeed = static_cast<Speed>(speed);
+			}
 
 			default:
 				log::warn("Type {} not found! Are you sure you're on the right version?", type);
