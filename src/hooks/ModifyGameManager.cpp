@@ -486,7 +486,7 @@ void MyGameManager::receiveData() {
                 
 
                 // TODO: Check SelectArtType range
-                auto artInt = unwrappedMessage["EditCommand"].asInt().ok().value();
+                auto artInt = unwrappedMessage["ArtType"].asInt().ok().value();
 
 				if (isValidEnumRange(artInt, 0, constants::LARGEST_SELECT_TYPE)) {
 					break;
