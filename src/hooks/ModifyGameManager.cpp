@@ -21,6 +21,7 @@
 #include "ModifyGameObject.hpp"
 #include "ModifyGameManager.hpp"
 #include "../UtilMacros.hpp"
+#include "../utils/Utills.hpp"
 
 
 using namespace geode::prelude;
@@ -485,7 +486,13 @@ void MyGameManager::receiveData() {
                 
 
                 // TODO: Check SelectArtType range
-                auto artType = static_cast<SelectArtType>(unwrappedMessage["EditCommand"].asInt().ok().value());
+                auto artInt = unwrappedMessage["EditCommand"].asInt().ok().value();
+
+				if (isValidEnumRange(artInt, 0, constants::LARGEST_SELECT_TYPE)) {
+					break;
+				}
+
+				auto artType = static_cast<SelectArtType>(artInt);
 
                 if (artType == SelectArtType::Ground) {
                     VALIDATE_MESSAGE("Line", Int);
@@ -500,11 +507,23 @@ void MyGameManager::receiveData() {
             }
 
 			case eOptionSpeedChanged: {
-				VALIDATE_MESSAGE("GameMode", Int);
+				VALIDATE_MESSAGE("Speed", Int);
 
 				// TODO: Check gameMode range
-				auto speed = static_cast<SelectArtType>(unwrappedMessage["Speed"].asInt().ok().value());
+				auto speed = unwrappedMessage["Speed"].asInt().ok().value();
+
+				if (isValidEnumRange(speed, 0, constants::LARGEST_SPEED)) {
+					break;
+				}
+
+
 				level->m_levelSettings->m_startSpeed = static_cast<Speed>(speed);
+
+				break;
+			}
+
+			case eOptionGameModeChanged: {
+				VALIDATE_MESSAGE("GameMode", Int);
 			}
 
 			default:

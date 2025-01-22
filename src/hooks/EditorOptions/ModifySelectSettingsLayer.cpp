@@ -18,6 +18,7 @@ class $modify(SelectSettingLayer) {
         
         matjson::Value object;
 
+
         if (this->m_type == SelectSettingType::StartingSpeed) {
             object = matjson::makeObject({
                 {"Type", static_cast<int>(eOptionSpeedChanged)},

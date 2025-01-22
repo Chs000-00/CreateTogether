@@ -27,6 +27,11 @@ void MyEditorUI::onDeleteSelected(CCObject* sender) {
 
     auto editUUID = removeSelectedObjectsWithMatjson();
 
+    if (!gameManager->m_fields->m_isInLobby) {
+        EditorUI::onDeleteSelected(sender);
+        return;
+    }
+
     matjson::Value object = matjson::makeObject({
         {"Type", static_cast<int>(eActionDeletedObject)},
         {"EditUUIDs", editUUID},
