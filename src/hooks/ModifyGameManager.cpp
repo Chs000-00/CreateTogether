@@ -408,7 +408,7 @@ void MyGameManager::receiveData() {
 
                     // Very Questionabel code, TODO: REWRITE THIS!
 					if (obj->isObject()) {
-						auto dObj = (GameObject*)level->m_fields->m_pUniqueIDOfGameObject->objectForKey(obj->getKey().value());
+						auto dObj = static_cast<GameObject*>(level->m_fields->m_pUniqueIDOfGameObject->objectForKey(obj->getKey().value()));
 
                         if (!dObj) {
                             break;

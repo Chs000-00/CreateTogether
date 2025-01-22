@@ -12,7 +12,10 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
         // Was the data sent from another user?
         bool m_wasDataSent = false;
         unsigned int m_blocksPlaced = 0;
-        CCDictionary* m_pUniqueIDOfGameObject = CCDictionary::create();
+
+        // There is a weird crash happening when using setObject
+        // Looks like it might be happening due to it being an autorelease object?
+        CCDictionary* m_pUniqueIDOfGameObject = new CCDictionary();
     };
 
 
