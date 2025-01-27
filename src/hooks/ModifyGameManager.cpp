@@ -218,7 +218,6 @@ void MyGameManager::fetchMemberList() {
 }
 
 // TODO: EResult? Vectors?
-// TODO: std::string
 // Sends data to all members in current lobby
 void MyGameManager::sendDataToMembers(std::string data, bool receiveData) {
 
@@ -257,7 +256,7 @@ bool MyGameManager::validateData(matjson::Value data) {
 	return true;
 }
 
-Result<int> MyGameManager::parseDataReceived(matjson::Value data, SteamNetworkingMessage_t* msg) {
+Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG* msg) {
 		auto level = static_cast<MyLevelEditorLayer*>(this->m_fields->m_level);
 
 		auto type = data["Type"].asInt().unwrapOr(-1);
@@ -453,7 +452,7 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, SteamNetworkin
 
                 // TODO: Check SelectArtType range
 
-				if (isValidEnumRange(artType, 0, constants::LARGEST_SELECT_ART_TYPE)) {
+				if (!isValidEnumRange(artType, 0, constants::LARGEST_SELECT_ART_TYPE)) {
 					return Err("eActionArtSelected: Invalid range");
 				}
 
@@ -476,7 +475,7 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, SteamNetworkin
 			case eOptionSpeedChanged: {
 				GEODE_UNWRAP_INTO(int speed, data["Speed"].asInt());     
 
-				if (isValidEnumRange(speed, 0, constants::LARGEST_SPEED)) {
+				if (!isValidEnumRange(speed, 0, constants::LARGEST_SPEED)) {
 					return Err("eOptionSpeedChanged: Invalid range");
 					break; // Just in case
 				}
@@ -492,6 +491,7 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, SteamNetworkin
 				GEODE_UNWRAP_INTO(int gameMode, data["GameMode"].asInt());    
 				level->m_levelSettings->m_startMode = gameMode;
 				level->levelSettingsUpdated();
+				break;
 			}
 
 			default:
@@ -500,7 +500,6 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, SteamNetworkin
 		}
 
 	return Ok(0);
-
 }
 
 void MyGameManager::receiveData() {
@@ -516,7 +515,7 @@ void MyGameManager::receiveData() {
 		TestServerMsg* msg = new TestServerMsg;
 		auto outrec = recv(this->m_fields->m_socket, msg->m_data, sizeof(msg->m_data), 0);
 
-		if (outrec == -1) {v   
+		if (outrec == -1) {
 			msg->Release();
 			return;
 		}
@@ -552,8 +551,8 @@ void MyGameManager::receiveData() {
 
 		auto out = this->parseDataReceived(unwrappedMessage, msg);
 
-		if (out.isErr()) {
-			log::warn("Something went wrong with the parsing: {}", res->unwrapErr());
+		if (!out) {
+			log::warn("Something went wrong with the parsing: {}", out.unwrapErr());
 		}
 
 		delete res;
@@ -586,7 +585,7 @@ void MyGameManager::lateSendData() {
 
     //log::info("LSendData");
 
-	if (m_fields->m_sendMoveList) {
+	if (this->m_fields->m_sendMoveList) {
 
 		matjson::Value object = matjson::makeObject({
 			{"Type", static_cast<int>(eActionMovedObject)},

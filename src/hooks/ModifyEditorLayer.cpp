@@ -12,6 +12,11 @@ using namespace geode::prelude;
 
 bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
 
+    #ifdef USE_TEST_SERVER
+    std::srand(std::time(nullptr));
+    this->m_fields->m_userID = SteamUser()->GetSteamID().ConvertToUint64() + std::rand();
+    #endif
+
     this->m_fields->m_pUniqueIDOfGameObject->retain();
 
     if (!LevelEditorLayer::init(p0, p1)) {
@@ -43,7 +48,7 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
         return createdGameObject;
     }
 
-    auto stringSteamID = std::to_string(SteamUser()->GetSteamID().ConvertToUint64());
+    auto stringSteamID = std::to_string(this->m_fields->m_userID);
     // This string should be unique for every user
     auto uid = stringSteamID + "!" + std::to_string(this->m_fields->m_blocksPlaced);
     this->m_fields->m_blocksPlaced += 1;

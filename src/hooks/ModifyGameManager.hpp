@@ -9,9 +9,11 @@
 #include <steamnetworkingtypes.h>
 #include <isteamnetworkingmessages.h>
 #include "../layers/LobbiesLayer.hpp"
+#include "../config.hpp"
 
 #ifdef USE_TEST_SERVER
 	#include <WinSock2.h>
+	#include "../types/PlaceboMsg.hpp"
 #endif
 
 using namespace geode::prelude;
@@ -64,7 +66,7 @@ class $modify(MyGameManager, GameManager) {
 	void fetchMemberList();
 	void sendDataToMembers(std::string data, bool receiveData = false);
 	void receiveData();
-	Result<int> parseDataReceived(matjson::Value data, SteamNetworkingMessage_t* msg);
+	Result<int> parseDataReceived(matjson::Value data, NETWORKING_MSG* msg);
 	void lateSendData();
 	void leaveLobby();
 	matjson::Value getLevelStringMatjson();

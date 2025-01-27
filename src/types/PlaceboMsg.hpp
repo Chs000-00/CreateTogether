@@ -19,6 +19,10 @@ struct TestServerMsg {
         delete this;
     };
 
+    size_t GetSize() {
+        return strlen(m_data);
+    }
+
     const char* GetData() {
         return this->m_data;
     };   

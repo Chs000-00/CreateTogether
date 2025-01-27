@@ -4,6 +4,7 @@
 #include <isteamnetworkingmessages.h>
 #include "../types/ActionTypes.hpp"
 #include "ModifyGameManager.hpp"
+#include <isteamuser.h>
 
 using namespace geode::prelude;
 class $modify(MyLevelEditorLayer, LevelEditorLayer) {
@@ -12,6 +13,12 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
         // Was the data sent from another user?
         bool m_wasDataSent = false;
         unsigned int m_blocksPlaced = 0;
+
+        #ifndef USE_TEST_SERVER
+        uint64 m_userID = SteamUser()->GetSteamID().ConvertToUint64();
+        #else
+        uint64 m_userID;
+        #endif
 
         // There is a weird crash happening when using setObject
         // Looks like it might be happening due to it being an autorelease object?
