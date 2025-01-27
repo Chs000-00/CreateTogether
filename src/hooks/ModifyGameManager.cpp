@@ -257,66 +257,20 @@ bool MyGameManager::validateData(matjson::Value data) {
 	return true;
 }
 
-void MyGameManager::receiveData() {
-
-	#ifndef USE_TEST_SERVER
-		SteamNetworkingMessage_t* messageList[64];
-		auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 64);
-	#else
-		// Compat with for loop
-		auto numMessages = 1;
-		char tserverdat[8192];
-		memset(tserverdat, 0, sizeof(tserverdat)); 
-		TestServerMsg* msg = new TestServerMsg;
-		auto outrec = recv(this->m_fields->m_socket, msg->m_data, sizeof(msg->m_data), 0);
-
-		if (outrec == -1) {
-			msg->Release();
-			return;
-		}
-	#endif
-
-	for (int i = 0; i < numMessages; i++) {
-		
-		#ifndef USE_TEST_SERVER
-			SteamNetworkingMessage_t* msg = messageList[i];
-		#endif
-
-		// Fix weird issue with incorrect str termination
-		auto fixedData = static_cast<std::string>(static_cast<const char*>(msg->GetData()));
-		fixedData.resize(msg->GetSize());
-
-		auto res = matjson::parse(fixedData);
-		log::info("Data received: {} {} ", fixedData, msg->GetSize());
-		
-
-		if (!res) {
-			log::error("Failed to parse json: {}", res.unwrapErr());
-			msg->Release();
-			continue;
-		}
-
-		matjson::Value unwrappedMessage = res.unwrap();
-
-		if (!MyGameManager::validateData(unwrappedMessage)) {
-			msg->Release();
-			continue;
-		}
-
+Result<int> MyGameManager::parseDataReceived(matjson::Value data) {
 		auto level = static_cast<MyLevelEditorLayer*>(this->m_fields->m_level);
 
 		// Use GEODE_UNWRAP_INTO
-		auto type = unwrappedMessage["Type"].asInt().unwrapOr(-1);
+		auto type = data["Type"].asInt().unwrapOr(-1);
 		switch (type) {
 			case eActionPlacedObject: {
 				log::debug("obj placed called");
-				VALIDATE_MESSAGE("ObjID", UInt);
-				VALIDATE_MESSAGE("x", Int);
-				VALIDATE_MESSAGE("y", Int);
-				VALIDATE_MESSAGE("ObjectUID", String);
+				GEODE_UNWRAP_INTO(int gameObjectID, data["ObjID"].asUInt());
+				GEODE_UNWRAP_INTO(double x, data["x"].asDouble());
+				GEODE_UNWRAP_INTO(double y, data["y"].asDouble());
+				GEODE_UNWRAP_INTO(std::string uid, data["ObjectUID"].asString());
 
-				auto gameObjectID = unwrappedMessage["ObjID"].asUInt().ok().value();
-				cocos2d::CCPoint gameObjectPos = {GET_CCPOINT};
+				cocos2d::CCPoint gameObjectPos = {x, y};
 				
 				// TODO: Figure if a race condition is possible
 				level->m_fields->m_wasDataSent = true;
@@ -325,7 +279,7 @@ void MyGameManager::receiveData() {
 
 				MyGameObject* betterPlacedGameObject = static_cast<MyGameObject*>(placedGameObject);
 
-				betterPlacedGameObject->m_fields->m_veryUniqueID = unwrappedMessage["ObjectUID"].asString().ok().value();
+				betterPlacedGameObject->m_fields->m_veryUniqueID = uid;
 
 				if (level->m_fields->m_pUniqueIDOfGameObject->objectForKey(betterPlacedGameObject->m_fields->m_veryUniqueID)) {
 					log::warn("UID Already exists!");
@@ -333,24 +287,24 @@ void MyGameManager::receiveData() {
 				}
 
 				// Works the same with asBool as UseExtra is not part of the json when it is false
-				if (unwrappedMessage.contains("UseExtra")) {
-					if (unwrappedMessage.contains("Rot") && unwrappedMessage["Rot"].asInt().isOk())
-						betterPlacedGameObject->setRotation(unwrappedMessage["Rot"].asInt().ok().value());
+				if (data.contains("UseExtra")) {
+					if (data.contains("Rot") && data["Rot"].asInt().isOk())
+						betterPlacedGameObject->setRotation(data["Rot"].asInt().ok().value());
 
-					if (unwrappedMessage.contains("HD") && unwrappedMessage["HD"].asBool().isOk())
-						betterPlacedGameObject->m_isHighDetail = unwrappedMessage["HD"].asBool().ok().value();
+					if (data.contains("HD") && data["HD"].asBool().isOk())
+						betterPlacedGameObject->m_isHighDetail = data["HD"].asBool().ok().value();
 
-					if (unwrappedMessage.contains("NoGlow") && unwrappedMessage["NoGlow"].asBool().isOk())
-						betterPlacedGameObject->m_hasNoGlow = unwrappedMessage["NoGlow"].asBool().ok().value();
+					if (data.contains("NoGlow") && data["NoGlow"].asBool().isOk())
+						betterPlacedGameObject->m_hasNoGlow = data["NoGlow"].asBool().ok().value();
 
-					if (unwrappedMessage.contains("NoEnter") && unwrappedMessage["NoEnter"].asBool().isOk())
-						betterPlacedGameObject->m_isDontEnter = unwrappedMessage["NoEnter"].asBool().ok().value();
+					if (data.contains("NoEnter") && data["NoEnter"].asBool().isOk())
+						betterPlacedGameObject->m_isDontEnter = data["NoEnter"].asBool().ok().value();
 						
-					if (unwrappedMessage.contains("FlipX") && unwrappedMessage["FlipX"].asBool().isOk())
-						betterPlacedGameObject->setFlipX(unwrappedMessage["FlipX"].asBool().ok().value());
+					if (data.contains("FlipX") && data["FlipX"].asBool().isOk())
+						betterPlacedGameObject->setFlipX(data["FlipX"].asBool().ok().value());
 
-					if (unwrappedMessage.contains("FlipY") && unwrappedMessage["FlipY"].asBool().isOk())
-						betterPlacedGameObject->setFlipY(unwrappedMessage["FlipY"].asBool().ok().value());	
+					if (data.contains("FlipY") && data["FlipY"].asBool().isOk())
+						betterPlacedGameObject->setFlipY(data["FlipY"].asBool().ok().value());	
 				}				
 
 				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, betterPlacedGameObject->m_fields->m_veryUniqueID);
@@ -360,8 +314,8 @@ void MyGameManager::receiveData() {
 			
 			// FIXME: This uses the old deleting logic, which is incompatible with the new one!
 			case eActionDeletedObject: {
-				VALIDATE_MESSAGE("EditUUIDs", Array);
-				auto deletedObjects = unwrappedMessage["EditUUIDs"].asArray().unwrap();
+
+				GEODE_UNWRAP_INTO(std::vector deletedObjects, data["EditUUIDs"].asArray());
 
 				for (auto obj : deletedObjects) {
 					if (obj.isString()) {
@@ -375,8 +329,8 @@ void MyGameManager::receiveData() {
 			}
 
 			case eActionTransformObject: {
-				VALIDATE_MESSAGE("ObjectUID", String);
-				VALIDATE_MESSAGE("EditCommand", Int);
+				GEODE_UNWRAP_INTO(std::string uid, data["ObjectUID"].asString());
+				GEODE_UNWRAP_INTO(int command, data["EditCommand"].asInt());
 
 				auto transformedObject = GET_OBJECT_FROM_UID;
 
@@ -385,7 +339,6 @@ void MyGameManager::receiveData() {
 				}
 
 				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
-				auto command = unwrappedMessage["EditCommand"].asInt().ok().value();
 				// TODO: Check command range
 
 				log::debug("Calling TransformObject");
@@ -397,14 +350,10 @@ void MyGameManager::receiveData() {
 			}
 
 			case eActionMovedObject: {
-				// VALIDATE_MESSAGE("EditUUIDs", Array);
-
-				auto movedObjects = unwrappedMessage["EditUUIDs"];
+				GEODE_UNWRAP_INTO(std::vector movedObjects, data["EditCommand"].asArray());
 
                 // Questionabel 
 				for (auto obj = movedObjects.begin(); obj != movedObjects.end(); ++obj) {
-
-                    log::info("OBJ {} {} {}", obj->isObject(), obj->isString(), obj->getKey().value_or("None"));
 
                     // Very Questionabel code, TODO: REWRITE THIS!
 					if (obj->isObject()) {
@@ -488,7 +437,7 @@ void MyGameManager::receiveData() {
                 // TODO: Check SelectArtType range
                 auto artInt = unwrappedMessage["ArtType"].asInt().ok().value();
 
-				if (isValidEnumRange(artInt, 0, constants::LARGEST_SELECT_TYPE)) {
+				if (isValidEnumRange(artInt, 0, constants::LARGEST_SELECT_ART_TYPE)) {
 					break;
 				}
 
@@ -513,7 +462,8 @@ void MyGameManager::receiveData() {
 				auto speed = unwrappedMessage["Speed"].asInt().ok().value();
 
 				if (isValidEnumRange(speed, 0, constants::LARGEST_SPEED)) {
-					break;
+					return Err("Invalid range");
+					break; // Just in case
 				}
 
 
@@ -528,7 +478,67 @@ void MyGameManager::receiveData() {
 
 			default:
 				log::warn("Type {} not found! Are you sure you're on the right version?", type);
+				return Err("Invalid case switch");
+
+			return Ok(0);
 		}
+}
+
+void MyGameManager::receiveData() {
+
+	#ifndef USE_TEST_SERVER
+		SteamNetworkingMessage_t* messageList[64];
+		auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 64);
+	#else
+		// Compat with for loop
+		auto numMessages = 1;
+		char tserverdat[8192];
+		memset(tserverdat, 0, sizeof(tserverdat)); 
+		TestServerMsg* msg = new TestServerMsg;
+		auto outrec = recv(this->m_fields->m_socket, msg->m_data, sizeof(msg->m_data), 0);
+
+		if (outrec == -1) {v   
+			msg->Release();
+			return;
+		}
+	#endif
+
+	for (int i = 0; i < numMessages; i++) {
+		
+		#ifndef USE_TEST_SERVER
+			SteamNetworkingMessage_t* msg = messageList[i];
+		#endif
+
+		// Fix weird issue with incorrect str termination
+		auto fixedData = static_cast<std::string>(static_cast<const char*>(msg->GetData()));
+		fixedData.resize(msg->GetSize());
+
+		auto res = new geode::Result<matjson::Value, matjson::ParseError>(matjson::parse(fixedData));
+
+		log::info("Data received: {} {} ", fixedData, msg->GetSize());
+		
+
+		if (res->isErr()) {
+			log::error("Failed to parse json: {}", res->unwrapErr());
+			msg->Release();
+			continue;
+		}
+
+		matjson::Value unwrappedMessage = res->unwrap();
+
+		if (!MyGameManager::validateData(unwrappedMessage)) {
+			msg->Release();
+			continue;
+		}
+
+		auto out = this->parseDataReceived(unwrappedMessage);
+
+		if (out.isErr()) {
+			log::warn("Something went wrong with the parsing!");
+		}
+
+		delete res;
+		res = nullptr;	// just in case
 		msg->Release();
 	}
 }

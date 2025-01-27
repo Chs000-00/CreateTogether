@@ -64,6 +64,7 @@ class $modify(MyGameManager, GameManager) {
 	void fetchMemberList();
 	void sendDataToMembers(std::string data, bool receiveData = false);
 	void receiveData();
+	Result<bool> parseDataReceived(matjson::Value data);
 	void lateSendData();
 	void leaveLobby();
 	matjson::Value getLevelStringMatjson();
