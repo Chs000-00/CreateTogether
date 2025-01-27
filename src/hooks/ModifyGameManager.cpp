@@ -257,10 +257,9 @@ bool MyGameManager::validateData(matjson::Value data) {
 	return true;
 }
 
-Result<int> MyGameManager::parseDataReceived(matjson::Value data) {
+Result<int> MyGameManager::parseDataReceived(matjson::Value data, SteamNetworkingMessage_t* msg) {
 		auto level = static_cast<MyLevelEditorLayer*>(this->m_fields->m_level);
 
-		// Use GEODE_UNWRAP_INTO
 		auto type = data["Type"].asInt().unwrapOr(-1);
 		switch (type) {
 			case eActionPlacedObject: {
@@ -270,7 +269,7 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data) {
 				GEODE_UNWRAP_INTO(double y, data["y"].asDouble());
 				GEODE_UNWRAP_INTO(std::string uid, data["ObjectUID"].asString());
 
-				cocos2d::CCPoint gameObjectPos = {x, y};
+				cocos2d::CCPoint gameObjectPos = {static_cast<float>(x), static_cast<float>(y)};
 				
 				// TODO: Figure if a race condition is possible
 				level->m_fields->m_wasDataSent = true;
@@ -282,11 +281,12 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data) {
 				betterPlacedGameObject->m_fields->m_veryUniqueID = uid;
 
 				if (level->m_fields->m_pUniqueIDOfGameObject->objectForKey(betterPlacedGameObject->m_fields->m_veryUniqueID)) {
-					log::warn("UID Already exists!");
+					return Err("eActionPlacedObject: UID Already exists");
 					break;
 				}
 
 				// Works the same with asBool as UseExtra is not part of the json when it is false
+				// TODO: Rewrite but with GEODE_UNWRAP_INTO
 				if (data.contains("UseExtra")) {
 					if (data.contains("Rot") && data["Rot"].asInt().isOk())
 						betterPlacedGameObject->setRotation(data["Rot"].asInt().ok().value());
@@ -335,7 +335,8 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data) {
 				auto transformedObject = GET_OBJECT_FROM_UID;
 
 				if (!transformedObject) {
-					log::warn("Warning: ObjectUID not found!");
+					return Err("eActionTransformObject: Object UID not found");
+					break;
 				}
 
 				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
@@ -350,7 +351,12 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data) {
 			}
 
 			case eActionMovedObject: {
-				GEODE_UNWRAP_INTO(std::vector movedObjects, data["EditCommand"].asArray());
+
+				if (!data.contains("EditUUIDs") && !data["EditUUIDs"].isObject()) {
+					return Err("eActionMovedObject: No EditUUIDs object");
+				}
+
+				auto movedObjects = data["EditUUIDs"];
 
                 // Questionabel 
 				for (auto obj = movedObjects.begin(); obj != movedObjects.end(); ++obj) {
@@ -363,7 +369,7 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data) {
                             break;
                         }
 
-                        auto pos = unwrappedMessage["EditUUIDs"][obj->getKey().value()];
+                        auto pos = movedObjects[obj->getKey().value()];
                         CCPoint newPos = {static_cast<float>(pos["x"].asInt().ok().value()), static_cast<float>(pos["y"].asInt().ok().value())};
 						dObj->setPosition(newPos);
 					}
@@ -380,8 +386,8 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data) {
 
 			case eActionRequestLevel: {
 
-                if (!this->m_fields->m_isHost) {
-                    break;
+                if (!this->m_fields->m_isHost) { 
+					return Err("eActionRequestLevel: User request level string from Non-Host");
                 }
 
 				matjson::Value lvlStringJson = this->getLevelStringMatjson();
@@ -396,92 +402,105 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data) {
 
 				#ifndef USE_TEST_SERVER
 					if (this->m_fields->m_hostID != msg->m_identityPeer.GetSteamID()) {
-						log::warn("Non-host is attempting to return the level string. Wtf?");
+						return Err("eActionReturnLevelString: Non-Host level string");
 						break;
 					}
 				#endif
 
-				// VALIDATE_MESSAGE("EditUUIDs", Array);
-				VALIDATE_MESSAGE("LevelString", String);
-                // IDkf what the args do
-                auto arr = level->createObjectsFromString(unwrappedMessage["LevelString"].asString().ok().value(), false, false);
+				GEODE_UNWRAP_INTO(std::vector editUUIDs, data["EditUUIDs"].asArray());
+				GEODE_UNWRAP_INTO(std::string levelString, data["LevelString"].asString());
+
+                // IDfk what the args do
+				// TODO: Figure out args
+				auto objectArr = CCArrayExt<MyGameObject*>(level->createObjectsFromString(levelString, false, false));
+				auto stringSteamID = std::to_string(SteamUser()->GetSteamID().ConvertToUint64());
+
+				// This might be inefficient as this requires looping over the arr twice.
+				for (auto i = 0; i != std::min(objectArr.size(), editUUIDs.size()); ++i) {
+					auto mObject = (objectArr[i]);
+					mObject->m_fields->m_veryUniqueID = editUUIDs[i].asInt().ok().value();
+					level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, editUUIDs[i].asInt().ok().value());
+				}
+
 				break;
 
 			}
 
 			// TODO: Check out SelectFontLayer
 			case eActionUpdatedFont: {
-				VALIDATE_MESSAGE("FontID", Int);
+				GEODE_UNWRAP_INTO(int fontID, data["FontID"].asInt());
 
-                auto fontID = unwrappedMessage["FontID"].asInt().ok().value();
 
 				level->m_fields->m_wasDataSent = true;
 				level->updateLevelFont(fontID);
 				level->m_fields->m_wasDataSent = false;
 
+				level->levelSettingsUpdated();
+
 				break;
 			}
 
             case eActionSongChanged: {
-                VALIDATE_MESSAGE("SongID", UInt);
-                auto songID = unwrappedMessage["SongID"].asUInt().ok().value();
+				GEODE_UNWRAP_INTO(int songID, data["SongID"].asUInt());
                 level->m_level->m_songID = songID;
+				level->levelSettingsUpdated();
 				break;
             }
 
             case eActionArtSelected: {
-                VALIDATE_MESSAGE("ArtType", Int);
-				VALIDATE_MESSAGE("Art", Int);
-                
+				GEODE_UNWRAP_INTO(int artType, data["ArtType"].asInt());
+				GEODE_UNWRAP_INTO(int artInt, data["Art"].asInt());                
 
                 // TODO: Check SelectArtType range
-                auto artInt = unwrappedMessage["ArtType"].asInt().ok().value();
 
-				if (isValidEnumRange(artInt, 0, constants::LARGEST_SELECT_ART_TYPE)) {
-					break;
+				if (isValidEnumRange(artType, 0, constants::LARGEST_SELECT_ART_TYPE)) {
+					return Err("eActionArtSelected: Invalid range");
 				}
 
-				auto artType = static_cast<SelectArtType>(artInt);
+				auto artTypeCasted = static_cast<SelectArtType>(artType);
 
-                if (artType == SelectArtType::Ground) {
-                    VALIDATE_MESSAGE("Line", Int);
-                    level->createGroundLayer(unwrappedMessage["Art"].asInt().ok().value(), unwrappedMessage["Line"].asInt().ok().value());
+                if (artTypeCasted == SelectArtType::Ground) {
+					GEODE_UNWRAP_INTO(int line, data["Line"].asInt());             
+                    level->createGroundLayer(artInt, line);
                 }
 
 
-                if (artType == SelectArtType::Background) {
-                    level->createBackground(unwrappedMessage["Art"].asInt().ok().value());
+                if (artTypeCasted == SelectArtType::Background) {
+                    level->createBackground(artInt);
                 }
+
 				break;
+
             }
 
 			case eOptionSpeedChanged: {
-				VALIDATE_MESSAGE("Speed", Int);
-
-				// TODO: Check gameMode range
-				auto speed = unwrappedMessage["Speed"].asInt().ok().value();
+				GEODE_UNWRAP_INTO(int speed, data["Speed"].asInt());     
 
 				if (isValidEnumRange(speed, 0, constants::LARGEST_SPEED)) {
-					return Err("Invalid range");
+					return Err("eOptionSpeedChanged: Invalid range");
 					break; // Just in case
 				}
 
-
 				level->m_levelSettings->m_startSpeed = static_cast<Speed>(speed);
+
+				level->levelSettingsUpdated();
 
 				break;
 			}
 
 			case eOptionGameModeChanged: {
-				VALIDATE_MESSAGE("GameMode", Int);
+				GEODE_UNWRAP_INTO(int gameMode, data["GameMode"].asInt());    
+				level->m_levelSettings->m_startMode = gameMode;
+				level->levelSettingsUpdated();
 			}
 
 			default:
 				log::warn("Type {} not found! Are you sure you're on the right version?", type);
 				return Err("Invalid case switch");
-
-			return Ok(0);
 		}
+
+	return Ok(0);
+
 }
 
 void MyGameManager::receiveData() {
@@ -531,10 +550,10 @@ void MyGameManager::receiveData() {
 			continue;
 		}
 
-		auto out = this->parseDataReceived(unwrappedMessage);
+		auto out = this->parseDataReceived(unwrappedMessage, msg);
 
 		if (out.isErr()) {
-			log::warn("Something went wrong with the parsing!");
+			log::warn("Something went wrong with the parsing: {}", res->unwrapErr());
 		}
 
 		delete res;
