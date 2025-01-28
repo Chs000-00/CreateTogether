@@ -10,5 +10,17 @@ using namespace geode::prelude;
 class $modify(MySetupTriggerPopup, SetupTriggerPopup) {
     void onClose(cocos2d::CCObject* sender) {
         SetupTriggerPopup::oonClose(sender);
+
+        auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+
+        if (!gameManager->m_fields->m_isInLobby) {
+            SelectArtLayer::selectArt(sender);
+            return;
+        }
+
+        auto ret = getJsonFromEffectGameObject(this);
+
+        gameManager->sendDataToMembers(ret);
+
     }
 };

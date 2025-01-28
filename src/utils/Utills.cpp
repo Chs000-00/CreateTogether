@@ -20,6 +20,7 @@ bool isValidEnumRange(int n, int min, int max) {
 // }
 
 // Todo: This
+// Returns an effectGameObject. Includes EnchancedGameObject.
 matjson::Value getJsonFromEffectGameObject(EffectGameObject*) {
 
 }

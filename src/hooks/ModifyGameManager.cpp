@@ -287,7 +287,7 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 				// Works the same with asBool as UseExtra is not part of the json when it is false
 				// TODO: Rewrite but with GEODE_UNWRAP_INTO
 				// GEODE_UNWRAP_IF_OK(UseExtra)
-				// TODO: Write this better?
+				// TODO: Find a better way to do this
 				if (data.contains("Rot") && data["Rot"].asInt().isOk())
 					betterPlacedGameObject->setRotation(data["Rot"].asInt().ok().value());
 
