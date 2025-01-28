@@ -10,9 +10,12 @@ bool isValidEnumRange(int n, int min, int max) {
 }
 
 // I dont think void* would work here
+// Nor ##T
 template <typename T>
-Result<int> unwrapToData(void* propertyRef) {
-
+Result<int> unwrapToData(void* propertyRef, matjson::Value json, const char* data) {
+    GEODE_UNWRAP_INTO(int res, json[data].as ##T ());
+    propertyRef = res;
+    return Ok(0);
 }
 
 // Todo: This
