@@ -286,25 +286,25 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 
 				// Works the same with asBool as UseExtra is not part of the json when it is false
 				// TODO: Rewrite but with GEODE_UNWRAP_INTO
-				if (data.contains("UseExtra")) {
-					if (data.contains("Rot") && data["Rot"].asInt().isOk())
-						betterPlacedGameObject->setRotation(data["Rot"].asInt().ok().value());
+				// GEODE_UNWRAP_IF_OK(UseExtra)
+				// TODO: Write this better?
+				if (data.contains("Rot") && data["Rot"].asInt().isOk())
+					betterPlacedGameObject->setRotation(data["Rot"].asInt().ok().value());
 
-					if (data.contains("HD") && data["HD"].asBool().isOk())
-						betterPlacedGameObject->m_isHighDetail = data["HD"].asBool().ok().value();
+				if (data.contains("HD") && data["HD"].asBool().isOk())
+					betterPlacedGameObject->m_isHighDetail = data["HD"].asBool().ok().value();
 
-					if (data.contains("NoGlow") && data["NoGlow"].asBool().isOk())
-						betterPlacedGameObject->m_hasNoGlow = data["NoGlow"].asBool().ok().value();
+				if (data.contains("NoGlow") && data["NoGlow"].asBool().isOk())
+					betterPlacedGameObject->m_hasNoGlow = data["NoGlow"].asBool().ok().value();
 
-					if (data.contains("NoEnter") && data["NoEnter"].asBool().isOk())
-						betterPlacedGameObject->m_isDontEnter = data["NoEnter"].asBool().ok().value();
-						
-					if (data.contains("FlipX") && data["FlipX"].asBool().isOk())
-						betterPlacedGameObject->setFlipX(data["FlipX"].asBool().ok().value());
+				if (data.contains("NoEnter") && data["NoEnter"].asBool().isOk())
+					betterPlacedGameObject->m_isDontEnter = data["NoEnter"].asBool().ok().value();
+					
+				if (data.contains("FlipX") && data["FlipX"].asBool().isOk())
+					betterPlacedGameObject->setFlipX(data["FlipX"].asBool().ok().value());
 
-					if (data.contains("FlipY") && data["FlipY"].asBool().isOk())
-						betterPlacedGameObject->setFlipY(data["FlipY"].asBool().ok().value());	
-				}				
+				if (data.contains("FlipY") && data["FlipY"].asBool().isOk())
+					betterPlacedGameObject->setFlipY(data["FlipY"].asBool().ok().value());				
 
 				level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, betterPlacedGameObject->m_fields->m_veryUniqueID);
 
