@@ -17,3 +17,12 @@ matjson::Value getJsonFromEffectGameObject(EffectGameObject*) {
 EffectGameObject* getEffectGameObjectFromMatjson(matjson::Value) {
 
 }
+
+// Todo: This
+matjson::Value getJsonFromEnhancedGameObject(EnhancedGameObject*) {
+
+}
+
+EnhancedGameObject* getEnhancedGameObjectFromMatjson(matjson::Value) {
+
+}
