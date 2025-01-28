@@ -8,3 +8,12 @@ using namespace geode::prelude;
 bool isValidEnumRange(int n, int min, int max) {
     return (min <= n && n <= max);
 }
+
+// Todo: This
+matjson::Value getJsonFromEffectGameObject(EffectGameObject*) {
+
+}
+
+EffectGameObject* getEffectGameObjectFromMatjson(matjson::Value) {
+
+}
