@@ -9,12 +9,18 @@ bool isValidEnumRange(int n, int min, int max) {
     return (min <= n && n <= max);
 }
 
+// I dont think void* would work here
+template <typename T>
+Result<int> unwrapToData(void* propertyRef) {
+
+}
+
 // Todo: This
 matjson::Value getJsonFromEffectGameObject(EffectGameObject*) {
 
 }
 
-EffectGameObject* getEffectGameObjectFromMatjson(matjson::Value) {
+Result<EffectGameObject*> getEffectGameObjectFromMatjson(matjson::Value) {
 
 }
 
@@ -23,6 +29,6 @@ matjson::Value getJsonFromEnhancedGameObject(EnhancedGameObject*) {
 
 }
 
-EnhancedGameObject* getEnhancedGameObjectFromMatjson(matjson::Value) {
+Result<EnhancedGameObject*> getEnhancedGameObjectFromMatjson(matjson::Value) {
 
 }
