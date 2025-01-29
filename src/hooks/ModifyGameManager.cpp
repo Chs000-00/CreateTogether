@@ -361,12 +361,18 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 				for (auto obj = movedObjects.begin(); obj != movedObjects.end(); ++obj) {
 
                     // Very Questionabel code, TODO: REWRITE THIS!
+					// TODO: Check if X and/or Y exists!
 					if (obj->isObject()) {
 						auto dObj = static_cast<GameObject*>(level->m_fields->m_pUniqueIDOfGameObject->objectForKey(obj->getKey().value()));
 
                         if (!dObj) {
+							return Err("eActionMovedObject: dObj does not exist!");
                             break;
                         }
+
+						if (pos["x"].isErr() || pos["y"].isErr()) {
+							return Err("eActionMovedObject: x and/or y missing!");
+						}
 
                         auto pos = movedObjects[obj->getKey().value()];
                         CCPoint newPos = {static_cast<float>(pos["x"].asInt().ok().value()), static_cast<float>(pos["y"].asInt().ok().value())};

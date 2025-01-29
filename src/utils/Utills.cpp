@@ -33,6 +33,11 @@ Result<EffectGameObject*> getEffectGameObjectFromMatjson(matjson::Value) {
 matjson::Value getJsonFromEnhancedGameObject(EnhancedGameObject* obj) {
     matjson::Value ret;
     ret.set("Duration", obj->m_duration)
+    ret.set("Opacity", obj->m_opacity)
+    ret.set("TargetGroupID", obj->m_targetGroupID)
+    ret.set("CenterGroupId", obj->m_centerGroupId)
+    ret.set("IsTouchTriggered", obj->m_isTouchTriggered)
+
 }
 
 Result<EnhancedGameObject*> getEnhancedGameObjectFromMatjson(matjson::Value) {
