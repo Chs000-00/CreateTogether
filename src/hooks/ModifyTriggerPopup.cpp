@@ -14,7 +14,6 @@ class $modify(MySetupTriggerPopup, SetupTriggerPopup) {
         auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
         if (!gameManager->m_fields->m_isInLobby) {
-            SelectArtLayer::selectArt(sender);
             return;
         }
 
