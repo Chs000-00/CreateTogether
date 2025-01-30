@@ -12,6 +12,7 @@ enum EEditorActionType {
     // This should always equal to 7 or the hardcoded values would not like that!
     eActionRequestLevel = 7,   // Request level for synchronization (Needs testing)
     eActionReturnLevelString,  // Return level string which was requested. Only host should be sending this! (Needs testing)
+    eActionChangeGroupID,      // Group ID Was modified
     eActionUpdatedColor,       // Color was updated
     // TODO: Reflection or RTTI to automate this crap
     // eActionEnchancedObjectEdited, // Enchanced gameObject was changed

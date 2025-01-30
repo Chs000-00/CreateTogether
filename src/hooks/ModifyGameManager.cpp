@@ -578,9 +578,22 @@ matjson::Value MyGameManager::getLevelStringMatjson() {
 
     matjson::Value rjson = matjson::makeObject({
         {"Type", static_cast<int>(eActionMovedObject)},
-		{"EditUUIDs", 0}, 
         {"LevelString", this->m_fields->m_level->getLevelString()}
     });
+
+	matjson::Value eUUIDs = matjson::Value();
+
+    auto objectArr = CCArrayExt<MyGameObject*>(m_objects);
+
+    // This might be inefficient as this requires looping over the arr twice.
+	// Lazyness
+	unsigned int index = 0;
+    for (auto obj : objectArr) {
+        eUUIDs.push(obj->m_fields->m_veryUniqueID)
+		index += 1;
+    }
+
+	rjson["EditUUIDs"] = eUUIDs;
 
 	return rjson;
 }
