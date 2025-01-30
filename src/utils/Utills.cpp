@@ -13,8 +13,8 @@ bool isValidEnumRange(int n, int min, int max) {
 }
 
 template <typename T> 
-inline void setJsonObjectFromProperty(matjson::Value json, T* val, const char* str) {
-    json.set(str, val)
+void setJsonObjectFromProperty(matjson::Value json, T* val, const char* str) {
+    json.set(str, val);
 }
 
 // TODO: Uhh this I guess

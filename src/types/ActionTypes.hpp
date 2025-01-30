@@ -28,6 +28,6 @@ enum EEditorActionType {
     eActionLockLayer,          // Host locks a layer, clients cannot unlock a layer (?)
     // TODO: Move this higher upward
     eActionRotatedObject,
-    eActionScaledObject
+    eActionWeirdlyScaledObject
 };
 

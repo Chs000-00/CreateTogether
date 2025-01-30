@@ -370,11 +370,12 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
                             break;
                         }
 
-						if (pos["x"].isErr() || pos["y"].isErr()) {
+						 auto pos = movedObjects[obj->getKey().value()];
+
+						if (pos["x"].asInt().isErr() || pos["y"].asInt().isErr()) {
 							return Err("eActionMovedObject: x and/or y missing!");
 						}
 
-                        auto pos = movedObjects[obj->getKey().value()];
                         CCPoint newPos = {static_cast<float>(pos["x"].asInt().ok().value()), static_cast<float>(pos["y"].asInt().ok().value())};
 						dObj->setPosition(newPos);
 					}
@@ -436,11 +437,16 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 				GEODE_UNWRAP_INTO(int fontID, data["FontID"].asInt());
 
 
+
 				level->m_fields->m_wasDataSent = true;
 				level->updateLevelFont(fontID);
 				level->m_fields->m_wasDataSent = false;
 
 				level->levelSettingsUpdated();
+
+				// if (auto settingsLayer = CCScene::get()->getChildByType<LevelSettingsLayer>(0)) {
+				// 	settingsLayer->selectSettingClosed();
+				// }
 
 				break;
 			}
@@ -590,6 +596,7 @@ void MyGameManager::sendDataToUser(SteamNetworkingIdentity usr, const char* out)
 void MyGameManager::lateSendData() {
 
     //log::info("LSendData");
+
 
 	if (this->m_fields->m_sendMoveList) {
 
