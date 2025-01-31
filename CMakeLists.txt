@@ -33,7 +33,7 @@ if (WIN32 AND USE_TEST_SERVER)
     message(STATUS "Compiling with test server")
 
     # geode moment
-    # Enable experimental support for a server at 24018, '127.0.0.1'
+    # Enable experimental support for a server at port 24018, '127.0.0.1'
     # Incase you dont have friends and need to test this app out
     add_compile_definitions(
         WIN32_LEAN_AND_MEAN=1
@@ -50,6 +50,9 @@ setup_geode_mod(${PROJECT_NAME})
 
 # CPMAddPackage("gh:crashoz/uuid_v4#41238a4")
 
+CPMAddPackage("gh:camila314/UIBuilder#cd0f953")
+
 target_link_libraries(${PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/steam_api64.lib
+    UIBuilder
 )
