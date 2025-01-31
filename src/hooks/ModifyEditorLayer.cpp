@@ -17,7 +17,7 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
     this->m_fields->m_userID = SteamUser()->GetSteamID().ConvertToUint64() + std::rand();
     #endif
 
-    this->m_fields->m_pUniqueIDOfGameObject->retain();
+    this->m_fields->m_pUniqueIDOfGameObject = CCDictionary::create();
 
     if (!LevelEditorLayer::init(p0, p1)) {
         return false;

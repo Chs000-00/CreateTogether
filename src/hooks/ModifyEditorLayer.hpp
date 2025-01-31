@@ -22,7 +22,7 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 
         // There is a weird crash happening when using setObject
         // Looks like it might be happening due to it being an autorelease object?
-        CCDictionary* m_pUniqueIDOfGameObject = new CCDictionary();
+        Ref<CCDictionary> m_pUniqueIDOfGameObject = nullptr;
     };
 
 
