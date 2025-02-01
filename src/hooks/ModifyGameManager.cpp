@@ -331,7 +331,7 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 				GEODE_UNWRAP_INTO(std::string uid, data["ObjectUID"].asString());
 				GEODE_UNWRAP_INTO(int command, data["EditCommand"].asInt());
 
-				auto transformedObject = GET_OBJECT_FROM_UID;
+				auto transformedObject = static_cast<GameObject*>(level->m_fields->m_pUniqueIDOfGameObject->objectForKey(uid));
 
 				if (!transformedObject) {
 					return Err("eActionTransformObject: Object UID not found");
