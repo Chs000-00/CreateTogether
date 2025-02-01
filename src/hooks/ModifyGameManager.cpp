@@ -419,7 +419,6 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
                 // IDfk what the args do
 				// TODO: Figure out args
 				auto objectArr = CCArrayExt<MyGameObject*>(level->createObjectsFromString(levelString, false, false));
-				auto stringSteamID = std::to_string(SteamUser()->GetSteamID().ConvertToUint64());
 
 				// This might be inefficient as this requires looping over the arr twice.
 				for (auto i = 0; i != std::min(objectArr.size(), editUUIDs.size()); ++i) {
@@ -427,9 +426,23 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 					mObject->m_fields->m_veryUniqueID = editUUIDs[i].asInt().ok().value();
 					level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, editUUIDs[i].asInt().ok().value());
 				}
-
 				break;
+			}
 
+			case eActionPastedObjects: {
+				GEODE_UNWRAP_INTO(std::vector editUUIDs, data["EditUUIDs"].asArray());
+				GEODE_UNWRAP_INTO(std::string objectString, data["ObjectString"].asString());
+
+				// TODO: Figure out args
+				auto objectArr = CCArrayExt<MyGameObject*>(level->createObjectsFromString(objectString, false, false));
+
+				// This might be inefficient as this requires looping over the arr twice.
+				for (auto i = 0; i != std::min(objectArr.size(), editUUIDs.size()); ++i) {
+					auto mObject = (objectArr[i]);
+					mObject->m_fields->m_veryUniqueID = editUUIDs[i].asInt().ok().value();
+					level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, editUUIDs[i].asInt().ok().value());
+				}
+				break;
 			}
 
 			// TODO: Check out SelectFontLayer
@@ -583,13 +596,15 @@ matjson::Value MyGameManager::getLevelStringMatjson() {
 
 	matjson::Value eUUIDs = matjson::Value();
 
-    auto objectArr = CCArrayExt<MyGameObject*>(m_objects);
+	auto level = static_cast<MyLevelEditorLayer*>(this->m_fields->m_level);
+
+    auto objectArr = CCArrayExt<MyGameObject*>(level->m_objects);
 
     // This might be inefficient as this requires looping over the arr twice.
 	// Lazyness
 	unsigned int index = 0;
     for (auto obj : objectArr) {
-        eUUIDs.push(obj->m_fields->m_veryUniqueID)
+        eUUIDs.push(obj->m_fields->m_veryUniqueID);
 		index += 1;
     }
 

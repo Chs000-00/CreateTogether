@@ -8,7 +8,7 @@ enum EEditorActionType {
     eActionMovedObject,        // Object was moved (Implemented)
     eActionScaledObject,       // Object was scaled
     eActionDeletedObject,      // Object was deleted (Implemented)
-    eActionPastedObjects,      // Objects were pasted
+    eActionPastedObjects,      // Objects were copied + pasted
     // This should always equal to 7 or the hardcoded values would not like that!
     eActionRequestLevel = 7,   // Request level for synchronization (Needs testing)
     eActionReturnLevelString,  // Return level string which was requested. Only host should be sending this! (Needs testing)

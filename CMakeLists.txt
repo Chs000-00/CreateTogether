@@ -24,7 +24,7 @@ else()
 endif()
 
 set(GEODE_LINK_NIGHTLY ON)
-set(USE_TEST_SERVER OFF)
+set(USE_TEST_SERVER ON)
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 # Thankye globed

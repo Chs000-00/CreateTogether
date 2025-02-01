@@ -12,30 +12,6 @@ bool isValidEnumRange(int n, int min, int max) {
     return (min <= n && n <= max);
 }
 
-template <typename T> 
-void setJsonObjectFromProperty(matjson::Value json, T* val, const char* str) {
-    json.set(str, val);
-}
-
-// TODO: Uhh this I guess
-template <typename T> 
-matjson::Value getJsonFromGameObject(T* obj) {
-    matjson::Value ret;
-    CREATE_TOGETHER_SET_JSON(m_duration);
-    CREATE_TOGETHER_SET_JSON(m_opacity);
-
-
-    return ret;
-}
-
-
-template <typename T> 
-matjson::Value setGameObjectFromJson(T* obj) {
-    matjson::Value ret;
-
-    return ret;
-}
-
 
 // Todo: This
 // Returns an effectGameObject. Includes EnchancedGameObject.

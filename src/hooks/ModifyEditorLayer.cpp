@@ -23,6 +23,7 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
         return false;
     }
 
+    // TODO: Check if you joined a lobby or not
     auto objectArr = CCArrayExt<MyGameObject*>(m_objects);
 
     auto stringSteamID = std::to_string(SteamUser()->GetSteamID().ConvertToUint64());

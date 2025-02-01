@@ -136,3 +136,57 @@ bool MyEditorUI::init(LevelEditorLayer* editorLayer) {
     this->m_fields->m_loadingFinished = true;
     return true;
 }
+
+gd::string MyEditorUI::copyObjects(CCArray* objects, bool copyColors, bool sort) {
+    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+
+
+    auto objectArr = CCArrayExt<MyGameObject*>(objects);
+
+    auto stringSteamID = std::to_string(SteamUser()->GetSteamID().ConvertToUint64());
+
+    auto editorLayer = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
+
+    gd::string ret = EditorUI::copyObjects(objects, copyColors, sort);
+
+
+    if (!gameManager->m_fields->m_isInLobby) {
+
+        for (auto obj : objectArr) {
+            auto uid = stringSteamID + std::to_string(editorLayer->m_fields->m_blocksPlaced);
+            obj->m_fields->m_veryUniqueID = uid;
+            editorLayer->m_fields->m_blocksPlaced += 1;
+            editorLayer->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID);
+        }
+
+        return ret;
+    }
+
+    matjson::Value object = matjson::makeObject({
+        {"Type", static_cast<int>(eActionPastedObjects)},
+        {"ObjectString", ret}
+    });
+    
+    matjson::Value eUUIDs = matjson::Value();
+
+
+    // Very not horrible copy + paste code but im lazy
+    // Lazyness x2
+    unsigned int index = 0;
+    for (auto obj : objectArr) {
+        auto uid = stringSteamID + std::to_string(editorLayer->m_fields->m_blocksPlaced);
+        eUUIDs.push(uid);
+        obj->m_fields->m_veryUniqueID = uid;
+        editorLayer->m_fields->m_blocksPlaced += 1;
+        editorLayer->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID);
+        index += 1;
+    }
+
+	object["EditUUIDs"] = eUUIDs;
+
+
+    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
+
+
+    return ret;
+}
