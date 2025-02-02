@@ -228,7 +228,7 @@ void MyGameManager::sendDataToMembers(std::string data, bool receiveData) {
 		this->receiveData();
 	}
 
-	log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
+	// log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
 
 	#ifndef USE_TEST_SERVER
 
@@ -448,12 +448,8 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 					auto mObject = (objectArr[i]);
 					GEODE_UNWRAP_INTO(std::string uid, editUUIDs[i].asString());
 					mObject->m_fields->m_veryUniqueID = uid;
-					mObject->setScaleX(5);
 					level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, uid);
 				}
-
-				log::info("UID: {}", objectArr[0]->m_uniqueID);
-				log::info("Size: {} {}", objectArr.size(), editUUIDs.size());
 
 				break;
 			}

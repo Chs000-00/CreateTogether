@@ -97,6 +97,8 @@ void MyEditorUI::transformObject(GameObject* p0, EditCommand p1, bool p2) {
 // TODO: Figure out if I can use
 void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
 
+    
+
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     auto betterObject = static_cast<MyGameObject*>(p0);
 
@@ -137,20 +139,19 @@ bool MyEditorUI::init(LevelEditorLayer* editorLayer) {
     return true;
 }
 
-gd::string MyEditorUI::copyObjects(CCArray* objects, bool copyColors, bool sort) {
+
+CCArray* MyEditorUI::pasteObjects(gd::string p0, bool p1, bool p2) {
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
+    CCArray* ret = EditorUI::pasteObjects(p0, p1, p2);
 
-    auto objectArr = CCArrayExt<MyGameObject*>(objects);
-
+    auto objectArr = CCArrayExt<MyGameObject*>(ret);
     auto stringSteamID = std::to_string(SteamUser()->GetSteamID().ConvertToUint64());
-
     auto editorLayer = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
 
-    gd::string ret = EditorUI::copyObjects(objects, copyColors, sort);
 
 
-    if (!gameManager->m_fields->m_isInLobby) {
+    if (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent) {
 
         for (auto obj : objectArr) {
             auto uid = stringSteamID + "!" + std::to_string(editorLayer->m_fields->m_blocksPlaced);
@@ -164,13 +165,12 @@ gd::string MyEditorUI::copyObjects(CCArray* objects, bool copyColors, bool sort)
 
     matjson::Value object = matjson::makeObject({
         {"Type", static_cast<int>(eActionPastedObjects)},
-        {"ObjectString", ret}
+        {"ObjectString", p0}
     });
     
     matjson::Value eUUIDs = matjson::Value::array();
 
-    // Very not horrible copy + paste code but im lazy
-    // Lazyness x2
+
     unsigned int index = 0;
     for (auto obj : objectArr) {
         auto uid = stringSteamID + "!" + std::to_string(editorLayer->m_fields->m_blocksPlaced);

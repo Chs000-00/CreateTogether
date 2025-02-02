@@ -26,6 +26,7 @@ class $modify(MyEditorUI, EditorUI) {
 
     void removeSelectedObjects();
     void deleteSingleObject(GameObject* dObj);
-    gd::string copyObjects(CCArray* objects, bool copyColors, bool sort);
+    // gd::string copyObjects(CCArray* objects, bool copyColors, bool sort);
+    CCArray* pasteObjects(gd::string p0, bool p1, bool p2);
     matjson::Value removeSelectedObjectsWithMatjson();
 };
