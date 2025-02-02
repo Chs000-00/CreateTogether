@@ -8,10 +8,10 @@ enum EEditorActionType {
     eActionMovedObject,        // Object was moved (Implemented)
     eActionScaledObject,       // Object was scaled
     eActionDeletedObject,      // Object was deleted (Implemented)
-    eActionPastedObjects,      // Objects were copied + pasted
+    eActionPastedObjects,      // Objects were copied + pasted (Needs testing)
     // This should always equal to 7 or the hardcoded values would not like that!
-    eActionRequestLevel = 7,   // Request level for synchronization (Needs testing)
-    eActionReturnLevelString,  // Return level string which was requested. Only host should be sending this! (Needs testing)
+    eActionRequestLevel = 7,   // Request level for synchronization (Objects sync)
+    eActionReturnLevelString,  // Return level string which was requested. Only host should be sending this! (Objects sync)
     eActionChangeGroupID,      // Group ID Was modified
     eActionUpdatedColor,       // Color was updated
     // TODO: Reflection or RTTI to automate this crap

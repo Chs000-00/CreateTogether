@@ -153,7 +153,7 @@ gd::string MyEditorUI::copyObjects(CCArray* objects, bool copyColors, bool sort)
     if (!gameManager->m_fields->m_isInLobby) {
 
         for (auto obj : objectArr) {
-            auto uid = stringSteamID + std::to_string(editorLayer->m_fields->m_blocksPlaced);
+            auto uid = stringSteamID + "!" + std::to_string(editorLayer->m_fields->m_blocksPlaced);
             obj->m_fields->m_veryUniqueID = uid;
             editorLayer->m_fields->m_blocksPlaced += 1;
             editorLayer->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID);
@@ -167,14 +167,14 @@ gd::string MyEditorUI::copyObjects(CCArray* objects, bool copyColors, bool sort)
         {"ObjectString", ret}
     });
     
-    matjson::Value eUUIDs = matjson::Value();
-
+    matjson::Value eUUIDs = matjson::Value::array();
 
     // Very not horrible copy + paste code but im lazy
     // Lazyness x2
     unsigned int index = 0;
     for (auto obj : objectArr) {
-        auto uid = stringSteamID + std::to_string(editorLayer->m_fields->m_blocksPlaced);
+        auto uid = stringSteamID + "!" + std::to_string(editorLayer->m_fields->m_blocksPlaced);
+        log::info("OBJ: {}", uid);
         eUUIDs.push(uid);
         obj->m_fields->m_veryUniqueID = uid;
         editorLayer->m_fields->m_blocksPlaced += 1;

@@ -12,7 +12,7 @@ using namespace geode::prelude;
 // Because it is so easy to test steam p2p applications, here is a "fake" msg class
 // To be used with the test server
 struct TestServerMsg {
-    char m_data[1024];
+    char m_data[8192];
     SteamNetworkingIdentity m_identityPeer; // DO NOT ACCESS!!!!
     inline void Release() {
         // log::debug("Destroying fake message!");

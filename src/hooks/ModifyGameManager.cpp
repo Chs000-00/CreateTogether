@@ -228,11 +228,12 @@ void MyGameManager::sendDataToMembers(std::string data, bool receiveData) {
 		this->receiveData();
 	}
 
+	log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
 
 	#ifndef USE_TEST_SERVER
 
         auto fixedData = data.c_str();
-        log::info("Sending MSG {} {}", fixedData, static_cast<uint32>(strlen(fixedData)));
+        
 
 		for (auto const& member : this->m_fields->m_playersInLobby) {
 			// log::debug("SendData called on {}", SteamFriends()->GetFriendPersonaName(member.GetSteamID()));
@@ -420,12 +421,16 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 				// TODO: Figure out args
 				auto objectArr = CCArrayExt<MyGameObject*>(level->createObjectsFromString(levelString, false, false));
 
+				
+
 				// This might be inefficient as this requires looping over the arr twice.
 				for (auto i = 0; i != std::min(objectArr.size(), editUUIDs.size()); ++i) {
 					auto mObject = (objectArr[i]);
-					mObject->m_fields->m_veryUniqueID = editUUIDs[i].asInt().ok().value();
-					level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, editUUIDs[i].asInt().ok().value());
+					GEODE_UNWRAP_INTO(std::string uid, editUUIDs[i].asString());
+					mObject->m_fields->m_veryUniqueID = uid;
+					level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, uid);
 				}
+
 				break;
 			}
 
@@ -433,15 +438,23 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 				GEODE_UNWRAP_INTO(std::vector editUUIDs, data["EditUUIDs"].asArray());
 				GEODE_UNWRAP_INTO(std::string objectString, data["ObjectString"].asString());
 
+
 				// TODO: Figure out args
 				auto objectArr = CCArrayExt<MyGameObject*>(level->createObjectsFromString(objectString, false, false));
+
 
 				// This might be inefficient as this requires looping over the arr twice.
 				for (auto i = 0; i != std::min(objectArr.size(), editUUIDs.size()); ++i) {
 					auto mObject = (objectArr[i]);
-					mObject->m_fields->m_veryUniqueID = editUUIDs[i].asInt().ok().value();
-					level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, editUUIDs[i].asInt().ok().value());
+					GEODE_UNWRAP_INTO(std::string uid, editUUIDs[i].asString());
+					mObject->m_fields->m_veryUniqueID = uid;
+					mObject->setScaleX(5);
+					level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, uid);
 				}
+
+				log::info("UID: {}", objectArr[0]->m_uniqueID);
+				log::info("Size: {} {}", objectArr.size(), editUUIDs.size());
+
 				break;
 			}
 
@@ -535,8 +548,10 @@ void MyGameManager::receiveData() {
 	#else
 		// Compat with for loop
 		auto numMessages = 1;
-		char tserverdat[8192];
-		memset(tserverdat, 0, sizeof(tserverdat)); 
+
+		// What is this used for?
+		// char tserverdat[8192];
+		// memset(tserverdat, 0, sizeof(tserverdat)); 
 		TestServerMsg* msg = new TestServerMsg;
 		auto outrec = recv(this->m_fields->m_socket, msg->m_data, sizeof(msg->m_data), 0);
 
@@ -590,11 +605,11 @@ void MyGameManager::receiveData() {
 matjson::Value MyGameManager::getLevelStringMatjson() {
 
     matjson::Value rjson = matjson::makeObject({
-        {"Type", static_cast<int>(eActionMovedObject)},
-        {"LevelString", this->m_fields->m_level->getLevelString()}
+        {"Type", static_cast<int>(eActionReturnLevelString)},
+        {"LevelString", this->m_fields->m_level->getLevelString()},
     });
 
-	matjson::Value eUUIDs = matjson::Value();
+	matjson::Value eUUIDs = matjson::Value::array();
 
 	auto level = static_cast<MyLevelEditorLayer*>(this->m_fields->m_level);
 
