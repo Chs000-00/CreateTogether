@@ -26,7 +26,7 @@ matjson::Value getJsonFromGameObject(T* obj) {
 
     matjson::Value ret;
 
-    if (std::is_base_of<EffectGameObject, T>::value) {
+    if constexpr (std::is_base_of<EffectGameObject, T>::value) {
         CREATE_TOGETHER_SET_JSON(m_duration);
         CREATE_TOGETHER_SET_JSON(m_opacity);
         CREATE_TOGETHER_SET_JSON(m_targetGroupID);
@@ -36,6 +36,10 @@ matjson::Value getJsonFromGameObject(T* obj) {
         CREATE_TOGETHER_SET_JSON(m_hasCenterEffect);
         CREATE_TOGETHER_SET_JSON(m_shakeStrength);
         CREATE_TOGETHER_SET_JSON(m_shakeInterval);
+        CREATE_TOGETHER_SET_JSON(m_tintGround);
+        CREATE_TOGETHER_SET_JSON(m_usesPlayerColor1);
+        CREATE_TOGETHER_SET_JSON(m_usesPlayerColor2);
+
     }
 
 
