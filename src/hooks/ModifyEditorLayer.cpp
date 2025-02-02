@@ -119,3 +119,22 @@ void MyLevelEditorLayer::deleteObject(GameObject *obj) {
     LevelEditorLayer::removeObjectFromSection(obj);
     this->removeSpecial(obj);
 }
+
+void MyLevelEditorLayer::addToGroup(GameObject* p0, int p1, bool p2) {
+    log::info("bool? {}", p2);
+
+    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+    MyGameObject* betterGameObject = static_cast<MyGameObject*>(p0);
+
+    if (gameManager->m_fields->m_isInLobby == false || m_fields->m_wasDataSent) {
+        return LevelEditorLayer::addToGroup(p0, p1, p2);
+    }
+
+    matjson::Value object = matjson::makeObject({
+        {"Type", static_cast<int>(eActionChangeGroupID)},
+        {"GroupID", p1},
+        {"Adding", true},
+        {"ObjectUID", betterGameObject->m_fields->m_veryUniqueID}
+    });
+    LevelEditorLayer::addToGroup(p0, p1, p2);
+}

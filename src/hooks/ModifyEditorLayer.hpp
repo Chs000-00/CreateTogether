@@ -30,4 +30,6 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
     void updateLevelFont(int p0);
     bool init(GJGameLevel* p0, bool p1);
     void deleteObject(GameObject* obj);
+
+    void addToGroup(GameObject* p0, int p1, bool p2);
 };
