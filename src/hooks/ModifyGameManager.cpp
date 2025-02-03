@@ -228,7 +228,7 @@ void MyGameManager::sendDataToMembers(std::string data, bool receiveData) {
 		this->receiveData();
 	}
 
-	// log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
+	log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
 
 	#ifndef USE_TEST_SERVER
 
@@ -439,6 +439,7 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 				GEODE_UNWRAP_INTO(std::string objectString, data["ObjectString"].asString());
 
 
+
 				// TODO: Figure out args
 				auto objectArr = CCArrayExt<MyGameObject*>(level->createObjectsFromString(objectString, false, false));
 
@@ -450,9 +451,51 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 					mObject->m_fields->m_veryUniqueID = uid;
 					level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, uid);
 				}
+			}
+
+			case eActionModifiedObject: {
+				GEODE_UNWRAP_INTO(std::vector editUUIDs, data["EditUUIDs"].asArray());
+				GEODE_UNWRAP_INTO(std::string objectString, data["ObjectString"].asString());
+
+
+				// TODO: Figure out args
+				auto objectArr = CCArrayExt<MyGameObject*>(level->createObjectsFromString(objectString, false, false));
+
+				if (objectArr.size() != editUUIDs.size()) {
+					return Err("eActionModifiedObject: Mismatched objectArr and editUUIDs size!");
+				}
+
+				// This might be inefficient as this requires looping over the arr twice.
+				for (auto i = 0; i != std::min(objectArr.size(), editUUIDs.size()); ++i) {
+					auto newObj = (objectArr[i]);
+
+					GEODE_UNWRAP_INTO(std::string uid, editUUIDs[i].asString());
+
+					if (auto oldObj = static_cast<MyGameObject*>(level->m_fields->m_pUniqueIDOfGameObject->objectForKey(uid))) {
+						auto tempPos = oldObj->getPosition();
+						auto tempRot = oldObj->getRotation();
+						auto tempFlipX = oldObj->isFlipX();
+						auto tempFlipY = oldObj->isFlipY();
+
+						level->deleteObject(oldObj);
+						newObj->m_fields->m_veryUniqueID = uid;
+						level->m_fields->m_pUniqueIDOfGameObject->setObject(newObj, uid);
+
+						newObj->setPosition(tempPos);
+						newObj->setRotation(tempRot);
+						newObj->setFlipX(tempFlipX);
+						newObj->setFlipY(tempFlipY);
+
+					}
+					else {
+						return Err("eActionTransformObject: Object UID not found");
+					}
+
+				}
 
 				break;
 			}
+
 
 			// TODO: Check out SelectFontLayer
 			case eActionUpdatedFont: {

@@ -120,8 +120,8 @@ void MyLevelEditorLayer::deleteObject(GameObject *obj) {
     this->removeSpecial(obj);
 }
 
+// TODO: Figure out args
 void MyLevelEditorLayer::addToGroup(GameObject* p0, int p1, bool p2) {
-    log::info("bool? {}", p2);
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     MyGameObject* betterGameObject = static_cast<MyGameObject*>(p0);
@@ -136,5 +136,8 @@ void MyLevelEditorLayer::addToGroup(GameObject* p0, int p1, bool p2) {
         {"Adding", true},
         {"ObjectUID", betterGameObject->m_fields->m_veryUniqueID}
     });
+
+    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
+
     LevelEditorLayer::addToGroup(p0, p1, p2);
 }

@@ -11,8 +11,8 @@
 // #define VALIDATE_MESSAGE(key, type) if (!unwrappedMessage.contains(## key) || unwrappedMessage[key].as ## type().isErr()) {msg->Release();continue;}
 
 
-#define CREATE_TOGETHER_SET_JSON(property) setJsonObjectFromProperty(obj-> ##property, ret, #property)
+// #define CREATE_TOGETHER_SET_JSON(property) setJsonObjectFromProperty(obj-> ##property, ret, #property)
 
-// TODO: Finish this
-#define CREATE_TOGETHER_JSON_TO_OBJ(property) setJsonObjectFromProperty(obj-> ##property, ret, #property)
+// // TODO: Finish this
+// #define CREATE_TOGETHER_JSON_TO_OBJ(property) setJsonObjectFromProperty(obj-> ##property, ret, #property)
 

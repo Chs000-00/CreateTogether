@@ -17,7 +17,7 @@ enum EEditorActionType {
     // TODO: Reflection or RTTI to automate this crap
     // eActionEnchancedObjectEdited, // Enchanced gameObject was changed
     // eActionEffectObjectEdited, // Effect gameObject was changed
-    eActionModifiedObject,     // Object data was changed, used for triggers
+    eActionModifiedObject,     // Object data was changed, used for EffectGameObjects and EnhancedGameObjects
     eActionSongChanged,        // Level's song was changed (Implemented)
     eOptionSpeedChanged,       // Starting player speed was changed (Implemented)
     eOptionGameTypeChanged,    // Classic or platformer was changed

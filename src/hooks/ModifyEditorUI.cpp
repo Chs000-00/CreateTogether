@@ -174,7 +174,7 @@ CCArray* MyEditorUI::pasteObjects(gd::string p0, bool p1, bool p2) {
     unsigned int index = 0;
     for (auto obj : objectArr) {
         auto uid = stringSteamID + "!" + std::to_string(editorLayer->m_fields->m_blocksPlaced);
-        log::info("OBJ: {}", uid);
+        // log::info("OBJ: {}", uid);
         eUUIDs.push(uid);
         obj->m_fields->m_veryUniqueID = uid;
         editorLayer->m_fields->m_blocksPlaced += 1;

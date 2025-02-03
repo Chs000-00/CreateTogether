@@ -7,6 +7,8 @@ using namespace geode::prelude;
 
 bool isValidEnumRange(int n, int min, int max);
 
+/*
+
 // TODO: Place this stuff in another file
 template < typename T > 
 void setJsonObjectFromProperty( T val, matjson::Value json, const char* str) {
@@ -53,3 +55,5 @@ matjson::Value setGameObjectFromJson(T* obj) {
 
     return ret;
 }
+
+*/
