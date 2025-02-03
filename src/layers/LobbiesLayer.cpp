@@ -31,6 +31,7 @@ bool LobbiesLayer::init() {
     background->setID("background");
     this->addChild(background);
 
+    // TODO: Add this as a member when I get intellisense access
     auto spinner = LoadingSpinner::create(100);
     spinner->setID("loading-spinner");
 
@@ -54,7 +55,7 @@ bool LobbiesLayer::init() {
 
     this->m_menu = CCMenu::create();
 
-    m_menu->setID("menu");
+    m_menu->retain();
     
     m_menu->addChildAtPosition(listBorders, Anchor::Center);
     m_menu->addChildAtPosition(backBtn, Anchor::TopLeft, {25, -25});
@@ -72,21 +73,24 @@ void LobbiesLayer::refreshLobbyList(CCObject* sender) {
     log::info("Refreshing lobby list");
 
 
-    this->getChildByID("menu")->getChildByID("loading-spinner")->setVisible(true);
+    this->m_menu->getChildByID("loading-spinner")->setVisible(true);
 
 	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
     auto gameManagerCast = static_cast<MyGameManager*>(GameManager::get());
     auto gameManagerFields = gameManagerCast->m_fields.self();
     gameManagerFields->m_lobbyLayer = this;
     // SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterFar);
-    gameManagerFields->m_lobbyMatchListCallResult.Set(hSteamAPICall, gameManagerCast, &MyGameManager::onLobbyMatchList);
+    this->m_lobbyMatchListCallResult.Set(hSteamAPICall, this, &LobbiesLayer::onLobbyMatchList);
 }
 
 
 void LobbiesLayer::keyBackClicked() {
     this->onBack(nullptr);
 }
+
 void LobbiesLayer::onBack(CCObject* sender) {
+
+    CC_SAFE_RELEASE(this->m_menu);
     CCDirector::get()->replaceScene(CCTransitionFade::create(0.5, LevelBrowserLayer::scene(GJSearchObject::create(SearchType::MyLevels))));
 }
 
@@ -135,6 +139,7 @@ void LobbiesLayer::fetchLobbies(unsigned int amountOfLobbiesFound) {
 	for (int i = 0; i < amountOfLobbiesFound; i++) {
 		CSteamID lobbyID = SteamMatchmaking()->GetLobbyByIndex(i);
         
+		SteamMatchmaking()->RequestLobbyData(lobbyID);
 
         log::info("LOBBY");
 
@@ -146,7 +151,6 @@ void LobbiesLayer::fetchLobbies(unsigned int amountOfLobbiesFound) {
 
 		clobby.isVersionMismatched = false;
 
-		SteamMatchmaking()->RequestLobbyData(lobbyID);
 
 		clobby.levelName = SteamMatchmaking()->GetLobbyData(lobbyID, "level_name");
 		clobby.steamUserName = SteamMatchmaking()->GetLobbyData(lobbyID, "host_name");
@@ -175,4 +179,9 @@ LobbiesLayer* LobbiesLayer::scene() {
     auto layer = LobbiesLayer::create();
     switchToScene(layer);
     return layer;
+}
+
+void LobbiesLayer::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure) {	
+	this->fetchLobbies(pLobbyMatchList->m_nLobbiesMatching);
+	this->loadDataToList();
 }

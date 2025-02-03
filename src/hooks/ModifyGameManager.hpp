@@ -53,14 +53,11 @@ class $modify(MyGameManager, GameManager) {
 
 		CCallResult< MyGameManager, LobbyCreated_t > m_isInLobbyCallResult;
 		CCallResult< MyGameManager, LobbyEnter_t > m_enterLobbyCallResult;
-		CCallResult< MyGameManager, LobbyMatchList_t  > m_lobbyMatchListCallResult;
-
     };
 
 	void update(float p0);
     void onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure);
 	void onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure);
-	void onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure);
 	void enterLevelEditor();
 	void sendDataToUser(SteamNetworkingIdentity usr, const char* out);
 	void fetchMemberList();

@@ -24,6 +24,10 @@ public:
     std::vector<lobbyData> m_data;
 
 
+	CCallResult< LobbiesLayer, LobbyMatchList_t  > m_lobbyMatchListCallResult;
+	void onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure);
+
+
     static LobbiesLayer* scene();
     static LobbiesLayer* create();
     static ScrollLayer* createLobbyList(std::vector<lobbyData> lobbyList);

@@ -149,13 +149,6 @@ void MyGameManager::enterLevelEditor() {
 	switchToScene(this->m_fields->m_level);
 }
 
-
-void MyGameManager::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure) {	
-	this->m_fields->m_lobbyLayer->fetchLobbies(pLobbyMatchList->m_nLobbiesMatching);
-	this->m_fields->m_lobbyLayer->loadDataToList();
-}
-
-
 void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 	if (pCallback->m_eResult == k_EResultOK) {
 		log::info("Created Lobby with steamID {} !", pCallback->m_ulSteamIDLobby);
