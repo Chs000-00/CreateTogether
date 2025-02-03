@@ -131,7 +131,7 @@ void MyGameManager::enterLevelEditor() {
 	auto gameLevel = GJGameLevel::create();
 	gameLevel->m_isEditable = true;
 	gameLevel->m_levelType = GJLevelType::Editor;
-	gameLevel->m_levelDesc = "Created with createTogether";
+	// gameLevel->m_levelDesc += "Created with Create Together";
 	this->m_fields->m_level = LevelEditorLayer::create(gameLevel, false);
 	// TODO: Only send this to host!!!!!!!!!
 	auto msg = "{\"Type\": 7}";

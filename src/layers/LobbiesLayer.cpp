@@ -7,6 +7,7 @@
 #include "../hooks/ModifyGameManager.hpp"
 #include "../ui/LevelListBorders.hpp"
 #include "../config.hpp"
+
 using namespace geode::prelude;
 
 bool LobbiesLayer::init() {
@@ -76,11 +77,9 @@ void LobbiesLayer::refreshLobbyList(CCObject* sender) {
     this->m_menu->getChildByID("loading-spinner")->setVisible(true);
 
 	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
-    auto gameManagerCast = static_cast<MyGameManager*>(GameManager::get());
-    auto gameManagerFields = gameManagerCast->m_fields.self();
-    gameManagerFields->m_lobbyLayer = this;
     // SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterFar);
     this->m_lobbyMatchListCallResult.Set(hSteamAPICall, this, &LobbiesLayer::onLobbyMatchList);
+
 }
 
 
@@ -131,39 +130,6 @@ void LobbiesLayer::loadDataToList() {
     menu->getChildByID("loading-spinner")->setVisible(false);
 }
 
-
-void LobbiesLayer::fetchLobbies(unsigned int amountOfLobbiesFound) {
-    std::vector<lobbyData> dataVector;
-	lobbyData clobby;
-
-	for (int i = 0; i < amountOfLobbiesFound; i++) {
-		CSteamID lobbyID = SteamMatchmaking()->GetLobbyByIndex(i);
-        
-		SteamMatchmaking()->RequestLobbyData(lobbyID);
-
-        log::info("LOBBY");
-
-		if (SteamMatchmaking()->GetLobbyData(lobbyID, "version") != MOD_VERSION) {
-			clobby.isVersionMismatched = true;
-			dataVector.push_back(clobby);  
-			continue;
-		}
-
-		clobby.isVersionMismatched = false;
-
-
-		clobby.levelName = SteamMatchmaking()->GetLobbyData(lobbyID, "level_name");
-		clobby.steamUserName = SteamMatchmaking()->GetLobbyData(lobbyID, "host_name");
-
-		clobby.steamId = lobbyID;
-
-		dataVector.push_back(clobby);   
-		log::debug("Data stuff: {} | {}", clobby.steamId.ConvertToUint64(), lobbyID.ConvertToUint64());
-
-        this->m_data = dataVector;
-	}
-}
-
 LobbiesLayer* LobbiesLayer::create() {
     auto ret = new LobbiesLayer;
     if (ret->init()) {
@@ -182,6 +148,35 @@ LobbiesLayer* LobbiesLayer::scene() {
 }
 
 void LobbiesLayer::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOFailure) {	
-	this->fetchLobbies(pLobbyMatchList->m_nLobbiesMatching);
-	this->loadDataToList();
+    std::vector<lobbyData> dataVector;
+    lobbyData clobby;
+
+    for (int i = 0; i < pLobbyMatchList->m_nLobbiesMatching; i++) {
+        CSteamID lobbyID = SteamMatchmaking()->GetLobbyByIndex(i);
+        
+        SteamMatchmaking()->RequestLobbyData(lobbyID);
+
+        log::info("LOBBY NUM {}", i);
+
+        if (SteamMatchmaking()->GetLobbyData(lobbyID, "version") != MOD_VERSION) {
+            clobby.isVersionMismatched = true;
+            dataVector.push_back(clobby);  
+            continue;
+        }
+
+        clobby.isVersionMismatched = false;
+
+
+        clobby.levelName = SteamMatchmaking()->GetLobbyData(lobbyID, "level_name");
+        clobby.steamUserName = SteamMatchmaking()->GetLobbyData(lobbyID, "host_name");
+
+        clobby.steamId = lobbyID;
+
+        dataVector.push_back(clobby);   
+        log::debug("Data stuff: {} | {}", clobby.steamId.ConvertToUint64(), lobbyID.ConvertToUint64());
+
+        this->m_data = dataVector;
+    }
+
+    this->loadDataToList();
 }

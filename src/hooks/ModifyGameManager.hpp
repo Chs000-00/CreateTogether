@@ -41,7 +41,7 @@ class $modify(MyGameManager, GameManager) {
 		bool m_sendMoveList;
 
 		LevelEditorLayer* m_level;
-    	LobbiesLayer* m_lobbyLayer = nullptr;
+    	// LobbiesLayer* m_lobbyLayer = nullptr;
 		CallbackManager m_callbackManager;
 
 		std::vector<SteamNetworkingIdentity> m_playersInLobby;

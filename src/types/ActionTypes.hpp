@@ -14,10 +14,7 @@ enum EEditorActionType {
     eActionReturnLevelString,  // Return level string which was requested. Only host should be sending this! (Objects sync)
     eActionChangeGroupID,      // Group ID was modified
     eActionUpdatedColor,       // Color was updated
-    // TODO: Reflection or RTTI to automate this crap
-    // eActionEnchancedObjectEdited, // Enchanced gameObject was changed
-    // eActionEffectObjectEdited, // Effect gameObject was changed
-    eActionModifiedObject,     // Object data was changed, used for EffectGameObjects and EnhancedGameObjects
+    eActionModifiedObject,     // Object data was changed, used for EffectGameObjects and EnhancedGameObjects (Implemented for all but ColorTriggers)
     eActionSongChanged,        // Level's song was changed (Implemented)
     eOptionSpeedChanged,       // Starting player speed was changed (Implemented)
     eOptionGameTypeChanged,    // Classic or platformer was changed
@@ -25,10 +22,10 @@ enum EEditorActionType {
     eActionArtSelected,        // Background art, ground art, or line was changed. (Needs testing)
     eOptionGameModeChanged,    // Starting GameMode was changed (Implemented)
     eActionUpdatedFont,        // Level's font was updated/changed (Implemented)
-    // eActionDeleteAllStartpos,  // Delete all startpos was pressed
-    eActionLockLayer,          // Host locks a layer, clients cannot unlock a layer (?)
+    eActionDeleteAllOfType,    // Delete all objects of a certain ID
+    eActionLockLayer,          // Host locks a layer, clients cannot unlock a layer (? not sure if I should implement this)
     // TODO: Move this higher upward
     eActionRotatedObject,
-    eActionWeirdlyScaledObject
+    eActionWeirdlyScaledObject // Like the object being scaled, but weird?
 };
 

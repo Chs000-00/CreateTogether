@@ -35,5 +35,4 @@ public:
     void onBack(CCObject* sender);
     void onJoin(CCObject* sender);
     void loadDataToList();
-    void fetchLobbies(unsigned int amountOfLobbiesFound);
 };
