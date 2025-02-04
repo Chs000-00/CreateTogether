@@ -15,7 +15,7 @@ class $modify(ColorSelectPopup) {
 
     // Test this out
     void closeColorSelect(CCObject* p0) {
-        
+        log::info("ClosedColorSelect");
         ColorSelectPopup::closeColorSelect(p0);
     }
 };

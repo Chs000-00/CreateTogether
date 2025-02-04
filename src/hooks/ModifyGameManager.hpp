@@ -37,8 +37,12 @@ class $modify(MyGameManager, GameManager) {
 		bool m_isHost = false; // TODO: use GetLobbyOwner instead? Possibly?
 		bool m_isInEditorLayer = false;
 
+		// TODO: Move this stuff to some other class
 		matjson::Value m_moveList;
 		bool m_sendMoveList;
+
+		matjson::Value m_groupIDEdits;
+		bool m_sendGroupIDEdits;
 
 		LevelEditorLayer* m_level;
     	// LobbiesLayer* m_lobbyLayer = nullptr;

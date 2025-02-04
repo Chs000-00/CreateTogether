@@ -32,4 +32,5 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
     void deleteObject(GameObject* obj);
 
     void addToGroup(GameObject* p0, int p1, bool p2);
+    void removeFromGroup(GameObject* p0, int p1);
 };

@@ -114,7 +114,7 @@ void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
         gameManager->m_fields->m_moveList = matjson::Value();
     }
 
-    if (gameManager->m_fields->m_sendMoveList) {
+    else {
         matjson::Value pos = matjson::Value();
         pos.set("x", p0->getPositionX());
         pos.set("y", p0->getPositionY());

@@ -464,27 +464,14 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 					GEODE_UNWRAP_INTO(std::string uid, editUUIDs[i].asString());
 
 					if (auto oldObj = static_cast<MyGameObject*>(level->m_fields->m_pUniqueIDOfGameObject->objectForKey(uid))) {
-						auto tempPos = oldObj->getPosition();
-						auto tempRot = oldObj->getRotation();
-						auto tempFlipX = oldObj->isFlipX();
-						auto tempFlipY = oldObj->isFlipY();
-
 						level->deleteObject(oldObj);
 						newObj->m_fields->m_veryUniqueID = uid;
 						level->m_fields->m_pUniqueIDOfGameObject->setObject(newObj, uid);
-
-						newObj->setPosition(tempPos);
-						newObj->setRotation(tempRot);
-						newObj->setFlipX(tempFlipX);
-						newObj->setFlipY(tempFlipY);
-
 					}
 					else {
 						return Err("eActionTransformObject: Object UID not found");
 					}
-
 				}
-
 				break;
 			}
 
@@ -668,10 +655,6 @@ void MyGameManager::sendDataToUser(SteamNetworkingIdentity usr, const char* out)
 }
 
 void MyGameManager::lateSendData() {
-
-    //log::info("LSendData");
-
-
 	if (this->m_fields->m_sendMoveList) {
 
 		matjson::Value object = matjson::makeObject({
@@ -680,10 +663,22 @@ void MyGameManager::lateSendData() {
 		});
 
 		this->sendDataToMembers(object.dump(matjson::NO_INDENTATION), false);
+	
+		this->m_fields->m_sendMoveList = false;
 	}
 
-	this->m_fields->m_sendMoveList = false;
 
+	if (this->m_fields->m_sendGroupIDEdits) {
+
+		matjson::Value object = matjson::makeObject({
+			{"Type", static_cast<int>(eActionMovedObject)},
+			{"GroupIDs", this->m_fields->m_groupIDEdits}
+		});
+
+		this->sendDataToMembers(object.dump(matjson::NO_INDENTATION), false);
+	
+		this->m_fields->m_groupIDEdits = false;
+	}
 }
 
 void MyGameManager::update(float p0) {
