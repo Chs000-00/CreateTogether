@@ -50,9 +50,8 @@ setup_geode_mod(${PROJECT_NAME})
 
 # CPMAddPackage("gh:crashoz/uuid_v4#41238a4")
 
-CPMAddPackage("gh:camila314/UIBuilder#cd0f953")
+# CPMAddPackage("gh:camila314/UIBuilder#cd0f953")
 
 target_link_libraries(${PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/steam_api64.lib
-    UIBuilder
 )
