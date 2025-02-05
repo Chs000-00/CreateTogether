@@ -20,6 +20,7 @@ enum EEditorActionType {
     eOptionGameTypeChanged,    // Classic or platformer was changed
     // Line change might be moved to another action type.
     eActionArtSelected,        // Background art, ground art, or line was changed. (Needs testing)
+    eOptionLevelSetting,       // Level setting was changed
     eOptionGameModeChanged,    // Starting GameMode was changed (Implemented)
     eActionUpdatedFont,        // Level's font was updated/changed (Implemented)
     eActionDeleteAllOfType,    // Delete all objects of a certain ID

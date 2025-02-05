@@ -59,6 +59,8 @@ bool LobbyPopup::setup(EPopupType type) {
             pfunc
         );
 
+
+        // TODO: Fix this reseting or something idfk
         publicToggle->toggle(this->m_isServerPublic);
 
         checkMarkMenu->addChild(publicText);
