@@ -37,10 +37,13 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
         this->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID);
     }
 
+    this->m_fields->m_loadingFinished = true;
+
     return true;
 }
 
 
+// TODO: Implement group id sync
 GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p2) {
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
@@ -99,7 +102,8 @@ void MyLevelEditorLayer::updateLevelFont(int p0) {
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
     if (!gameManager->m_fields->m_isInLobby || m_fields->m_wasDataSent) {
-        return LevelEditorLayer::updateLevelFont(p0);
+        LevelEditorLayer::updateLevelFont(p0);
+        return;
     }
 
     matjson::Value object = matjson::makeObject({
@@ -109,7 +113,7 @@ void MyLevelEditorLayer::updateLevelFont(int p0) {
 
     gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
 
-    return LevelEditorLayer::updateLevelFont(p0);
+    LevelEditorLayer::updateLevelFont(p0);
 }
 
 void MyLevelEditorLayer::deleteObject(GameObject *obj) {
@@ -126,28 +130,29 @@ void MyLevelEditorLayer::deleteObject(GameObject *obj) {
 void MyLevelEditorLayer::addToGroup(GameObject* p0, int p1, bool p2) {
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-    MyGameObject* betterGameObject = static_cast<MyGameObject*>(p0);
 
-    log::info("AddToGroup: {} {}", p1, p2);
-
-    // Il make it check for finishing loading properly once someone gives me a bug report about it
-    if (!gameManager->m_fields->m_isInLobby || m_fields->m_wasDataSent || !static_cast<MyEditorUI*>(this->m_editorUI)->m_fields->m_loadingFinished) {
-        return LevelEditorLayer::addToGroup(p0, p1, p2);
+    if (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent || !this->m_fields->m_loadingFinished) {
+        LevelEditorLayer::addToGroup(p0, p1, p2);
+        return;
     }
+
+    MyGameObject* betterGameObject = static_cast<MyGameObject*>(p0);
 
     if (!gameManager->m_fields->m_sendGroupIDEdits) {
         gameManager->m_fields->m_sendGroupIDEdits = true;
-        gameManager->m_fields->m_groupIDEdits = matjson::Value();
         // Lets just hope you dont add and remove groups at the same time.
-        gameManager->m_fields->m_groupIDEdits["Add"] = true;
+        gameManager->m_fields->m_isAddingGroupID = true;
         // Or that we edit the same ID in one frame
-        gameManager->m_fields->m_groupIDEdits["ID"] = p1;
-        gameManager->m_fields->m_groupIDEdits["EditUUIDs"] = matjson::Value::array();
+        gameManager->m_fields->m_groupIDToEdit = p1;
+        gameManager->m_fields->m_groupIDEdits = matjson::Value::array();
+
+        gameManager->m_fields->m_groupIDEdits.push(betterGameObject->m_fields->m_veryUniqueID);
+
     }
 
-    else {
+    if (gameManager->m_fields->m_sendMoveList) {
         // Or that EditUUIDs exists!
-        gameManager->m_fields->m_groupIDEdits["EditUUIDs"].push(betterGameObject->m_fields->m_veryUniqueID);
+        gameManager->m_fields->m_groupIDEdits.push(betterGameObject->m_fields->m_veryUniqueID);
     }
 
 
@@ -160,18 +165,24 @@ void MyLevelEditorLayer::removeFromGroup(GameObject* p0, int p1) {
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     MyGameObject* betterGameObject = static_cast<MyGameObject*>(p0);
 
-    if (gameManager->m_fields->m_isInLobby == false || m_fields->m_wasDataSent) {
+    if  (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent || !this->m_fields->m_loadingFinished) {
         LevelEditorLayer::removeFromGroup(p0, p1);
+        return;
     }
 
-    matjson::Value object = matjson::makeObject({
-        {"Type", static_cast<int>(eActionChangeGroupID)},
-        {"GroupID", p1},
-        {"Add", false},
-        {"ObjectUID", betterGameObject->m_fields->m_veryUniqueID}
-    });
+    if (!gameManager->m_fields->m_sendGroupIDEdits) {
+        gameManager->m_fields->m_sendGroupIDEdits = true;
+        // Lets just hope you dont add and remove groups at the same time.
+        gameManager->m_fields->m_isAddingGroupID = false;
+        // Or that we edit the same ID in one frame
+        gameManager->m_fields->m_groupIDToEdit = p1;
+        gameManager->m_fields->m_groupIDEdits = matjson::Value::array();
+    }
 
-    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
-  
+    else {
+        // Or that EditUUIDs exists!
+        gameManager->m_fields->m_groupIDEdits.push(betterGameObject->m_fields->m_veryUniqueID);
+    }
+
     LevelEditorLayer::removeFromGroup(p0, p1);
 }

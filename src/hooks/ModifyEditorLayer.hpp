@@ -14,6 +14,9 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
         bool m_wasDataSent = false;
         unsigned int m_blocksPlaced = 0;
 
+
+        bool m_loadingFinished = false;
+        
         #ifndef USE_TEST_SERVER
         uint64 m_userID = SteamUser()->GetSteamID().ConvertToUint64();
         #else

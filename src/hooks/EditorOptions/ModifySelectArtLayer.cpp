@@ -9,8 +9,9 @@ class $modify(SelectArtLayer) {
     void selectArt(CCObject* sender) {
         auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
+        SelectArtLayer::selectArt(sender);
+
         if (!gameManager->m_fields->m_isInLobby) {
-            SelectArtLayer::selectArt(sender);
             return;
         }
 
@@ -23,6 +24,5 @@ class $modify(SelectArtLayer) {
 
 
         gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
-        SelectArtLayer::selectArt(sender);
     }
 };

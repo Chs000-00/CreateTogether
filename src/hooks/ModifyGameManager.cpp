@@ -495,6 +495,33 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 				break;
 			}
 
+			case eActionChangeGroupID: {
+				GEODE_UNWRAP_INTO(int groupID, data["GroupID"].asInt());
+				GEODE_UNWRAP_INTO(bool isAdding, data["Add"].asBool());
+				GEODE_UNWRAP_INTO(std::vector editUUIDs, data["EditUUIDs"].asArray());
+
+
+				// This might be inefficient as this requires looping over the arr twice.
+				for (auto i = 0; i != editUUIDs.size(); ++i) {
+					GEODE_UNWRAP_INTO(std::string uid, editUUIDs[i].asString());
+
+					level->m_fields->m_wasDataSent = true;
+
+					auto retObj = static_cast<GameObject*>(level->m_fields->m_pUniqueIDOfGameObject->objectForKey(uid));
+
+					if (isAdding) {
+						level->addToGroup(retObj, groupID, false);
+						retObj->addToGroup(groupID);
+					} else {
+						level->removeFromGroup(retObj, groupID);
+						retObj->removeFromGroup(groupID);
+					}
+
+					level->m_fields->m_wasDataSent = false;
+				}	
+				break;
+			}
+
             case eActionSongChanged: {
 				GEODE_UNWRAP_INTO(int songID, data["SongID"].asUInt());
                 level->m_level->m_songID = songID;
@@ -596,6 +623,8 @@ void MyGameManager::receiveData() {
 
 		if (res->isErr()) {
 			log::error("Failed to parse json: {}", res->unwrapErr());
+			delete res;
+			res = nullptr;	// just in case
 			msg->Release();
 			continue;
 		}
@@ -603,6 +632,8 @@ void MyGameManager::receiveData() {
 		matjson::Value unwrappedMessage = res->unwrap();
 
 		if (!MyGameManager::validateData(unwrappedMessage)) {
+			delete res;
+			res = nullptr;	// just in case
 			msg->Release();
 			continue;
 		}
@@ -671,13 +702,15 @@ void MyGameManager::lateSendData() {
 	if (this->m_fields->m_sendGroupIDEdits) {
 
 		matjson::Value object = matjson::makeObject({
-			{"Type", static_cast<int>(eActionMovedObject)},
-			{"GroupIDs", this->m_fields->m_groupIDEdits}
+			{"Type", static_cast<int>(eActionChangeGroupID)},
+			{"Add", this->m_fields->m_isAddingGroupID},
+			{"GroupID", this->m_fields->m_groupIDToEdit},
+			{"EditUUIDs", this->m_fields->m_groupIDEdits}
 		});
 
 		this->sendDataToMembers(object.dump(matjson::NO_INDENTATION), false);
 	
-		this->m_fields->m_groupIDEdits = false;
+		this->m_fields->m_sendGroupIDEdits = false;
 	}
 }
 
@@ -686,8 +719,8 @@ void MyGameManager::update(float p0) {
 
 	if (this->m_fields->m_isInLobby) {
 		this->receiveData();
+		this->lateSendData();
 	}
-	this->lateSendData();
 
 	GameManager::update(p0);
 }

@@ -15,7 +15,15 @@ class $modify(ColorSelectPopup) {
 
     // Test this out
     void closeColorSelect(CCObject* p0) {
-        log::info("ClosedColorSelect");
+        log::info("ClosedColorSelectClosed");
+
+        if (this->m_colorTrigger) {
+            log::info("Color Trigger");
+        }
+        if (this->m_gameObject) {
+            log::info("Oh there is a game object!");
+        }
+
         ColorSelectPopup::closeColorSelect(p0);
     }
 };

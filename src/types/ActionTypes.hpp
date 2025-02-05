@@ -8,11 +8,11 @@ enum EEditorActionType {
     eActionMovedObject,        // Object was moved (Implemented)
     eActionScaledObject,       // Object was scaled
     eActionDeletedObject,      // Object was deleted (Implemented)
-    eActionPastedObjects,      // Objects were copied + pasted (Needs testing)
+    eActionPastedObjects,      // Objects were copied + pasted (Implemented)
     // This should always equal to 7 or the hardcoded values would not like that!
     eActionRequestLevel = 7,   // Request level for synchronization (Objects sync)
     eActionReturnLevelString,  // Return level string which was requested. Only host should be sending this! (Objects sync)
-    eActionChangeGroupID,      // Group ID was modified
+    eActionChangeGroupID,      // Group ID was modified (Implemented)
     eActionUpdatedColor,       // Color was updated
     eActionModifiedObject,     // Object data was changed, used for EffectGameObjects and EnhancedGameObjects (Implemented for all but ColorTriggers)
     eActionSongChanged,        // Level's song was changed (Implemented)

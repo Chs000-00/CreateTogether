@@ -94,10 +94,8 @@ void MyEditorUI::transformObject(GameObject* p0, EditCommand p1, bool p2) {
     EditorUI::transformObject(p0, p1, p2);
 }
 
-// TODO: Figure out if I can use
+// TODO: Figure out a better way to move objects
 void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
-
-    
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     auto betterObject = static_cast<MyGameObject*>(p0);
@@ -114,7 +112,8 @@ void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
         gameManager->m_fields->m_moveList = matjson::Value();
     }
 
-    else {
+    // IDFK Why im doing this
+    if (gameManager->m_fields->m_sendMoveList) {
         matjson::Value pos = matjson::Value();
         pos.set("x", p0->getPositionX());
         pos.set("y", p0->getPositionY());

@@ -43,6 +43,8 @@ class $modify(MyGameManager, GameManager) {
 
 		matjson::Value m_groupIDEdits;
 		bool m_sendGroupIDEdits;
+		bool m_isAddingGroupID;
+		int m_groupIDToEdit;
 
 		LevelEditorLayer* m_level;
     	// LobbiesLayer* m_lobbyLayer = nullptr;

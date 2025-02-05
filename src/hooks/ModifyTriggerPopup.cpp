@@ -40,7 +40,7 @@ class $modify(MySetupTriggerPopup, SetupTriggerPopup) {
             editObjs = this->m_gameObjects;
         } 
         else {
-            log::warn("Error: no suitable gameObject found!");
+            log::warn("Warning: no suitable gameObject found!");
             return;
         }
 
