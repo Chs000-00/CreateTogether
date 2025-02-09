@@ -11,15 +11,15 @@ enum EEditorActionType {
     eActionPastedObjects,      // Objects were copied + pasted (Implemented)
     // This should always equal to 7 or the hardcoded values would not like that!
     eActionRequestLevel = 7,   // Request level for synchronization (Objects sync)
-    eActionReturnLevelString,  // Return level string which was requested. Only host should be sending this! (Objects sync)
+    eActionReturnLevelString,  // Return level string which was requested. Only host should be sending this! (Implemented)
     eActionChangeGroupID,      // Group ID was modified (Implemented)
     eActionUpdatedColor,       // Color was updated
-    eActionModifiedObject,     // Object data was changed, used for EffectGameObjects and EnhancedGameObjects (Implemented for all but ColorTriggers)
+    eActionModifiedObject,     // Object data was changed, used for EffectGameObjects and EnhancedGameObjects (Implemented)
     eActionSongChanged,        // Level's song was changed (Implemented)
     eOptionSpeedChanged,       // Starting player speed was changed (Implemented)
     eOptionGameTypeChanged,    // Classic or platformer was changed
     // Line change might be moved to another action type.
-    eActionArtSelected,        // Background art, ground art, or line was changed. (Needs testing)
+    eActionArtSelected,        // Background art, ground art, or line was changed. (Implemented)
     eOptionLevelSetting,       // Level setting was changed
     eOptionGameModeChanged,    // Starting GameMode was changed (Implemented)
     eActionUpdatedFont,        // Level's font was updated/changed (Implemented)
