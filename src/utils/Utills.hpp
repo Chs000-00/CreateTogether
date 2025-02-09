@@ -8,4 +8,4 @@ using namespace geode::prelude;
 // Comparison uses <=
 bool isValidEnumRange(int n, int min, int max);
 
-Result<void> toggleFromLevelSettings(LevelSettingsObject* settings, int option);
+Result<int> toggleFromLevelSettings(LevelSettingsObject* settings, int option);

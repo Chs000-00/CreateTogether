@@ -44,7 +44,7 @@ class $modify(LevelOptionsLayer) {
         matjson::Value object = matjson::makeObject({
             {"Type", static_cast<int>(eOptionLevelSetting)},
             {"ToggleIndex", p0},
-            {"Value", p1}
+            {"Val", p1}
         });
 
         gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));

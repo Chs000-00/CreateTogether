@@ -12,7 +12,7 @@ bool isValidEnumRange(int n, int min, int max) {
 }
 
 
-Result<void> toggleFromLevelSettings(LevelSettingsObject* settings, int option) {
+Result<int> toggleFromLevelSettings(LevelSettingsObject* settings, int option) {
     switch (option) {
         case 0:
             settings->m_startMini = !settings->m_startMini;
@@ -45,10 +45,61 @@ Result<void> toggleFromLevelSettings(LevelSettingsObject* settings, int option) 
         case 8:
             settings->m_allowMultiRotation = !settings->m_allowMultiRotation;
             break;
+
+        case 9:
+            settings->m_enablePlayerSqueeze = !settings->m_enablePlayerSqueeze;
+            break;
+        
+        case 10:
+            settings->m_fixGravityBug = !settings->m_fixGravityBug;
+            break;
+
+        case 11:
+            settings->m_fixNegativeScale = !settings->m_fixNegativeScale;
+            break;
+
+        case 12:
+            settings->m_fixRobotJump = !settings->m_fixRobotJump;
+            break;
+
+        // Case 13 is "skipped" because I am very good at programmign and I checked for this beforehand which was a really great idea totally
+
+        case 14:
+            settings->m_dynamicLevelHeight = !settings->m_dynamicLevelHeight;
+            break;
+
+        case 15:
+            settings->m_sortGroups = !settings->m_sortGroups;
+            break;
+
+        case 16:
+            settings->m_fixRadiusCollision = !settings->m_fixRadiusCollision;
+            break;
+
+        case 17:
+            settings->m_enable22Changes = !settings->m_enable22Changes;
+            break;
+
+        case 18:
+            settings->m_allowStaticRotate = !settings->m_allowStaticRotate;
+            break;
+
+        case 19:
+            settings->m_reverseSync != settings->m_reverseSync;
+            break;
+
+        case 20:
+            settings->m_noTimePenalty != settings->m_noTimePenalty;
+            break;
+
+        case 22:
+            settings->m_propertykA45 != settings->m_propertykA45;
+            break;
+
         
         default:
-            return Err("no corresponding option found");
+            return Err("eOptionLevelSetting: No corresponding option found");
             break;
     }
-    return Ok();
+    return Ok(0);
 }

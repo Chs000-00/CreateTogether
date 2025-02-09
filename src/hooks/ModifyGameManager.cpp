@@ -577,6 +577,23 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 				break;
 			}
 
+			case eOptionLevelSetting: {
+				GEODE_UNWRAP_INTO(int toggleIndex, data["ToggleIndex"].asInt());   
+
+				if (toggleIndex == 13) {
+					GEODE_UNWRAP_INTO(float val, data["Val"].asDouble());   
+					level->m_levelSettings->m_spawnGroup = val;
+				} 
+				else {
+					auto ret = toggleFromLevelSettings(level->m_levelSettings, toggleIndex);
+
+					if (!ret) {
+						return ret;
+					}
+				}
+				break;
+			}
+
 			default:
 				log::warn("Type {} not found! Are you sure you're on the right version?", type);
 				return Err("Invalid case switch");
