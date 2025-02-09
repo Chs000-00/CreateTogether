@@ -138,22 +138,20 @@ void MyLevelEditorLayer::addToGroup(GameObject* p0, int p1, bool p2) {
 
     MyGameObject* betterGameObject = static_cast<MyGameObject*>(p0);
 
-    if (!gameManager->m_fields->m_sendGroupIDEdits) {
-        gameManager->m_fields->m_sendGroupIDEdits = true;
+    if (!gameManager->m_fields->m_sharedMassEdit.m_sendGroupIDEdits) {
+        gameManager->m_fields->m_sharedMassEdit.m_sendGroupIDEdits = true;
         // Lets just hope you dont add and remove groups at the same time.
-        gameManager->m_fields->m_isAddingGroupID = true;
+        gameManager->m_fields->m_sharedMassEdit.m_isAddingGroupID = true;
         // Or that we edit the same ID in one frame
-        gameManager->m_fields->m_groupIDToEdit = p1;
-        gameManager->m_fields->m_groupIDEdits = matjson::Value::array();
+        gameManager->m_fields->m_sharedMassEdit.m_groupIDToEdit = p1;
+        gameManager->m_fields->m_sharedMassEdit.m_groupIDEdits = matjson::Value::array();
 
-        gameManager->m_fields->m_groupIDEdits.push(betterGameObject->m_fields->m_veryUniqueID);
+        gameManager->m_fields->m_sharedMassEdit.m_groupIDEdits.push(betterGameObject->m_fields->m_veryUniqueID);
 
     }
 
-    if (gameManager->m_fields->m_sendMoveList) {
-        // Or that EditUUIDs exists!
-        gameManager->m_fields->m_groupIDEdits.push(betterGameObject->m_fields->m_veryUniqueID);
-    }
+    // Or that EditUUIDs exists!
+    gameManager->m_fields->m_sharedMassEdit.m_groupIDEdits.push(betterGameObject->m_fields->m_veryUniqueID);
 
 
     LevelEditorLayer::addToGroup(p0, p1, p2);
@@ -170,19 +168,18 @@ void MyLevelEditorLayer::removeFromGroup(GameObject* p0, int p1) {
         return;
     }
 
-    if (!gameManager->m_fields->m_sendGroupIDEdits) {
-        gameManager->m_fields->m_sendGroupIDEdits = true;
+    if (!gameManager->m_fields->m_sharedMassEdit.m_sendGroupIDEdits) {
+        gameManager->m_fields->m_sharedMassEdit.m_sendGroupIDEdits = true;
         // Lets just hope you dont add and remove groups at the same time.
-        gameManager->m_fields->m_isAddingGroupID = false;
+        gameManager->m_fields->m_sharedMassEdit.m_isAddingGroupID = false;
         // Or that we edit the same ID in one frame
-        gameManager->m_fields->m_groupIDToEdit = p1;
-        gameManager->m_fields->m_groupIDEdits = matjson::Value::array();
+        gameManager->m_fields->m_sharedMassEdit.m_groupIDToEdit = p1;
+        gameManager->m_fields->m_sharedMassEdit.m_groupIDEdits = matjson::Value::array();
     }
 
-    else {
-        // Or that EditUUIDs exists!
-        gameManager->m_fields->m_groupIDEdits.push(betterGameObject->m_fields->m_veryUniqueID);
-    }
+    // Or that EditUUIDs exists!
+    gameManager->m_fields->m_sharedMassEdit.m_groupIDEdits.push(betterGameObject->m_fields->m_veryUniqueID);
+
 
     LevelEditorLayer::removeFromGroup(p0, p1);
 }

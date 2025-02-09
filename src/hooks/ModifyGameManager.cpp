@@ -686,31 +686,31 @@ void MyGameManager::sendDataToUser(SteamNetworkingIdentity usr, const char* out)
 }
 
 void MyGameManager::lateSendData() {
-	if (this->m_fields->m_sendMoveList) {
+	if (this->m_fields->m_sharedMassEdit.m_sendMoveList) {
 
 		matjson::Value object = matjson::makeObject({
 			{"Type", static_cast<int>(eActionMovedObject)},
-			{"EditUUIDs", this->m_fields->m_moveList}
+			{"EditUUIDs", this->m_fields->m_sharedMassEdit.m_moveList}
 		});
 
 		this->sendDataToMembers(object.dump(matjson::NO_INDENTATION), false);
 	
-		this->m_fields->m_sendMoveList = false;
+		this->m_fields->m_sharedMassEdit.m_sendMoveList = false;
 	}
 
 
-	if (this->m_fields->m_sendGroupIDEdits) {
+	if (this->m_fields->m_sharedMassEdit.m_sendGroupIDEdits) {
 
 		matjson::Value object = matjson::makeObject({
 			{"Type", static_cast<int>(eActionChangeGroupID)},
-			{"Add", this->m_fields->m_isAddingGroupID},
-			{"GroupID", this->m_fields->m_groupIDToEdit},
-			{"EditUUIDs", this->m_fields->m_groupIDEdits}
+			{"Add", this->m_fields->m_sharedMassEdit.m_isAddingGroupID},
+			{"GroupID", this->m_fields->m_sharedMassEdit.m_groupIDToEdit},
+			{"EditUUIDs", this->m_fields->m_sharedMassEdit.m_groupIDEdits}
 		});
 
 		this->sendDataToMembers(object.dump(matjson::NO_INDENTATION), false);
 	
-		this->m_fields->m_sendGroupIDEdits = false;
+		this->m_fields->m_sharedMassEdit.m_sendGroupIDEdits = false;
 	}
 }
 

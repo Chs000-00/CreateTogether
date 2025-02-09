@@ -13,6 +13,8 @@ using namespace geode::prelude;
 class $modify(LevelOptionsLayer) {
     void didToggle(int p0) {
 
+        log::info("LevelOptionsLayer: p0 {}", p0);
+        
         LevelOptionsLayer::didToggle(p0);
 
         auto gameManager = static_cast<MyGameManager*>(GameManager::get());

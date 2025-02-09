@@ -13,6 +13,8 @@ bool LobbyPopup::setup(EPopupType type) {
     // convenience function provided by Popup
     // for adding/setting a title to the popup
 
+    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+
     switch (type) {
         case eLobbyHostPopup: {
             this->setTitle("Create Lobby:");
@@ -61,7 +63,7 @@ bool LobbyPopup::setup(EPopupType type) {
 
 
         // TODO: Fix this reseting or something idfk
-        publicToggle->toggle(this->m_isServerPublic);
+        publicToggle->toggle(gameManager);
 
         checkMarkMenu->addChild(publicText);
         checkMarkMenu->addChild(publicToggle);
@@ -75,13 +77,14 @@ bool LobbyPopup::setup(EPopupType type) {
 }
 
 void LobbyPopup::onPublicToggle(CCMenuItemToggler* sender) {
-    this->m_isServerPublic = sender->m_toggled; 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+    gameManager->m_fields->m_options.isPrivate = sender->m_toggled; 
+
     if (gameManager->m_fields->m_isInLobby) {
         log::debug("Setting isPublic to {}", sender->m_toggled);
         // TODO: Check if this code works
 
-        if (this->m_isServerPublic) {
+        if (gameManager->m_fields->m_options.isPrivate) {
             SteamMatchmaking()->SetLobbyType(gameManager->m_fields->m_lobbyId, k_ELobbyTypePublic);
         }
         else {
@@ -98,7 +101,7 @@ void LobbyPopup::startHosting(CCObject* sender) {
 
     this->onClose(nullptr);
 
-    if (this->m_isServerPublic) {
+    if (gameManagerFields->m_options.isPrivate) {
         gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
     }
     else {

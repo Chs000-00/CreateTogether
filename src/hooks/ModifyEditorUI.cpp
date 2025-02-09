@@ -107,18 +107,17 @@ void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
     }
 
 
-    if (!gameManager->m_fields->m_sendMoveList) {
-        gameManager->m_fields->m_sendMoveList = true;
-        gameManager->m_fields->m_moveList = matjson::Value();
+    if (!gameManager->m_fields->m_sharedMassEdit.m_sendMoveList) {
+        gameManager->m_fields->m_sharedMassEdit.m_sendMoveList = true;
+        gameManager->m_fields->m_sharedMassEdit.m_moveList = matjson::Value();
     }
 
     // IDFK Why im doing this
-    if (gameManager->m_fields->m_sendMoveList) {
-        matjson::Value pos = matjson::Value();
-        pos.set("x", p0->getPositionX());
-        pos.set("y", p0->getPositionY());
-        gameManager->m_fields->m_moveList[betterObject->m_fields->m_veryUniqueID] = pos;
-    }
+    matjson::Value pos = matjson::Value();
+    pos.set("x", p0->getPositionX());
+    pos.set("y", p0->getPositionY());
+    gameManager->m_fields->m_sharedMassEdit.m_moveList[betterObject->m_fields->m_veryUniqueID] = pos;
+
 
     // matjson::Value object = matjson::makeObject({
     //     {"Type", static_cast<int>(eActionMovedObject)},

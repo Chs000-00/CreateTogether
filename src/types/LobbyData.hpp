@@ -12,3 +12,9 @@ struct lobbyData {
     std::string levelName;
     bool isVersionMismatched;
 };
+
+struct lobbyOptions {
+    bool isPrivate = false;
+    // TODO: Implement
+    bool canFriendsJoin = true;
+};

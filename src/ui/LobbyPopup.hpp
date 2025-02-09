@@ -14,7 +14,6 @@ enum EPopupType {
 class LobbyPopup : public geode::Popup<EPopupType> {
 private:
     bool setup(EPopupType type) override;
-    bool m_isServerPublic = false;
 
 public:
     static LobbyPopup* create(EPopupType type);

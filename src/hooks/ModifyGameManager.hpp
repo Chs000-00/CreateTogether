@@ -29,6 +29,7 @@ private:
 
 class $modify(MyGameManager, GameManager) {
     struct Fields {
+		//  Inner Structs?
         SteamAPICall_t m_lobbyCreated;
         SteamAPICall_t m_lobbyJoined;
         uint64 m_lobbyId;
@@ -37,14 +38,18 @@ class $modify(MyGameManager, GameManager) {
 		bool m_isHost = false; // TODO: use GetLobbyOwner instead? Possibly?
 		bool m_isInEditorLayer = false;
 
-		// TODO: Move this stuff to some other class
-		matjson::Value m_moveList;
-		bool m_sendMoveList;
+		struct lobbyOptions m_options;
 
-		matjson::Value m_groupIDEdits;
-		bool m_sendGroupIDEdits;
-		bool m_isAddingGroupID;
-		int m_groupIDToEdit;
+		struct SharedMassEdit {
+			// TODO: Move this stuff to some other class
+			matjson::Value m_moveList;
+			bool m_sendMoveList;
+
+			matjson::Value m_groupIDEdits;
+			bool m_sendGroupIDEdits;
+			bool m_isAddingGroupID;
+			int m_groupIDToEdit;
+		} m_sharedMassEdit;
 
 		LevelEditorLayer* m_level;
     	// LobbiesLayer* m_lobbyLayer = nullptr;
