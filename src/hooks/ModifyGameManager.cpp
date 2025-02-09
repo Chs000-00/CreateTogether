@@ -335,8 +335,6 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
 				// TODO: Check command range
 
-				log::debug("Calling TransformObject");
-
 				cEditorUI->m_fields->m_wasDataSent = true;
 				cEditorUI->transformObject(transformedObject, static_cast<EditCommand>(command), false);
 				cEditorUI->m_fields->m_wasDataSent = false;
@@ -601,19 +599,52 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 				break;
 			}
 
+			case eActionRotatedObject: {
+				GEODE_UNWRAP_INTO(float rotation, data["Rot"].asDouble());   
+				GEODE_UNWRAP_INTO(float x, data["x"].asDouble());
+				GEODE_UNWRAP_INTO(float y, data["y"].asDouble());
+				GEODE_UNWRAP_INTO(std::vector editUUIDs, data["EditUUIDs"].asArray());
+
+				cocos2d::CCPoint position = {x, y};
+
+				auto cEditorUI = static_cast<MyEditorUI*>(level->m_editorUI);
+				// TODO: Check command range
+
+
+				auto arr = CCArray::create();
+
+				for (auto i = 0; i < editUUIDs.size(); ++i) {
+					GEODE_UNWRAP_INTO(std::string uid, editUUIDs[i].asString());
+					auto retObj = static_cast<GameObject*>(level->m_fields->m_pUniqueIDOfGameObject->objectForKey(uid));
+					arr->addObject(retObj);
+				}
+				
+				cEditorUI->m_fields->m_wasDataSent = true;
+				cEditorUI->rotateObjects(arr, rotation, position);
+				cEditorUI->m_fields->m_wasDataSent = false;
+
+				break;
+			}
+
 			default:
 				log::warn("Type {} not found! Are you sure you're on the right version?", type);
 				return Err("Invalid case switch");
 		}
+
+
 
 	return Ok(0);
 }
 
 void MyGameManager::receiveData() {
 
+	if (this->m_fields->m_isPlaytesting) {
+		return;
+	}
+
 	#ifndef USE_TEST_SERVER
-		SteamNetworkingMessage_t* messageList[64];
-		auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 64);
+		SteamNetworkingMessage_t* messageList[128];
+		auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 128);
 	#else
 		// Compat with for loop
 		auto numMessages = 1;

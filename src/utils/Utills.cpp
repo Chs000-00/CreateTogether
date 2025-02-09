@@ -11,7 +11,6 @@ bool isValidEnumRange(int n, int min, int max) {
     return (min <= n && n <= max);
 }
 
-
 Result<int> toggleFromLevelSettings(LevelSettingsObject* settings, int option) {
     switch (option) {
         case 0:

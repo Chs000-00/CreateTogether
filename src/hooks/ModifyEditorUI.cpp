@@ -95,6 +95,7 @@ void MyEditorUI::transformObject(GameObject* p0, EditCommand p1, bool p2) {
 }
 
 // TODO: Figure out a better way to move objects
+// TODO: Debug moveObject
 void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
@@ -187,4 +188,32 @@ CCArray* MyEditorUI::pasteObjects(gd::string p0, bool p1, bool p2) {
 
 
     return ret;
+}
+
+void MyEditorUI::rotateObjects(CCArray* p0, float p1, CCPoint p2) {
+    
+    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+
+    if (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent) {
+        EditorUI::rotateObjects(p0, p1, p2);
+        return;
+    }
+
+    matjson::Value object = matjson::makeObject({
+        {"Type", static_cast<int>(eActionRotatedObject)},
+        {"Rot", p1},
+        {"x", p2.x},
+        {"y", p2.y}
+    });
+    
+    matjson::Value eUUIDs = matjson::Value::array();
+
+
+    auto objectArr = CCArrayExt<MyGameObject*>(p0);
+    for (auto obj : objectArr) {
+        eUUIDs.push(obj->m_fields->m_veryUniqueID);
+    }
+	object["EditUUIDs"] = eUUIDs;
+
+    EditorUI::rotateObjects(p0, p1, p2);
 }
