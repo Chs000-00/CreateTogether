@@ -84,12 +84,20 @@ void LobbyPopup::onPublicToggle(CCMenuItemToggler* sender) {
         log::debug("Setting isPublic to {}", sender->m_toggled);
         // TODO: Check if this code works
 
-        if (gameManager->m_fields->m_options.isPrivate) {
-            SteamMatchmaking()->SetLobbyType(gameManager->m_fields->m_lobbyId, k_ELobbyTypePublic);
+        if (gameManager->m_fields->m_options.canFriendsJoin) {
+            if (gameManager->m_fields->m_options.isPrivate) {
+                gameManager->m_fields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
+            }
+            else {
+                gameManager->m_fields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
+            }
         }
         else {
-            SteamMatchmaking()->SetLobbyType(gameManager->m_fields->m_lobbyId, k_ELobbyTypeFriendsOnly);
+            if (!gameManager->m_fields->m_options.isPrivate) {
+                gameManager->m_fields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePrivate, 16);
+            }    
         }
+
     }
 }
 
@@ -101,11 +109,19 @@ void LobbyPopup::startHosting(CCObject* sender) {
 
     this->onClose(nullptr);
 
-    if (gameManagerFields->m_options.isPrivate) {
-        gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
+
+    if (gameManagerFields->m_options.canFriendsJoin) {
+        if (gameManagerFields->m_options.isPrivate) {
+            gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
+        }
+        else {
+            gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
+        }
     }
     else {
-        gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
+        if (!gameManagerFields->m_options.isPrivate) {
+            gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePrivate, 16);
+        }    
     }
 
     gameManagerFields->m_isHost = true;

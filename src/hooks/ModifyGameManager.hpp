@@ -37,6 +37,7 @@ class $modify(MyGameManager, GameManager) {
         bool m_isInLobby = false;
 		bool m_isHost = false; // TODO: use GetLobbyOwner instead? Possibly?
 		bool m_isInEditorLayer = false;
+		bool m_isRequestingLevelString = false;
 
 		struct lobbyOptions m_options;
 

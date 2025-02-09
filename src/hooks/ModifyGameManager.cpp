@@ -16,6 +16,7 @@
 #include "../types/ActionTypes.hpp"
 #include "../types/LobbyData.hpp"
 #include "../layers/LobbiesLayer.hpp"
+#include "../ui/WaitingForHostPopup.hpp"
 #include "ModifyEditorUI.hpp"
 #include "ModifyEditorLayer.hpp"
 #include "ModifyGameObject.hpp"
@@ -42,12 +43,10 @@ void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 
 				gameManager->m_fields->m_lobbyJoined = SteamMatchmaking()->JoinLobby(callback->m_steamIDLobby); // I'm not sure if this is needed
 
-				delete callback;
+				
 
 			}
-			else {
-				delete callback;
-			}
+			delete callback;
 		}
 		
 	);
@@ -126,6 +125,8 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 }
 
 void MyGameManager::enterLevelEditor() {
+	WaitingForHostPopup::create();
+	this->m_fields->m_isRequestingLevelString = true;
 	this->m_fields->m_isInEditorLayer = true;
 	auto gameLevel = GJGameLevel::create();
 	gameLevel->m_isEditable = true;
@@ -399,6 +400,10 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 
 			case eActionReturnLevelString: {
 
+				if (!this->m_fields->m_isRequestingLevelString) {
+					return Err("eActionReturnLevelString: Not requesting a level string");
+				}
+
 				#ifndef USE_TEST_SERVER
 					if (this->m_fields->m_hostID != msg->m_identityPeer.GetSteamID()) {
 						return Err("eActionReturnLevelString: Non-Host level string");
@@ -422,6 +427,8 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 					mObject->m_fields->m_veryUniqueID = uid;
 					level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, uid);
 				}
+
+				this->m_fields->m_isRequestingLevelString = false;
 
 				break;
 			}
