@@ -108,7 +108,6 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 
 	if (gameManager->m_fields->m_isHost) {
 		log::warn("onLobbyEntered called as host!");
-		gameManager->m_fields->m_level = LevelEditorLayer::get();
 	} else {
 		gameManager->m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
 		gameManager->enterLevelEditor();
@@ -132,7 +131,7 @@ void MyGameManager::enterLevelEditor() {
 	gameLevel->m_isEditable = true;
 	gameLevel->m_levelType = GJLevelType::Editor;
 	// gameLevel->m_levelDesc += "Created with Create Together";
-	this->m_fields->m_level = LevelEditorLayer::create(gameLevel, false);
+	auto lev = LevelEditorLayer::create(gameLevel, false);
 	// TODO: Only send this to host!!!!!!!!!
 	auto msg = "{\"Type\": 7}";
 
@@ -142,11 +141,12 @@ void MyGameManager::enterLevelEditor() {
         host.SetSteamID(this->m_fields->m_hostID);
         SteamNetworkingMessages()->SendMessageToUser(host, msg, static_cast<uint32>(strlen(msg)), k_nSteamNetworkingSend_Reliable, 0);
     #else
+		// FIX! THIS!
         sendDataToMembers(msg, false);
     #endif
 
 	this->fetchMemberList();
-	switchToScene(this->m_fields->m_level);
+	switchToScene(lev);
 }
 
 void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
@@ -251,7 +251,13 @@ bool MyGameManager::validateData(matjson::Value data) {
 }
 
 Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG* msg) {
-		auto level = static_cast<MyLevelEditorLayer*>(this->m_fields->m_level);
+
+		// I can get rid of this to save on 10 nanoseconds!
+		if (!LevelEditorLayer::get()) {
+			return Err("WTF? parseDataReceived called yet LevelEditorLayer::get returned nullptr");
+		}
+
+		auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
 
 		auto type = data["Type"].asInt().unwrapOr(-1);
 		switch (type) {
@@ -708,28 +714,36 @@ void MyGameManager::receiveData() {
 // TODO: Finish this
 matjson::Value MyGameManager::getLevelStringMatjson() {
 
-    matjson::Value rjson = matjson::makeObject({
-        {"Type", static_cast<int>(eActionReturnLevelString)},
-        {"LevelString", this->m_fields->m_level->getLevelString()},
-    });
+	// I can get rid of this to save on 10 nanoseconds!
+	if (auto worseLevel = LevelEditorLayer::get()) {
+		auto level = static_cast<MyLevelEditorLayer*>(worseLevel);
 
-	matjson::Value eUUIDs = matjson::Value::array();
+		matjson::Value rjson = matjson::makeObject({
+			{"Type", static_cast<int>(eActionReturnLevelString)},
+			{"LevelString", level->getLevelString()},
+		});
 
-	auto level = static_cast<MyLevelEditorLayer*>(this->m_fields->m_level);
+		matjson::Value eUUIDs = matjson::Value::array();
 
-    auto objectArr = CCArrayExt<MyGameObject*>(level->m_objects);
+		auto objectArr = CCArrayExt<MyGameObject*>(level->m_objects);
 
-    // This might be inefficient as this requires looping over the arr twice.
-	// Lazyness
-	unsigned int index = 0;
-    for (auto obj : objectArr) {
-        eUUIDs.push(obj->m_fields->m_veryUniqueID);
-		index += 1;
-    }
+		// This might be inefficient as this requires looping over the arr twice.
+		// Lazyness
+		unsigned int index = 0;
+		for (auto obj : objectArr) {
+			eUUIDs.push(obj->m_fields->m_veryUniqueID);
+			index += 1;
+		}
 
-	rjson["EditUUIDs"] = eUUIDs;
+		rjson["EditUUIDs"] = eUUIDs;
 
-	return rjson;
+		return rjson;	
+	}
+	else {
+		return Err("WTF? getLevelStringMatjson called yet LevelEditorLayer::get() returned nullptr");
+	}
+
+
 }
 
 void MyGameManager::sendDataToUser(SteamNetworkingIdentity usr, const char* out) {

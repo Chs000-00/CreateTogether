@@ -54,8 +54,7 @@ class $modify(MyGameManager, GameManager) {
 			int m_groupIDToEdit;
 		} m_sharedMassEdit;
 
-		LevelEditorLayer* m_level;
-    	// LobbiesLayer* m_lobbyLayer = nullptr;
+	    	// LobbiesLayer* m_lobbyLayer = nullptr;
 		CallbackManager m_callbackManager;
 
 		std::vector<SteamNetworkingIdentity> m_playersInLobby;
