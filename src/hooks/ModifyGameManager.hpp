@@ -59,6 +59,7 @@ class $modify(MyGameManager, GameManager) {
 
 		std::vector<SteamNetworkingIdentity> m_playersInLobby;
 
+		matjson::Value m_levelBuffer;
 
         #ifdef USE_TEST_SERVER
 			SOCKET m_socket;
@@ -71,16 +72,35 @@ class $modify(MyGameManager, GameManager) {
 	void update(float p0);
     void onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure);
 	void onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure);
+
+	// Called to enter the level editor
 	void enterLevelEditor();
+
+	// Send data to a specific user, prob broken
 	void sendDataToUser(SteamNetworkingIdentity usr, const char* out);
+
+	// Update the memberList
 	void fetchMemberList();
+
+	// Send data to each member. ReceiveData is some weird useless bool that I should prob remove
 	void sendDataToMembers(std::string data, bool receiveData = false);
+
+	// Receive data
 	void receiveData();
+
+	// Parse recived data
 	Result<int> parseDataReceived(matjson::Value data, NETWORKING_MSG* msg);
+
+	// Send data each frame cause idfk why not
 	void lateSendData();
+
+	// Leave the current lobby if it exists. Otherwise do nothing
 	void leaveLobby();
+	
+	// Return a matjson::Value from LevelEditorLayer::get()->getLevelString()
 	matjson::Value getLevelStringMatjson();
 
+	// This is just one fucking function call why do I even have this
 	static bool validateData(matjson::Value data);
 
 };

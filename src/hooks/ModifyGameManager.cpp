@@ -588,6 +588,7 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 				break;
 			}
 
+			// TODO: Debug thsi why is it not working wtf
 			case eOptionLevelSetting: {
 				GEODE_UNWRAP_INTO(int toggleIndex, data["ToggleIndex"].asInt());   
 
@@ -806,8 +807,8 @@ void MyGameManager::leaveLobby() {
 			SteamMatchmaking()->LeaveLobby(this->m_fields->m_lobbyId);
 			this->m_fields->m_lobbyId = 0;
 
-
 		#else
+			// WHY DOES THIS CRASH????
 			close(this->m_fields->m_socket);
 		#endif
 

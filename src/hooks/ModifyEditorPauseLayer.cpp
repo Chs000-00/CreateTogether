@@ -86,6 +86,7 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 	void onSaveAndPlay(cocos2d::CCObject* sender) {
 		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 		// gameManager->leaveLobby(); // Leave Lobby
+		gameManager->m_fields->m_levelBuffer = gameManager->getLevelStringMatjson();
 		EditorPauseLayer::onSaveAndPlay(sender); // And exit editor (whoops)
 	}
 
