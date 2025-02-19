@@ -58,8 +58,6 @@ class $modify(MyGameManager, GameManager) {
 
 		std::vector<SteamNetworkingIdentity> m_playersInLobby;
 
-		matjson::Value m_levelBuffer;
-
         #ifdef USE_TEST_SERVER
 			SOCKET m_socket;
         #endif

@@ -183,3 +183,18 @@ void MyLevelEditorLayer::removeFromGroup(GameObject* p0, int p1) {
 
     LevelEditorLayer::removeFromGroup(p0, p1);
 }
+
+void MyLevelEditorLayer::createFakePlayLayer() {
+    log::debug("Creating a fake playlayer...");
+
+    auto gameLevel = this->m_level;
+
+    auto ret = new PlayLayer;
+    if (ret->init(gameLevel, false, false)) {
+        ret->autorelease();
+    }
+    else {
+        log::error("Failed to init Fake PlayLayer due to an unknown issue.");
+        CC_SAFE_DELETE(ret);
+    }
+}
