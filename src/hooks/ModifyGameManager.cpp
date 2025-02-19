@@ -171,7 +171,7 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 		// Because this pointer would be destroyed, we would need to create a new LevelEditorLayer with the same data
 		// instead of a pointer, so the LevelEditor would be presistent when leaving the level editor to playtest
 		// Currently this is just a temporary solution to get the mod running
-		m_fields->m_level = LevelEditorLayer::get();
+		// m_fields->m_level = LevelEditorLayer::get();
 
 		// Constants can be changed in CMakeLists.txt
 		// Kind of a bad idea but who cares
@@ -645,7 +645,7 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 
 void MyGameManager::receiveData() {
 
-	if (this->m_fields->m_isPlaytesting) {
+	if (this->m_fields->m_isInEditorLayer) {
 		return;
 	}
 
@@ -741,7 +741,7 @@ matjson::Value MyGameManager::getLevelStringMatjson() {
 		return rjson;	
 	}
 	else {
-		return Err("WTF? getLevelStringMatjson called yet LevelEditorLayer::get() returned nullptr");
+		log::warn("WTF? getLevelStringMatjson called yet LevelEditorLayer::get() returned nullptr");
 	}
 
 
