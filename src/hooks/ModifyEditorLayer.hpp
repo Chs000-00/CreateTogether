@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/binding/GameObject.hpp>
