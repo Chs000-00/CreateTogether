@@ -188,5 +188,7 @@ void MyLevelEditorLayer::createFakePlayLayer() {
     log::debug("Creating a fake playlayer...");
 
     auto ret = PlayLayer::scene(this->m_level, false, false);
+    ret->setZOrder(0);
+    // ret->m_fields->m_isFakeLayer = true;
     addChild(ret);
 }

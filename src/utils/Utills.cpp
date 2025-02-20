@@ -84,15 +84,15 @@ Result<int> toggleFromLevelSettings(LevelSettingsObject* settings, int option) {
             break;
 
         case 19:
-            settings->m_reverseSync != settings->m_reverseSync;
+            settings->m_reverseSync = !settings->m_reverseSync;
             break;
 
         case 20:
-            settings->m_noTimePenalty != settings->m_noTimePenalty;
+            settings->m_noTimePenalty = !settings->m_noTimePenalty;
             break;
 
         case 22:
-            settings->m_propertykA45 != settings->m_propertykA45;
+            settings->m_propertykA45 = !settings->m_propertykA45;
             break;
 
         

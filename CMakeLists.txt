@@ -8,6 +8,7 @@ project(CreateTogether VERSION 0.3.1)
 
 file(GLOB SOURCES
     src/hooks/*.cpp
+    src/hooks/PlayLayer/*.cpp
     src/hooks/EditorOptions/*.cpp
     src/layers/*.cpp
     src/ui/*.cpp

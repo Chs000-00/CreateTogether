@@ -742,9 +742,11 @@ matjson::Value MyGameManager::getLevelStringMatjson() {
 	}
 	else {
 		log::warn("WTF? getLevelStringMatjson called yet LevelEditorLayer::get() returned nullptr");
+		matjson::Value rjson = matjson::makeObject({
+			{"Type", static_cast<int>(eActionReturnLevelString)}
+		});
+		return rjson;	
 	}
-
-
 }
 
 void MyGameManager::sendDataToUser(SteamNetworkingIdentity usr, const char* out) {
