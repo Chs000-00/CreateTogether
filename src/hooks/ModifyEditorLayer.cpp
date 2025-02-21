@@ -8,6 +8,8 @@
 #include "ModifyGameObject.hpp"
 #include "ModifyEditorLayer.hpp"
 #include "ModifyEditorUI.hpp"
+#include "./PlayLayer/ModifyPlayLayer.hpp"
+
 
 using namespace geode::prelude;
 
@@ -189,6 +191,13 @@ void MyLevelEditorLayer::createFakePlayLayer() {
 
     auto ret = PlayLayer::scene(this->m_level, false, false);
     ret->setZOrder(0);
-    // ret->m_fields->m_isFakeLayer = true;
-    addChild(ret);
+    auto playLayer = ret->getChildByType<MyPlayLayer>(0);
+    if (!playLayer) {
+        log::warn("playLayer is nullptr or not found!");
+        ret->removeFromParent();
+        CC_SAFE_DELETE(ret);
+        return;
+    }
+    playLayer->m_fields->m_isFakeLayer = true;
+    CCScene::get()->addChild(ret);
 }
