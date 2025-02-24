@@ -20,13 +20,13 @@ enum EEditorActionType {
     eOptionGameTypeChanged,    // Classic or platformer was changed
     // Line change might be moved to another action type.
     eActionArtSelected,        // Background art, ground art, or line was changed. (Implemented)
-    eOptionLevelSetting,       // Level setting was changed
+    eOptionLevelSetting,       // Level setting was changed (Implemented, needs testing)
     eOptionGameModeChanged,    // Starting GameMode was changed (Implemented)
     eActionUpdatedFont,        // Level's font was updated/changed (Implemented)
     eActionDeleteAllOfType,    // Delete all objects of a certain ID
     eActionLockLayer,          // Host locks a layer, clients cannot unlock a layer (? not sure if I should implement this)
     // TODO: Move this higher upward
-    eActionRotatedObject,
+    eActionRotatedObject,      // (Sort of implemented? Not sure why but its bugged /: )
     eActionWeirdlyScaledObject // Like the object being scaled, but weird?
 };
 

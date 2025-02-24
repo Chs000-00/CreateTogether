@@ -96,6 +96,7 @@ void MyEditorUI::transformObject(GameObject* p0, EditCommand p1, bool p2) {
 
 // TODO: Figure out a better way to move objects
 // TODO: Debug moveObject
+// Also move hook object"s" isntead??
 void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
@@ -110,14 +111,10 @@ void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
 
     if (!gameManager->m_fields->m_sharedMassEdit.m_sendMoveList) {
         gameManager->m_fields->m_sharedMassEdit.m_sendMoveList = true;
-        gameManager->m_fields->m_sharedMassEdit.m_moveList = matjson::Value();
+        gameManager->m_fields->m_sharedMassEdit.m_moveList = matjson::Value::array();
     }
 
-    // IDFK Why im doing this
-    matjson::Value pos = matjson::Value();
-    pos.set("x", p0->getPositionX());
-    pos.set("y", p0->getPositionY());
-    gameManager->m_fields->m_sharedMassEdit.m_moveList[betterObject->m_fields->m_veryUniqueID] = pos;
+    gameManager->m_fields->m_sharedMassEdit.m_moveList.push(betterObject->m_fields->m_veryUniqueID;);
 
 
     // matjson::Value object = matjson::makeObject({
