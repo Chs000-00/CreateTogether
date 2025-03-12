@@ -11,9 +11,9 @@ void MyPauseLayer::onQuit(CCObject* sender) {
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
     if (playLayer->m_fields->m_isFakeLayer) {
-        removeFromParent();
-        playLayer->removeFromParent();
+        this->getParent()->removeFromParent();
         gameManager->leaveLobby();
+        
         // More stuff here im too lazy to implement
     }
     else {
@@ -24,8 +24,7 @@ void MyPauseLayer::onQuit(CCObject* sender) {
 void MyPauseLayer::onEdit(CCObject* sender) {
     auto playLayer = static_cast<MyPlayLayer*>(PlayLayer::get());
     if (playLayer->m_fields->m_isFakeLayer) {
-        removeFromParent();
-        playLayer->removeFromParent();
+        this->getParent()->removeFromParent();
     }
     else {
         PauseLayer::onQuit(sender);

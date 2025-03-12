@@ -107,7 +107,7 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 	
 
 	if (gameManager->m_fields->m_isHost) {
-		log::warn("onLobbyEntered called as host!");
+		log::info("onLobbyEntered called as host!");
 	} else {
 		gameManager->m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
 		gameManager->enterLevelEditor();
@@ -115,9 +115,10 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 
 	gameManager->m_fields->m_hostID = SteamMatchmaking()->GetLobbyOwner(gameManager->m_fields->m_lobbyId);
 
-	// Make sure we did become host of a level who's host already left.
+	// Make sure we didn't become host of a level who's host already left.
 	if (!gameManager->m_fields->m_isHost && gameManager->m_fields->m_hostID == SteamUser()->GetSteamID()) {
 		log::warn("Invalid host! onLobbyEntered was not called as host yet hostID is your steamID");
+		log::warn("This is a rare error (:");
 		gameManager->leaveLobby();
 	}
 

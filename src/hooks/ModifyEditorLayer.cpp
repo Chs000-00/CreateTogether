@@ -191,13 +191,18 @@ void MyLevelEditorLayer::createFakePlayLayer() {
 
     auto ret = PlayLayer::scene(this->m_level, false, false);
     ret->setZOrder(0);
-    auto playLayer = ret->getChildByType<MyPlayLayer>(0);
+    CCScene::get()->addChild(ret);
+    
+    auto scenePlayLayer = ret->getChildren()->objectAtIndex(0);
+    auto playLayer = static_cast<MyPlayLayer*>(scenePlayLayer);
     if (!playLayer) {
-        log::warn("playLayer is nullptr or not found!");
+        log::warn("playLayer is nullptr or not found!"); // I don't think its possible for this error to happen
         ret->removeFromParent();
         CC_SAFE_DELETE(ret);
         return;
     }
-    playLayer->m_fields->m_isFakeLayer = true;
-    CCScene::get()->addChild(ret);
+    else {
+        playLayer->m_fields->m_isFakeLayer = true;
+        ret->setZOrder(5);
+    }
 }
