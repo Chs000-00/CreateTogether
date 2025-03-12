@@ -350,9 +350,15 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 
 			case eActionMovedObject: {
 
-				if (!data.contains("EditUUIDs") && !data["EditUUIDs"].isObject()) {
+				if (!data.contains("EditUUIDs") && !data["EditUUIDs"].isArray()) {
 					return Err("eActionMovedObject: No EditUUIDs object");
 				}
+
+				GEODE_UNWRAP_INTO(double x, data["x"].asDouble());
+				GEODE_UNWRAP_INTO(double y, data["y"].asDouble());
+
+				cocos2d::CCPoint newPos = {static_cast<float>(x), static_cast<float>(y)};
+				
 
 				auto movedObjects = data["EditUUIDs"];
 
@@ -369,14 +375,7 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
                             break;
                         }
 
-						 auto pos = movedObjects[obj->getKey().value()];
-
-						if (pos["x"].asInt().isErr() || pos["y"].asInt().isErr()) {
-							return Err("eActionMovedObject: x and/or y missing!");
-						}
-
-                        CCPoint newPos = {static_cast<float>(pos["x"].asInt().ok().value()), static_cast<float>(pos["y"].asInt().ok().value())};
-						dObj->setPosition(newPos);
+						level->m_editorUI->moveObject(dObj, newPos)
 					}
 				}
 
