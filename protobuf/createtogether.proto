@@ -11,11 +11,14 @@ message CCPositionMessage {
     optional float y = 2;
 }
 
+message GameObject {
+  optional CCPositionMessage position = 3;
+  optional float Rotation = 2;
+}
 
 message CreateObject {
   optional string uniqueObjectID = 1;
-  optional float Rotation = 2;
-  optional CCPositionMessage position = 3;
+  optional GameObject object = 3;
 }
 
 message SelectedObject {
@@ -30,6 +33,10 @@ message DeleteObjects {
 message MovedObject {
     optional EditUUIDStrings uids = 1;
     optional CCPositionMessage positionOffset = 2;
+}
+
+message UpdatedFont {
+    optional int32 fontID = 1;
 }
 
 message BasicRequest { }
