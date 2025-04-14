@@ -1,0 +1,42 @@
+namespace CTSerialization.base; 
+
+// Yeah idk if I need to add include or not
+// include "CCSerialization.fbs";
+
+
+union MessageBody {
+  CreateObjects,
+  DeleteObjects
+}
+
+table MessageHeader {
+  body:MessageBody; // Might remove this I guess
+}
+
+table CreateObjects {
+  uniqueID:string;
+  obj:GDGameObject;
+}
+
+table DeleteObjects {
+  uniqueIDList:[string];
+}
+
+table MovedObjects {
+  uniqueIDList:[string];
+  positionOffset:CCPosI;
+}
+
+root_type MessageHeader;
+
+
+// message MovedObject {
+//     optional EditUUIDStrings uids = 1;
+//     optional CCPositionMessage positionOffset = 2;
+// }
+
+// message UpdatedFont {
+//     optional int32 fontID = 1;
+// }
+
+// message BasicRequest { }

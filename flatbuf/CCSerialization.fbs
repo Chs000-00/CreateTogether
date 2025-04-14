@@ -1,0 +1,18 @@
+namespace CTSerialization.cc2d; 
+
+// Naming conflicts should be removed with namespace... I hope.
+struct CCPos {
+  x:float;
+  y:float;
+}
+
+/// A version of sCCPos using int instead of float
+struct CCPosI {
+    x:int;
+    y:int;
+}
+
+/// Not CC2d, but instead added by robtop.
+struct GDGameObject {
+    pos:CCPosI;
+}
