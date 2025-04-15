@@ -6,11 +6,12 @@ namespace CTSerialization.base;
 
 union MessageBody {
   CreateObjects,
-  DeleteObjects
+  DeleteObjects,
+  MovedObjects
 }
 
 table MessageHeader {
-  body:MessageBody; // Might remove this I guess
+  body:[MessageBody]; // Might remove this I guess
 }
 
 table CreateObjects {

@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 
 // TODO: Test this
-#define UNWRAP_BUFFER(outvar, ...)                                                \
+#define UNWRAP_BUFFER(outvar, ...)                                             \
     auto res##__LINE__ = __VA_ARGS__;                                          \
     if (res##__LINE__))                                                        \
         return geode::Err(std::move(res##__LINE__).unwrapErr());               \
