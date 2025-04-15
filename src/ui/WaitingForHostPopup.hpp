@@ -12,7 +12,7 @@ protected:
         // for adding/setting a title to the popup
         this->setTitle("Waiting for host.");
 
-        auto label = CCLabelBMFont::create("Waiting for host to enter the editor.", "bigFont.fnt");
+        auto label = CCLabelBMFont::create("Waiting for reply...", "bigFont.fnt");
         m_mainLayer->addChildAtPosition(label, Anchor::Center);
 
         auto spinner = LoadingSpinner::create(100);

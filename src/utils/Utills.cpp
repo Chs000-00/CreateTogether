@@ -97,7 +97,7 @@ Result<int> toggleFromLevelSettings(LevelSettingsObject* settings, int option) {
 
         
         default:
-            return Err("eOptionLevelSetting: No corresponding option found");
+            return Err("toggleFromLevelSettings: No corresponding option found");
             break;
     }
     return Ok(0);

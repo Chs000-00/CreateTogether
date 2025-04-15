@@ -186,8 +186,11 @@ void MyLevelEditorLayer::removeFromGroup(GameObject* p0, int p1) {
     LevelEditorLayer::removeFromGroup(p0, p1);
 }
 
+// I don't want to run into sync issues & issues when a client joins before host. As a work-around, this function
+// Creates a "Fake" Play layer layered over the editor, so the editor can keep updates while the player is playing.
+// TODO: Save & Deload the level upon fake layer creation.
 void MyLevelEditorLayer::createFakePlayLayer() {
-    log::debug("Creating a fake playlayer...");
+    log::debug("Creating a fake playlayer.");
 
     auto ret = PlayLayer::scene(this->m_level, false, false);
     ret->setZOrder(0);

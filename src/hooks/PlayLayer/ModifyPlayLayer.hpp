@@ -7,7 +7,7 @@ using namespace geode::prelude;
 
 class $modify(MyPlayLayer, PlayLayer) {
     struct Fields {
-        // Was the data sent from another user?
+        // Is this a faked play layer? For more info see MyLevelEditorLayer::createFakePlayLayer()
         bool m_isFakeLayer = false;
     };
 };

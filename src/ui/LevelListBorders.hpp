@@ -10,6 +10,7 @@ using namespace geode::prelude;
 using namespace geode::prelude;
 
 // Creates a border similar to the ones when browsing levels
+// Also gross
 class GDLevelListBorders : public ListBorders {
 protected:
     bool init() override;

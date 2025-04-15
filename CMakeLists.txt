@@ -34,12 +34,15 @@ if (WIN32 AND USE_TEST_SERVER)
     message(STATUS "Compiling with test server")
 
     # geode moment
-    # Enable experimental support for a server at port 24018, '127.0.0.1'
-    # Incase you dont have friends and need to test this app out
+    # Enable experimental support for a server at port 24018, address '127.0.0.1'
+    # Incase you dont have friend's and need to test this mod out
+    # A button should appear in your level list. One of them joins the server as host, the friends list joins the server as not-host
+
     add_compile_definitions(
         WIN32_LEAN_AND_MEAN=1
         USE_TEST_SERVER=1
     ) 
+
     target_link_libraries(${PROJECT_NAME} ws2_32)
 endif()
 

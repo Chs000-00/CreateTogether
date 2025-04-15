@@ -3,6 +3,9 @@ This is where he makes a mod.
 
 <img src="logo.png" width="150" alt="the mod's very epic logo" />
 
+Yes I know this code is gross-looking, but feel free to contribute with a pr.
+
+
 ## Getting started
 We recommend heading over to [the getting started section on our docs](https://docs.geode-sdk.org/getting-started/) for useful info on what to do next.
 
@@ -15,7 +18,7 @@ This project requires steamworks sdk! Install `steam_api64.dll` and `steam_api64
 # Assuming you have the Geode CLI set up already
 geode build
 ```
-## Local testing
+## Local testing (If you have no friends)
 1. Enable USE_TEST_SERVER in CmakeLists
 2. Recompile
 3. Open test server (`node server.js`)
