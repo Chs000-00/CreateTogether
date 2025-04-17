@@ -27,6 +27,8 @@
 using namespace geode::prelude;
 void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 
+
+	// Alexa, how do I copy an object from a pointer in c++?
 	auto callback = new GameLobbyJoinRequested_t;
 	callback->m_steamIDFriend = pCallback->m_steamIDFriend;
 	callback->m_steamIDLobby = pCallback->m_steamIDLobby;
@@ -42,9 +44,6 @@ void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 				log::debug("JoinLobbyRequest Called with steamID: {} | friendID: {} | friendName: {}", callback->m_steamIDLobby.ConvertToUint64(), callback->m_steamIDFriend.ConvertToUint64(), SteamFriends()->GetFriendPersonaName(callback->m_steamIDFriend));
 
 				gameManager->m_fields->m_lobbyJoined = SteamMatchmaking()->JoinLobby(callback->m_steamIDLobby); // I'm not sure if this is needed
-
-				
-
 			}
 			delete callback;
 		}
@@ -253,7 +252,7 @@ bool MyGameManager::validateData(matjson::Value data) {
 
 Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG* msg) {
 
-		// I can get rid of this to save on 10 nanoseconds!
+		// I can get rid of this to save 10 nanoseconds!
 		if (!LevelEditorLayer::get()) {
 			return Err("WTF? parseDataReceived called yet LevelEditorLayer::get returned nullptr");
 		}
@@ -323,7 +322,6 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 						level->deleteObject(dObj);
 					}
 				}
-
 
 				break;
 			}

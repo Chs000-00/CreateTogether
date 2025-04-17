@@ -7,7 +7,9 @@ namespace CTSerialization.base;
 union MessageBody {
   CreateObjects,
   DeleteObjects,
-  MovedObjects
+  MovedObjects,
+  RotatedObject,
+  LevelSettingChanged
 }
 
 table MessageHeader {
@@ -15,8 +17,7 @@ table MessageHeader {
 }
 
 table CreateObjects {
-  uniqueID:string;
-  obj:GDGameObject;
+  obj:GDGameObjectMin;
 }
 
 table DeleteObjects {
@@ -28,13 +29,18 @@ table MovedObjects {
   positionOffset:CCPosI;
 }
 
+table LevelSettingChanged {
+  settingID:uint16;
+}
+
+table RotatedObject {
+  rotation:float;
+  // I... Think this is the anchor point... No clue...
+  anchor:CCPos;
+  uniqueIDList:[string];
+}
+
 root_type MessageHeader;
-
-
-// message MovedObject {
-//     optional EditUUIDStrings uids = 1;
-//     optional CCPositionMessage positionOffset = 2;
-// }
 
 // message UpdatedFont {
 //     optional int32 fontID = 1;

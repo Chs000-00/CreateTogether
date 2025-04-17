@@ -11,8 +11,3 @@ struct CCPosI {
     x:int;
     y:int;
 }
-
-/// Not CC2d, but instead added by robtop.
-struct GDGameObject {
-    pos:CCPosI;
-}

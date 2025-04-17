@@ -75,7 +75,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
         gameManager->m_fields->m_socket = socket(AF_INET, SOCK_STREAM, 0);
         sockaddr_in serverAddress;
         serverAddress.sin_family = AF_INET;
-        serverAddress.sin_port = htons(24018);
+        serverAddress.sin_port = htons(DEDICATED_PORT);
         serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
         connect(gameManager->m_fields->m_socket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 

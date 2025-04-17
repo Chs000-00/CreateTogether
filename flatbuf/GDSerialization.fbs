@@ -1,0 +1,10 @@
+namespace CTSerialization.gddef; 
+
+// Enums go here
+
+// The data a GD Game Object has when placed in the editor
+struct GDGameObjectMin {
+    uniqueID:string;
+    pos:CCPosI;
+    rotation:float;
+}
