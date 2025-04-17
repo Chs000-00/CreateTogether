@@ -206,6 +206,7 @@ void MyLevelEditorLayer::createFakePlayLayer() {
     }
     else {
         playLayer->m_fields->m_isFakeLayer = true;
-        ret->setZOrder(5);
+        ret->setZOrder(10); // Set the Z-Order above all the other stuff
+        log::debug("fake playLayer created sucessfully!");
     }
 }

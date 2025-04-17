@@ -27,6 +27,6 @@ void MyPauseLayer::onEdit(CCObject* sender) {
         this->getParent()->removeFromParent();
     }
     else {
-        PauseLayer::onQuit(sender);
+        PauseLayer::onEdit(sender);
     }
 }
