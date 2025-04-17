@@ -810,8 +810,10 @@ void MyGameManager::leaveLobby() {
 			this->m_fields->m_lobbyId = 0;
 
 		#else
+
 			// WHY DOES THIS CRASH????
 			close(this->m_fields->m_socket);
+			
 		#endif
 
 		// this->m_fields->m_lobbyCreated = 0;

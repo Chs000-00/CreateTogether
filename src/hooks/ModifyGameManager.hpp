@@ -24,7 +24,6 @@ private:
 	STEAM_CALLBACK(CallbackManager, onLobbyChatUpdateWrapper, LobbyChatUpdate_t);
 	STEAM_CALLBACK(CallbackManager, onLobbyEnter, LobbyEnter_t);
 	STEAM_CALLBACK(CallbackManager, onNetworkingMessagesSessionRequest, SteamNetworkingMessagesSessionRequest_t);
-
 };
 
 class $modify(MyGameManager, GameManager) {
@@ -40,6 +39,7 @@ class $modify(MyGameManager, GameManager) {
 		bool m_isInEditorLayer = false;
 		bool m_isRequestingLevelString = false;
 		
+		// Don't remember why this is a seperate option. Most likley to destruct state when leaving the lobby.
 		struct lobbyOptions m_options;
 
 		struct SharedMassEdit {

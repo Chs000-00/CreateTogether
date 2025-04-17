@@ -1,5 +1,7 @@
 #pragma once
 
+// DEPRICATED HEADERS!
+
 // TODO: Fix eOption messages "not working" if optionsLayer is open.
 enum EEditorActionType {
     eActionPlacedObject,       // Object was placed in level (Implemented)
