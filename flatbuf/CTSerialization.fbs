@@ -4,12 +4,14 @@ namespace CTSerialization.base;
 // include "CCSerialization.fbs";
 
 
+
 union MessageBody {
   CreateObjects,
   DeleteObjects,
   MovedObjects,
   RotatedObject,
-  LevelSettingChanged
+  LevelSettingChanged,
+  RequestLevel
 }
 
 table MessageHeader {
@@ -38,6 +40,21 @@ table RotatedObject {
   // I... Think this is the anchor point... No clue...
   anchor:CCPos;
   uniqueIDList:[string];
+}
+
+table RequestLevel { }
+
+table ReturnLevelString {
+  uniqueIDList:[string];
+  levelString:string;
+}
+
+enum AdminActions : byte { TempUserIDBan = 1, Mute, Kick }
+
+table AdminAction {
+  userId:uint64; // This might not be unsigned. TODO: Check
+  action:AdminActions;
+  timeout:uint32;
 }
 
 root_type MessageHeader;

@@ -189,6 +189,7 @@ void MyLevelEditorLayer::removeFromGroup(GameObject* p0, int p1) {
 // I don't want to run into sync issues & issues when a client joins before host. As a work-around, this function
 // Creates a "Fake" Play layer layered over the editor, so the editor can keep updates while the player is playing.
 // TODO: Save & Deload the level upon fake layer creation.
+// TODO: See if it might somehow be possible to not use a fakelayer? Im too lazy to experiment with serialization of the vector...
 void MyLevelEditorLayer::createFakePlayLayer() {
     log::debug("Creating a fake playlayer.");
 

@@ -126,7 +126,7 @@ void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 void MyGameManager::enterLevelEditor() {
 	WaitingForHostPopup::create();
 	this->m_fields->m_isRequestingLevelString = true;
-	this->m_fields->m_isInEditorLayer = true;
+	this->m_fields->m_isInEditorLayer = false;
 	auto gameLevel = GJGameLevel::create();
 	gameLevel->m_isEditable = true;
 	gameLevel->m_levelType = GJLevelType::Editor;
@@ -163,7 +163,7 @@ void MyGameManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 		// Although this would work, this shouldnt be relied on for checking if
 		// the player is in the editor layer.
 		// TODO: Change this inside EditorLayer::init instead!
-		m_fields->m_isInEditorLayer = true;
+		m_fields->m_isInEditorLayer = false;
 
 		m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
 
