@@ -185,29 +185,3 @@ void MyLevelEditorLayer::removeFromGroup(GameObject* p0, int p1) {
 
     LevelEditorLayer::removeFromGroup(p0, p1);
 }
-
-// I don't want to run into sync issues & issues when a client joins before host. As a work-around, this function
-// Creates a "Fake" Play layer layered over the editor, so the editor can keep updates while the player is playing.
-// TODO: Save & Deload the level upon fake layer creation.
-// TODO: See if it might somehow be possible to not use a fakelayer? Im too lazy to experiment with serialization of the vector...
-void MyLevelEditorLayer::createFakePlayLayer() {
-    log::debug("Creating a fake playlayer.");
-
-    auto ret = PlayLayer::scene(this->m_level, false, false);
-    ret->setZOrder(0);
-    CCScene::get()->addChild(ret);
-    
-    auto scenePlayLayer = ret->getChildren()->objectAtIndex(0);
-    auto playLayer = static_cast<MyPlayLayer*>(scenePlayLayer);
-    if (!playLayer) {
-        log::warn("playLayer is nullptr or not found!"); // I don't think its possible for this error to happen
-        ret->removeFromParent();
-        CC_SAFE_DELETE(ret);
-        return;
-    }
-    else {
-        playLayer->m_fields->m_isFakeLayer = true;
-        ret->setZOrder(10); // Set the Z-Order above all the other stuff
-        log::debug("fake playLayer created sucessfully!");
-    }
-}

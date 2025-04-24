@@ -3,14 +3,14 @@ namespace CTSerialization.base;
 // Yeah idk if I need to add include or not
 // include "CCSerialization.fbs";
 
-
-
 union MessageBody {
   CreateObjects,
   DeleteObjects,
   MovedObjects,
   RotatedObject,
   LevelSettingChanged,
+  PastedObjects,
+  ModifiedObjects,
   RequestLevel
 }
 
@@ -42,6 +42,16 @@ table RotatedObject {
   uniqueIDList:[string];
 }
 
+table PastedObjects {
+  uniqueIDList:[string];
+  pastedString:string;
+}
+
+table ModifiedObjects {
+  uniqueIDList:[string];
+  pastedString:string;
+}
+
 table RequestLevel { }
 
 table ReturnLevelString {
@@ -55,6 +65,7 @@ table AdminAction {
   userId:uint64; // This might not be unsigned. TODO: Check
   action:AdminActions;
   timeout:uint32;
+  reason:string;
 }
 
 root_type MessageHeader;
