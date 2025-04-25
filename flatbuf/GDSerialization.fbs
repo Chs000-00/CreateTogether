@@ -7,4 +7,9 @@ struct GDGameObjectMin {
     uniqueID:string;
     pos:CCPosI;
     rotation:float;
+    isHighDetail:bool;
+    noGlow:bool;
+    noEnter:bool;
+    flip:ObjectFlip;
 }
+

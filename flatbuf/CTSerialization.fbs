@@ -6,16 +6,24 @@ namespace CTSerialization.base;
 union MessageBody {
   CreateObjects,
   DeleteObjects,
-  MovedObjects,
-  RotatedObject,
-  LevelSettingChanged,
-  PastedObjects,
-  ModifiedObjects,
-  RequestLevel
+  MoveObjects,
+  LevelSettingChange,
+  RotateObject,
+  PasteObject,
+  ModifyObject,
+  UpdateFont,
+  UpdateSong,
+  ChangeGroupID,
+  RequestLevel,
+  ChangeArt,
+  SpeedChange,
+  ReturnLevelString,
+  GameModeChange,
+  AdminAction
 }
 
 table MessageHeader {
-  body:[MessageBody]; // Might remove this I guess
+  body:[MessageBody]; // Might remove this I guess.
 }
 
 table CreateObjects {
@@ -26,30 +34,58 @@ table DeleteObjects {
   uniqueIDList:[string];
 }
 
-table MovedObjects {
+table MoveObjects {
   uniqueIDList:[string];
   positionOffset:CCPosI;
 }
 
-table LevelSettingChanged {
+table LevelSettingChange {
   settingID:uint16;
 }
 
-table RotatedObject {
+table RotateObject {
   rotation:float;
   // I... Think this is the anchor point... No clue...
   anchor:CCPos;
   uniqueIDList:[string];
 }
 
-table PastedObjects {
+table PasteObjects {
   uniqueIDList:[string];
   pastedString:string;
 }
 
-table ModifiedObjects {
+table ModifyObjects {
   uniqueIDList:[string];
   pastedString:string;
+}
+
+table UpdatedFont {
+  fontID:uint16;
+}
+
+table UpdateSong {
+  songID:uint64;
+}
+
+table ChangeGroupID {
+  groupID:uint32; // TODO: uhh uhh I forgot my uint32max this might not be hyperoptimal
+  isAdding:bool;
+  uniqueIDList:[string];
+}
+
+// TODO: ChangeArt
+table ChangeArt {
+
+}
+
+// TODO: SpeedChange
+table SpeedChange {
+
+}
+
+table GameModeChange {
+  gameMode:uint8; // I guess... this dosen't use enums?
 }
 
 table RequestLevel { }
@@ -59,19 +95,13 @@ table ReturnLevelString {
   levelString:string;
 }
 
-enum AdminActions : byte { TempUserIDBan = 1, Mute, Kick }
+enum AdminActions : byte { SteamUserIDBan = 1, DisableInteraction, Kick }
 
 table AdminAction {
-  userId:uint64; // This might not be unsigned. TODO: Check
   action:AdminActions;
-  timeout:uint32;
+  userId:uint64; // This might not be unsigned. TODO: Check
+  timeoutEpoch:uint64;
   reason:string;
 }
 
 root_type MessageHeader;
-
-// message UpdatedFont {
-//     optional int32 fontID = 1;
-// }
-
-// message BasicRequest { }

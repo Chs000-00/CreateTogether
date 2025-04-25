@@ -8,6 +8,12 @@ struct CCPos {
 
 /// A version of sCCPos using int instead of float
 struct CCPosI {
-    x:int;
-    y:int;
+  x:int;
+  y:int;
+}
+
+// Flip state
+struct ObjectFlip {
+  flipX:bool;
+  flipY:bool;
 }
