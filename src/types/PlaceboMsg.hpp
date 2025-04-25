@@ -11,6 +11,7 @@ using namespace geode::prelude;
 
 // Because it is so easy to test steam p2p applications, here is a "fake" msg class
 // To be used with the test server
+// TODO: Replace this with SteamSockets
 struct TestServerMsg {
     char m_data[8192];
     SteamNetworkingIdentity m_identityPeer; // DO NOT ACCESS!!!!

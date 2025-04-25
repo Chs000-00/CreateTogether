@@ -5,6 +5,7 @@
 using namespace geode::prelude;
 
 // TODO: Test this
+// Unwrap a buffer into a ok() or err()
 #define UNWRAP_BUFFER(outvar, ...)                                             \
     auto res##__LINE__ = __VA_ARGS__;                                          \
     if (res##__LINE__))                                                        \

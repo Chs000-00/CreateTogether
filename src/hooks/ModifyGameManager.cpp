@@ -239,7 +239,7 @@ void MyGameManager::sendDataToMembers(std::string data, bool receiveData) {
 	#endif
 }
 
-
+// Idk why this here.
 bool MyGameManager::validateData(matjson::Value data) {
 
 	if (!data.contains("Type")) {
@@ -632,7 +632,7 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
 			}
 
 			default:
-				log::warn("Type {} not found! Are you sure you're on the right version?", type);
+				log::warn("Union {} not found! Are you sure you're on the right version?", type);
 				return Err("Invalid case switch");
 		}
 
