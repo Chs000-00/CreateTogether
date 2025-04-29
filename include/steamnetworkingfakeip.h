@@ -89,7 +89,6 @@ public:
 /// A struct used to describe a "fake IP" we have been assigned to
 /// use as an identifier.  This callback is posted when
 /// ISteamNetworkingSoockets::BeginAsyncRequestFakeIP completes.
-
 /// See also ISteamNetworkingSockets::GetFakeIP
 struct SteamNetworkingFakeIPResult_t
 {
