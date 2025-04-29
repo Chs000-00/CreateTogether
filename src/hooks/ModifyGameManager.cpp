@@ -143,7 +143,7 @@ void MyGameManager::enterLevelEditor() {
         SteamNetworkingMessages()->SendMessageToUser(host, msg, static_cast<uint32>(strlen(msg)), k_nSteamNetworkingSend_Reliable, 0);
     #else
 		// FIX! THIS!
-        sendDataToMembers(msg, false);
+        sendDataToMembers(msg);
     #endif
 
 	this->fetchMemberList();
@@ -213,16 +213,9 @@ void MyGameManager::fetchMemberList() {
 
 // TODO: EResult? Vectors?
 // Sends data to all members in current lobby
-void MyGameManager::sendDataToMembers(std::string data, bool receiveData) {
+void MyGameManager::sendDataToMembers(std::string data) {
 
-	// Make sure we didn't send before receiving data
-	// This most likely won't be needed
-	// TODO: Check if I can remove this
-	if (receiveData) {
-		this->receiveData();
-	}
-
-	log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
+	// log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
 
 	#ifndef USE_TEST_SERVER
 
@@ -727,7 +720,7 @@ void MyGameManager::sendDataToUser(SteamNetworkingIdentity usr, const char* out)
     #endif
 }
 
-void MyGameManager::lateSendData() {
+void MyGameManager::sendQueuedData() {
 	if (this->m_fields->m_sharedMassEdit.m_sendMoveList) {
 
 		matjson::Value object = matjson::makeObject({
@@ -735,7 +728,7 @@ void MyGameManager::lateSendData() {
 			{"EditUUIDs", this->m_fields->m_sharedMassEdit.m_moveList}
 		});
 
-		this->sendDataToMembers(object.dump(matjson::NO_INDENTATION), false);
+		this->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
 	
 		this->m_fields->m_sharedMassEdit.m_sendMoveList = false;
 	}
@@ -750,7 +743,7 @@ void MyGameManager::lateSendData() {
 			{"EditUUIDs", this->m_fields->m_sharedMassEdit.m_groupIDEdits}
 		});
 
-		this->sendDataToMembers(object.dump(matjson::NO_INDENTATION), false);
+		this->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
 	
 		this->m_fields->m_sharedMassEdit.m_sendGroupIDEdits = false;
 	}
@@ -761,7 +754,7 @@ void MyGameManager::update(float p0) {
 
 	if (this->m_fields->m_isInLobby) {
 		this->receiveData();
-		this->lateSendData();
+		this->sendQueuedData();
 	}
 
 	GameManager::update(p0);
