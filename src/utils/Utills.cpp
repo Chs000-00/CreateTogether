@@ -61,7 +61,9 @@ Result<int> toggleFromLevelSettings(LevelSettingsObject* settings, int option) {
             settings->m_fixRobotJump = !settings->m_fixRobotJump;
             break;
 
-        // Case 13 is "skipped" because I am very good at programmign and I checked for this beforehand which was a really great idea totally
+        case 13:
+            return Err("toggleFromLevelSettings: Case 13 is invalid and shouldn't have been sleected");
+            break; // Just in case
 
         case 14:
             settings->m_dynamicLevelHeight = !settings->m_dynamicLevelHeight;

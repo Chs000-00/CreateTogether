@@ -12,7 +12,7 @@ struct CCPosI {
   y:int;
 }
 
-// Flip state
+/// Flip state
 struct ObjectFlip {
   flipX:bool;
   flipY:bool;

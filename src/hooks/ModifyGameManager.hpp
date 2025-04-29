@@ -20,6 +20,7 @@ using namespace geode::prelude;
 
 
 class $modify(MyGameManager, GameManager) {
+	
     struct Fields {
 		CallbackManager* m_callbackManager;
 		NetworkManager* m_networkManager;
