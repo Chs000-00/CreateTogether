@@ -26,7 +26,8 @@ union MessageBody {
 }
 
 table MessageHeader {
-  body:[MessageBody]; // Might remove this I guess.
+  // This most likley will not be needed for the steamworks version. Oh well, not my problem (yet)
+  body:[MessageBody]; 
 }
 
 table CreateObjects {

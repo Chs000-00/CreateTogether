@@ -240,17 +240,6 @@ void MyGameManager::sendDataToMembers(std::string data, bool receiveData) {
 	#endif
 }
 
-// Idk why this here.
-bool MyGameManager::validateData(matjson::Value data) {
-
-	if (!data.contains("Type")) {
-		log::warn("Message does not contain a Type!");
-		return false;
-	}
-
-	return true;
-}
-
 Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG* msg) {
 
 		// I can get rid of this to save 10 nanoseconds!
@@ -665,6 +654,7 @@ void MyGameManager::receiveData() {
 			msg->Release();
 			return;
 		}
+
 	#endif
 
 	for (int i = 0; i < numMessages; i++) {
@@ -673,31 +663,12 @@ void MyGameManager::receiveData() {
 			SteamNetworkingMessage_t* msg = messageList[i];
 		#endif
 
-		// Fix weird issue with incorrect str termination
-		auto fixedData = static_cast<std::string>(static_cast<const char*>(msg->GetData()));
-		fixedData.resize(msg->GetSize());
-
-		auto res = new geode::Result<matjson::Value, matjson::ParseError>(matjson::parse(fixedData));
-
-		log::info("Data received: {} {} ", fixedData, msg->GetSize());
+		// Uhh idk anymore what this is
+		const char* data = new char[msg->GetSize()];
+		data = msg->GetData();
 		
+		CTSerialize::GetMessageHeader(data);
 
-		if (res->isErr()) {
-			log::error("Failed to parse json: {}", res->unwrapErr());
-			delete res;
-			res = nullptr;	// just in case
-			msg->Release();
-			continue;
-		}
-
-		matjson::Value unwrappedMessage = res->unwrap();
-
-		if (!MyGameManager::validateData(unwrappedMessage)) {
-			delete res;
-			res = nullptr;	// just in case
-			msg->Release();
-			continue;
-		}
 
 		auto out = this->parseDataReceived(unwrappedMessage, msg);
 
@@ -705,8 +676,8 @@ void MyGameManager::receiveData() {
 			log::warn("Something went wrong with the parsing: {}", out.unwrapErr());
 		}
 
-		delete res;
-		res = nullptr;	// just in case
+		delete data;
+		data = nullptr;	// just in case
 		msg->Release();
 	}
 }

@@ -98,6 +98,4 @@ class $modify(MyGameManager, GameManager) {
 	matjson::Value getLevelStringMatjson();
 
 	// This is just one fucking function call why do I even have this
-	static bool validateData(matjson::Value data);
-
 };
