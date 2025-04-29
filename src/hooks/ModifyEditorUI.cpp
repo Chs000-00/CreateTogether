@@ -114,7 +114,7 @@ void MyEditorUI::moveObject(GameObject* p0, CCPoint p1) {
         gameManager->m_fields->m_sharedMassEdit.m_moveList = matjson::Value::array();
     }
 
-    gameManager->m_fields->m_sharedMassEdit.m_moveList.push(betterObject->m_fields->m_veryUniqueID;);
+    gameManager->m_fields->m_sharedMassEdit.m_moveList.push(betterObject->m_fields->m_veryUniqueID);
 
 
     // matjson::Value object = matjson::makeObject({

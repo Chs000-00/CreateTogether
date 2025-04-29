@@ -13,6 +13,7 @@
 #include <isteammatchmaking.h>
 #include <isteamnetworkingmessages.h>
 #include <isteamuser.h>
+#include <ctserialize_generated.h>
 #include "../types/ActionTypes.hpp"
 #include "../types/LobbyData.hpp"
 #include "../layers/LobbiesLayer.hpp"
@@ -373,7 +374,7 @@ Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG
                             break;
                         }
 
-						level->m_editorUI->moveObject(dObj, newPos)
+						level->m_editorUI->moveObject(dObj, newPos);
 					}
 				}
 

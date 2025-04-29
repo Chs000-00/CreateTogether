@@ -8,9 +8,9 @@ using namespace geode::prelude;
 // Unwrap a buffer into a ok() or err()
 #define UNWRAP_BUFFER(outvar, ...)                                             \
     auto res##__LINE__ = __VA_ARGS__;                                          \
-    if (res##__LINE__))                                                        \
+    if (res##__LINE__)                                                         \
         return geode::Err(std::move(res##__LINE__).unwrapErr());               \
-    outvar = std::move(res##__LINE__))
+    outvar = std::move(res##__LINE__)
 
 // Checks if a enum is within range.
 // Comparison uses <=

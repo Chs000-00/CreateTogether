@@ -8,7 +8,6 @@
 #include "ModifyGameObject.hpp"
 #include "ModifyEditorLayer.hpp"
 #include "ModifyEditorUI.hpp"
-#include "./PlayLayer/ModifyPlayLayer.hpp"
 
 
 using namespace geode::prelude;

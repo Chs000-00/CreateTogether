@@ -1,7 +1,10 @@
-namespace CTSerialization.base; 
+include "ccserialization.fbs";
+include "gdserialization.fbs";
 
-// Yeah idk if I need to add include or not
-// include "CCSerialization.fbs";
+namespace CTSerialize; 
+
+// Yes this gives out style guideline errors. Cry about it
+// TODO: Uhh Rename these files to something better I guess idk im too lazy to do that
 
 union MessageBody {
   CreateObjects,
@@ -9,8 +12,8 @@ union MessageBody {
   MoveObjects,
   LevelSettingChange,
   RotateObject,
-  PasteObject,
-  ModifyObject,
+  PasteObjects,
+  ModifyObjects,
   UpdateFont,
   UpdateSong,
   ChangeGroupID,
@@ -60,7 +63,7 @@ table ModifyObjects {
   pastedString:string;
 }
 
-table UpdatedFont {
+table UpdateFont {
   fontID:uint16;
 }
 
@@ -95,7 +98,7 @@ table ReturnLevelString {
   levelString:string;
 }
 
-enum AdminActions : byte { SteamUserIDBan = 1, DisableInteraction, Kick }
+enum AdminActions : byte { Invalid = 0, SteamUserIDBan, DisableInteraction, Kick }
 
 table AdminAction {
   action:AdminActions;

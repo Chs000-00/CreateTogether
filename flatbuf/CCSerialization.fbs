@@ -1,4 +1,4 @@
-namespace CTSerialization.cc2d; 
+namespace CTSerialize; 
 
 // Naming conflicts should be removed with namespace... I hope.
 struct CCPos {
