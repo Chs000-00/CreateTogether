@@ -2,19 +2,9 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/modify/GameManager.hpp>
-#include <Geode/binding/GJGameLevel.hpp>
-#include <isteammatchmaking.h>
-#include <isteamfriends.h>
-#include <steam_api_common.h>
-#include <steamnetworkingtypes.h>
-#include <isteamnetworkingmessages.h>
-#include "../layers/LobbiesLayer.hpp"
-#include "../config.hpp"
+#include "../networking/NetManager.hpp"
+#include "../networking/SteamCallbacks.hpp"
 
-#ifdef USE_TEST_SERVER
-	#include <WinSock2.h>
-	#include "../types/PlaceboMsg.hpp"
-#endif
 
 using namespace geode::prelude;
 

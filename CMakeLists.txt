@@ -14,6 +14,7 @@ file(GLOB SOURCES
     src/ui/*.cpp
     src/types/*.cpp
     src/utils/*.cpp
+    src/networking/*.cpp
 )
 # Set up the mod binary
 add_library(${PROJECT_NAME} SHARED ${SOURCES})

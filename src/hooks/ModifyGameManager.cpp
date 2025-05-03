@@ -10,13 +10,9 @@
 #include <Geode/modify/GameManager.hpp>
 #include <Geode/binding/GameObject.hpp>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
-#include <isteammatchmaking.h>
-#include <isteamnetworkingmessages.h>
-#include <isteamuser.h>
 #include <ctserialize_generated.h>
 #include "../types/ActionTypes.hpp"
 #include "../types/LobbyData.hpp"
-#include "../layers/LobbiesLayer.hpp"
 #include "../ui/WaitingForHostPopup.hpp"
 #include "ModifyEditorUI.hpp"
 #include "ModifyEditorLayer.hpp"
@@ -26,103 +22,8 @@
 
 
 using namespace geode::prelude;
-void CallbackManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 
 
-	// Alexa, how do I copy an object from a pointer in c++?
-	auto callback = new GameLobbyJoinRequested_t;
-	callback->m_steamIDFriend = pCallback->m_steamIDFriend;
-	callback->m_steamIDLobby = pCallback->m_steamIDLobby;
-
-	geode::createQuickPopup(
-		"Lobby",         
-		"Join Lobby?",
-		"Nah", "Yeah",
-		[callback](auto, bool btn2) {
-			if (btn2) {
-				// TODO: Remove this
-				auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-				log::debug("JoinLobbyRequest Called with steamID: {} | friendID: {} | friendName: {}", callback->m_steamIDLobby.ConvertToUint64(), callback->m_steamIDFriend.ConvertToUint64(), SteamFriends()->GetFriendPersonaName(callback->m_steamIDFriend));
-
-				gameManager->m_fields->m_lobbyJoined = SteamMatchmaking()->JoinLobby(callback->m_steamIDLobby); // I'm not sure if this is needed
-			}
-			delete callback;
-		}
-		
-	);
-}
-
-void CallbackManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
-	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-
-
-	if (gameManager->m_fields->m_lobbyId != pCallback->m_ulSteamIDLobby) {
-		// log::debug("Mismatching Update! {} != {}", gameManager->m_fields->m_lobbyId, pCallback->m_ulSteamIDLobby);
-		return;
-	}
-
-	if (pCallback->m_ulSteamIDUserChanged == gameManager->m_fields->m_hostID.ConvertToUint64()) {
-		if (pCallback->m_rgfChatMemberStateChange == k_EChatMemberStateChangeLeft || pCallback->m_rgfChatMemberStateChange == k_EChatMemberStateChangeDisconnected) {
-			log::info("Host left server! Leaving lobby.");
-
-			LobbiesLayer::scene();
-			gameManager->leaveLobby();
-
-			FLAlertLayer::create(
-				"Host left server",    
-				"The host has left the server!",  
-				"Ok"
-			)->show();
-
-		}
-	}
-
-	log::debug("LobbyChatUpdateWrapper called. UserID: {} | UserName: {} | StateChange: {} | SteamIDMakingChange: {}", pCallback->m_ulSteamIDUserChanged, SteamFriends()->GetFriendPersonaName(pCallback->m_ulSteamIDUserChanged), pCallback->m_rgfChatMemberStateChange, pCallback->m_ulSteamIDMakingChange);
-
-
-	gameManager->fetchMemberList();
-}
-
-void CallbackManager::onNetworkingMessagesSessionRequest(SteamNetworkingMessagesSessionRequest_t* pCallback) {
-	SteamNetworkingMessages()->AcceptSessionWithUser(pCallback->m_identityRemote);
-}
-
-void CallbackManager::onLobbyEnter(LobbyEnter_t* pCallback) {
-
-	if (pCallback->m_EChatRoomEnterResponse != k_EChatRoomEnterResponseSuccess) {
-		log::error("Failed to enter lobby with error code {}", pCallback->m_EChatRoomEnterResponse);
-		FLAlertLayer::create(
-			"Lobby Error",  
-			fmt::format("Failed to enter lobby; <cr>Error {} </c>", pCallback->m_EChatRoomEnterResponse),
-			"Ok"   
-		)->show();
-		return;
-	}
-
-
-	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-	log::info("EnterLobby called with! SteamID: {} | ChatRoomEnterResponse: {}", pCallback->m_ulSteamIDLobby, pCallback->m_EChatRoomEnterResponse);
-
-	gameManager->m_fields->m_isInLobby = true;
-	
-
-	if (gameManager->m_fields->m_isHost) {
-		log::info("onLobbyEntered called as host!");
-	} else {
-		gameManager->m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
-		gameManager->enterLevelEditor();
-	}
-
-	gameManager->m_fields->m_hostID = SteamMatchmaking()->GetLobbyOwner(gameManager->m_fields->m_lobbyId);
-
-	// Make sure we didn't become host of a level who's host already left.
-	if (!gameManager->m_fields->m_isHost && gameManager->m_fields->m_hostID == SteamUser()->GetSteamID()) {
-		log::warn("Invalid host! onLobbyEntered was not called as host yet hostID is your steamID");
-		log::warn("This is a rare error (:");
-		gameManager->leaveLobby();
-	}
-
-}
 
 void MyGameManager::enterLevelEditor() {
 	WaitingForHostPopup::create();
@@ -758,32 +659,4 @@ void MyGameManager::update(float p0) {
 	}
 
 	GameManager::update(p0);
-}
-
-void MyGameManager::leaveLobby() {
-	this->m_fields->m_isInEditorLayer = false;
-	if (this->m_fields->m_isInLobby) {
-
-        m_fields->m_isInLobby = false;
-
-		#ifndef USE_TEST_SERVER
-
-			log::info("Leaving lobby with ID {}", this->m_fields->m_lobbyId);
-			SteamMatchmaking()->LeaveLobby(this->m_fields->m_lobbyId);
-			this->m_fields->m_lobbyId = 0;
-
-		#else
-
-			// WHY DOES THIS CRASH????
-			close(this->m_fields->m_socket);
-			
-		#endif
-
-		// this->m_fields->m_lobbyCreated = 0;
-		// this->m_fields->m_lobbyJoined = 0;
-
-	}
-	else {
-		log::info("Can't leave lobby because not in lobby!");
-	}
 }

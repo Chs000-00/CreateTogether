@@ -1,6 +1,15 @@
 #pragma once
 
 #include "NetworkingHeaders.hpp"
+#include "../types/LobbyData.hpp"
+#include <isteammatchmaking.h>
+
+// TODO: Remove this.
+#ifdef USE_TEST_SERVER
+	#include <WinSock2.h>
+	#include "../types/PlaceboMsg.hpp"
+#endif
+
 
 class NetManager {
     public:
@@ -16,9 +25,8 @@ class NetManager {
         // Called to enter the level editor
 	    void enterLevelEditor();
         
-        // PARAMS!!
-        void joinSteamLobby();
-        void leaveSteamLobby();
+        void joinSteamLobby(CSteamID steamIDLobby);
+        void leaveCurrentSteamLobby();
 
         // Uses port in config.hpp
         void joinIPLobby(const char* address);
@@ -26,23 +34,31 @@ class NetManager {
         void fetchMemberList();
 
         bool m_isRequestingLevelString = false;
+        bool m_isInEditorLayer = false;
+        uint64 m_lobbyId;
+        bool m_isHost = false;
+        CSteamID m_hostID;
+        bool m_isInLobby = false;
+
+
 
 		// m_options can be deconstructed for default values.
 		struct lobbyOptions m_options;
 
+        SOCKET m_socket;
+        
+
         
     private:
+        void preFlushProcess();
+        // Send data and empty queue
         void flushQueue();
-        // Receive data and then pars it
+        // Receive data and then parse it
         void receiveData();
         // Parse data. Called in receiveData.
         Result<int> parseData();
 
-        uint64 m_lobbyId;
-		CSteamID m_hostID;
-        bool m_isHost = false;
-        bool m_isInLobby = false;
         std::vector<SteamNetworkingIdentity> m_playersInLobby;
         std::vector<CSteamID> m_excludedMemberList;
         
-}
+};
