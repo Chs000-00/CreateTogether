@@ -40,6 +40,14 @@ class NetManager {
         CSteamID m_hostID;
         bool m_isInLobby = false;
 
+        struct MassEdit {
+
+			matjson::Value m_groupIDEdits;
+			bool m_sendGroupIDEdits;
+			bool m_isAddingGroupID;
+			int m_groupIDToEdit;
+
+		} m_massEdit;
 
 
 		// m_options can be deconstructed for default values.
@@ -50,6 +58,7 @@ class NetManager {
 
         
     private:
+        void sendMessageHeaderToUser(SteamNetworkingIdentity usr, CTSerialize::MessageHeader out);
         void preFlushProcess();
         // Send data and empty queue
         void flushQueue();

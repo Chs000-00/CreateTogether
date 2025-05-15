@@ -42,3 +42,28 @@ void NetManager::leaveCurrentSteamLobby() {
 		log::info("Can't leave lobby because not in lobby!");
 	}
 }
+
+void NetManager::sendMessageHeaderToUser(SteamNetworkingIdentity usr, CTSerialize::MessageHeader out) {
+	#ifndef USE_TEST_SERVER
+		SteamNetworkingMessages()->SendMessageToUser(usr, out, static_cast<uint32>(sizeof(out)), k_nSteamNetworkingSend_Reliable, 0);
+	#else
+        // this->sendDataToMembers(out, false);
+    #endif
+}
+
+
+void NetManager::flushQueue() {
+	if (this->m_massEdit.m_sendGroupIDEdits) {
+
+		// matjson::Value object = matjson::makeObject({
+		// 	{"Type", static_cast<int>(eActionChangeGroupID)},
+		// 	{"Add", this->m_massEdit.m_isAddingGroupID},
+		// 	{"GroupID", this->m_massEdit.m_groupIDToEdit},
+		// 	{"EditUUIDs", this->m_massEdit.m_groupIDEdits}
+		// });
+
+		//this->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
+	
+		this->m_massEdit.m_sendGroupIDEdits = false;
+	}
+}

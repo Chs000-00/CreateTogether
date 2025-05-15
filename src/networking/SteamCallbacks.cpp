@@ -96,3 +96,46 @@ void SteamCallbacks::onLobbyEnter(LobbyEnter_t* pCallback) {
 	}
 
 }
+
+
+void SteamCallbacks::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
+	if (pCallback->m_eResult == k_EResultOK) {
+		log::info("Created Lobby with steamID {} !", pCallback->m_ulSteamIDLobby);
+
+
+		FLAlertLayer::create(
+			"Lobby host",
+			"Lobby created successfully!",
+			"Ok"
+		)->show();
+
+		// Although this would work, this shouldnt be relied on for checking if
+		// the player is in the editor layer.
+		// TODO: Change this inside EditorLayer::init instead!
+		m_fields->m_isInEditorLayer = false;
+
+		m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
+
+		// Get pointer to the current level editor
+		// Because this pointer would be destroyed, we would need to create a new LevelEditorLayer with the same data
+		// instead of a pointer, so the LevelEditor would be presistent when leaving the level editor to playtest
+		// Currently this is just a temporary solution to get the mod running
+		// m_fields->m_level = LevelEditorLayer::get();
+
+		// Constants can be changed in CMakeLists.txt
+		// Kind of a bad idea but who cares
+
+		// SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "lobby_type", MOD_LOBBY_NAME); // TODO: Uncomment this
+		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "version", MOD_VERSION);
+		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "level_name", LevelEditorLayer::get()->m_level->m_levelName.c_str());
+		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "host_name", SteamFriends()->GetPersonaName());
+	}
+	else {
+		log::warn("Failed to create lobby with error code {}!", fmt::underlying(pCallback->m_eResult));
+		
+		m_fields->m_isInEditorLayer = false;
+		m_fields->m_lobbyCreated = 0;
+		m_fields->m_lobbyJoined = 0;
+		m_fields->m_isInLobby = false;
+	}
+}
