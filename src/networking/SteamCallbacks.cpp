@@ -92,16 +92,18 @@ void SteamCallbacks::onLobbyEnter(LobbyEnter_t* pCallback) {
 	if (!netManager->m_isHost && netManager->m_hostID == SteamUser()->GetSteamID()) {
 		log::warn("Invalid host! onLobbyEntered was not called as host yet hostID is your steamID");
 		log::warn("This is a rare error (:");
-		netManager->leaveLobby();
+		netManager->leaveCurrentSteamLobby();
 	}
 
 }
 
 
 void SteamCallbacks::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
+
+	auto netManager = NetManager::get();
+
 	if (pCallback->m_eResult == k_EResultOK) {
 		log::info("Created Lobby with steamID {} !", pCallback->m_ulSteamIDLobby);
-
 
 		FLAlertLayer::create(
 			"Lobby host",
@@ -112,9 +114,9 @@ void SteamCallbacks::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) 
 		// Although this would work, this shouldnt be relied on for checking if
 		// the player is in the editor layer.
 		// TODO: Change this inside EditorLayer::init instead!
-		m_fields->m_isInEditorLayer = false;
+		netManager->m_isInEditorLayer = false;
 
-		m_fields->m_lobbyId = pCallback->m_ulSteamIDLobby;
+		netManager->m_lobbyId = pCallback->m_ulSteamIDLobby;
 
 		// Get pointer to the current level editor
 		// Because this pointer would be destroyed, we would need to create a new LevelEditorLayer with the same data
@@ -133,9 +135,10 @@ void SteamCallbacks::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) 
 	else {
 		log::warn("Failed to create lobby with error code {}!", fmt::underlying(pCallback->m_eResult));
 		
-		m_fields->m_isInEditorLayer = false;
-		m_fields->m_lobbyCreated = 0;
-		m_fields->m_lobbyJoined = 0;
-		m_fields->m_isInLobby = false;
+		netManager->m_isInEditorLayer = false;
+		netManager->m_isInLobby = false;
+
+		this->m_lobbyCreated = 0;
+		this->m_lobbyJoined = 0;
 	}
 }

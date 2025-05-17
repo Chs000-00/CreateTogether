@@ -70,28 +70,6 @@ void MyGameManager::fetchMemberList() {
 	} 
 }
 
-// TODO: EResult? Vectors?
-// Sends data to all members in current lobby
-void MyGameManager::sendDataToMembers(std::string data) {
-
-	// log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
-
-	#ifndef USE_TEST_SERVER
-
-        auto fixedData = data.c_str();
-        
-
-		for (auto const& member : this->m_fields->m_playersInLobby) {
-			// log::debug("SendData called on {}", SteamFriends()->GetFriendPersonaName(member.GetSteamID()));
-			SteamNetworkingMessages()->SendMessageToUser(member, fixedData, static_cast<uint32>(strlen(fixedData)), k_nSteamNetworkingSend_Reliable, 0);
-		}
-		// log::debug("Done sending messages");
-
-	#else
-		send(this->m_fields->m_socket, data.c_str(), strlen(data.c_str()), 0);
-	#endif
-}
-
 Result<int> MyGameManager::parseDataReceived(matjson::Value data, NETWORKING_MSG* msg) {
 
 		// I can get rid of this to save 10 nanoseconds!

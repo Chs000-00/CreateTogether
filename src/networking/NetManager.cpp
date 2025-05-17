@@ -1,9 +1,8 @@
 #include "NetManager.hpp"
 #include "../hooks/ModifyGameManager.hpp"
-
 NetManager* NetManager::get() {
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-    return gameManager->m_fields->m_networkManager;
+    return gameManager->m_fields->m_netManager;
 }
 
 void NetManager::update() {
@@ -43,13 +42,31 @@ void NetManager::leaveCurrentSteamLobby() {
 	}
 }
 
-void NetManager::sendMessageHeaderToUser(SteamNetworkingIdentity usr, CTSerialize::MessageHeader out) {
+void NetManager::sendMessageHeaderToUser(SteamNetworkingIdentity usr, flatbuffers::FlatBufferBuilder* out) {
 	#ifndef USE_TEST_SERVER
-		SteamNetworkingMessages()->SendMessageToUser(usr, out, static_cast<uint32>(sizeof(out)), k_nSteamNetworkingSend_Reliable, 0);
+		SteamNetworkingMessages()->SendMessageToUser(usr, out->GetBufferPointer(), out->GetSize(), k_nSteamNetworkingSend_Reliable, 0);
 	#else
-        // this->sendDataToMembers(out, false);
+        log::warn("Attempted to sendMessageHeaderToUser yet server is dedicated! Ignoring.");
     #endif
 }
+
+void NetManager::sendData(flatbuffers::FlatBufferBuilder* out) {
+
+
+	// log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
+
+	#ifndef USE_TEST_SERVER        
+
+		for (auto const& member : this->m_playersInLobby) {
+			this->sendMessageHeaderToUser(member, out);
+		}
+		// log::debug("Done sending messages");
+
+	#else
+		send(this->m_fields->m_socket, data.c_str(), strlen(data.c_str()), 0);
+	#endif
+}
+
 
 
 void NetManager::flushQueue() {

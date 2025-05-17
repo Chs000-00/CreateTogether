@@ -15,9 +15,11 @@ class NetManager {
     public:
         static NetManager* get();
 
-        // TODO: Add params
+        // TODO: EResult? Vectors? Idk.
         // Queues data. This will be sent automatically in its update() function.
-        static void queueData();
+        static void queueData(flatbuffers::FlatBufferBuilder out);
+        void sendData(flatbuffers::FlatBufferBuilder* out);
+        void sendMessageHeaderToUser(SteamNetworkingIdentity usr, flatbuffers::FlatBufferBuilder* out);
 
         void update();
 
@@ -54,11 +56,13 @@ class NetManager {
 		struct lobbyOptions m_options;
 
         SOCKET m_socket;
+
+        std::vector<SteamNetworkingIdentity> m_playersInLobby;
+
         
 
         
     private:
-        void sendMessageHeaderToUser(SteamNetworkingIdentity usr, CTSerialize::MessageHeader out);
         void preFlushProcess();
         // Send data and empty queue
         void flushQueue();
@@ -67,7 +71,6 @@ class NetManager {
         // Parse data. Called in receiveData.
         Result<int> parseData();
 
-        std::vector<SteamNetworkingIdentity> m_playersInLobby;
         std::vector<CSteamID> m_excludedMemberList;
         
 };
