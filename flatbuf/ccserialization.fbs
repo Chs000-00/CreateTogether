@@ -1,6 +1,7 @@
 namespace CTSerialize; 
 
 // Naming conflicts should be removed with namespace... I hope.
+// Should serialize cocos2d's CCPoint
 struct CCPos {
   x:float;
   y:float;

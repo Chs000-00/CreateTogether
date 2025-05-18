@@ -1,11 +1,10 @@
 #include "../HighLevelHeader.hpp"
+#include "SharedHighLevelHeaders.hpp"
 
+void sendMoveObjects(std::vector<const char*> uniqueIDList, CCPoint offset) {
 
-// table MoveObjects {
-//   uniqueIDList:[string];
-//   positionOffset:CCPosI;
-// }
+}
 
-void sendMoveObjects(std::vector<const char*> uniqueIDList) {
+void sendRotateObjects(std::vector<const char*> uniqueIDList, float rotation, CCPoint anchor) {
 
 }

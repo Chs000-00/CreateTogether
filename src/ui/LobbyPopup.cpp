@@ -4,6 +4,7 @@
 #include <isteammatchmaking.h>
 #include "LobbyPopup.hpp"
 #include "../hooks/ModifyGameManager.hpp"
+#include "../networking/NetManager.hpp"
 
 using namespace geode::prelude;
 
@@ -77,24 +78,26 @@ bool LobbyPopup::setup(EPopupType type) {
 }
 
 void LobbyPopup::onPublicToggle(CCMenuItemToggler* sender) {
-    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-    gameManager->m_fields->m_options.isPrivate = sender->m_toggled; 
+    auto netManager = NetManager::get();
+    netManager->m_options.isPrivate = sender->m_toggled; 
 
-    if (gameManager->m_fields->m_isInLobby) {
+    auto steamCallbacks = static_cast<MyGameManager*>(GameManager::get())->m_fields->m_callbackManager;
+
+    if (netManager->m_isInLobby) {
         log::debug("Setting isPublic to {}", sender->m_toggled);
         // TODO: Check if this code works
 
-        if (gameManager->m_fields->m_options.canFriendsJoin) {
-            if (gameManager->m_fields->m_options.isPrivate) {
-                gameManager->m_fields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
+        if (netManager->m_options.canFriendsJoin) {
+            if (netManager->m_options.isPrivate) {
+                steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
             }
             else {
-                gameManager->m_fields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
+                steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
             }
         }
         else {
-            if (!gameManager->m_fields->m_options.isPrivate) {
-                gameManager->m_fields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePrivate, 16);
+            if (!netManager->m_options.isPrivate) {
+                steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePrivate, 16);
             }    
         }
 
@@ -104,34 +107,36 @@ void LobbyPopup::onPublicToggle(CCMenuItemToggler* sender) {
 
 void LobbyPopup::startHosting(CCObject* sender) {
 
-    auto gameManagerCast = static_cast<MyGameManager*>(GameManager::get());
-    auto gameManagerFields = gameManagerCast->m_fields.self();
+    auto netManager = NetManager::get();
+    auto steamCallbacks = static_cast<MyGameManager*>(GameManager::get())->m_fields->m_callbackManager;
+
+
 
     this->onClose(nullptr);
 
 
-    if (gameManagerFields->m_options.canFriendsJoin) {
-        if (gameManagerFields->m_options.isPrivate) {
-            gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
+    if (netManager->m_options.canFriendsJoin) {
+        if (netManager->m_options.isPrivate) {
+            steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
         }
         else {
-            gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
+            steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
         }
     }
     else {
-        if (!gameManagerFields->m_options.isPrivate) {
-            gameManagerFields->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePrivate, 16);
+        if (!netManager->m_options.isPrivate) {
+            steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePrivate, 16);
         }    
     }
 
-    gameManagerFields->m_isHost = true;
-    gameManagerFields->m_isInLobbyCallResult.Set(gameManagerFields->m_lobbyCreated, gameManagerCast, &MyGameManager::onLobbyCreated);
+    netManager->m_isHost = true;
+    steamCallbacks->m_isInLobbyCallResult.Set(steamCallbacks->m_lobbyCreated, steamCallbacks, &SteamCallbacks::onLobbyCreated);
 
 }
 
 void LobbyPopup::inviteFriends(CCObject* sender) {
-    auto gameManagerFields = static_cast<MyGameManager*>(GameManager::get())->m_fields.self();
-    SteamFriends()->ActivateGameOverlayInviteDialog(gameManagerFields->m_lobbyId);
+    auto netManager = NetManager::get();
+    SteamFriends()->ActivateGameOverlayInviteDialog(netManager->m_lobbyId);
 }
 
 LobbyPopup* LobbyPopup::create(EPopupType type) {
