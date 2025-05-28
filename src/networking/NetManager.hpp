@@ -3,6 +3,8 @@
 #include "NetworkingHeaders.hpp"
 #include "../types/LobbyData.hpp"
 #include <isteammatchmaking.h>
+#include "../ui/WaitingForHostPopup.hpp"
+
 
 // TODO: Remove this.
 #ifdef USE_TEST_SERVER
@@ -10,16 +12,17 @@
 	#include "../types/PlaceboMsg.hpp"
 #endif
 
-
 class NetManager {
     public:
         static NetManager* get();
 
+        static bool getIsInLobby();
+
         // TODO: EResult? Vectors? Idk.
         // Queues data. This will be sent automatically in its update() function.
-        static void queueData(flatbuffers::FlatBufferBuilder out);
-        void sendData(flatbuffers::FlatBufferBuilder* out);
-        void sendMessageHeaderToUser(SteamNetworkingIdentity usr, flatbuffers::FlatBufferBuilder* out);
+        static void queueData();
+        void sendData(flatbuffers::Offset<CTSerialize::MessageHeader> out);
+        void sendMessageHeaderToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out);
 
         void update();
 
@@ -59,6 +62,7 @@ class NetManager {
 
         std::vector<SteamNetworkingIdentity> m_playersInLobby;
 
+        flatbuffers::FlatBufferBuilder m_builder;
         
 
         

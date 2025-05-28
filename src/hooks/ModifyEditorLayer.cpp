@@ -5,6 +5,8 @@
 #include <isteamuser.h>
 #include "../types/ActionTypes.hpp"
 #include "ModifyGameManager.hpp"
+#include "../networking/HighLevelHeader.hpp"
+#include "../networking/NetManager.hpp"
 #include "ModifyGameObject.hpp"
 #include "ModifyEditorLayer.hpp"
 #include "ModifyEditorUI.hpp"
@@ -63,56 +65,28 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
 
     this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, uid);
 
+    // WHAT THE HELL IS THIS????? TODO: CHANGE THIS!!
+    auto selected = this->m_editorUI->m_selectedObject;
+
     // Assign UUIds when a user is not in lobby
-    if (!gameManager->m_fields->m_isInLobby) {
+    if (!NetManager::getIsInLobby()) {
         return createdGameObject;
     }
-     
-    matjson::Value object = matjson::makeObject({
-        {"Type", static_cast<int>(eActionPlacedObject)},
-        {"x", p1.x},
-        {"y", p1.y},
-        {"Layer", createdGameObject->m_editorLayer},
-        {"ObjID", p0},
-        {"ObjectUID", createdGameObject->m_fields->m_veryUniqueID}
-    });
 
-    // TODO: Find better way to do this
-    // Extra values which are copied to a new object when created
-    if (auto selected = this->m_editorUI->m_selectedObject) {
-        if (selected->m_objectID == p0) {
-            // object.set("UseExtra", true);
-            object.set("Rot", selected->getRotation());
-            object.set("HD", selected->m_isHighDetail);
-            object.set("NoGlow", selected->m_hasNoGlow);
-            object.set("NoEnter", selected->m_isDontEnter);
-            object.set("NoFade", selected->m_isDontFade);
-            object.set("FlipX", selected->m_isFlipX);
-            object.set("FlipY", selected->m_isFlipY);
-        }
-    }
-    
-    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
-    
+    sendCreateObjects(uid.c_str(), p1, selected->getRotation(), selected->m_isHighDetail, selected->m_hasNoGlow, selected->m_isDontEnter, selected->m_isFlipX, selected->m_isFlipY);
+     
     return createdGameObject;
 }
 
-
+// TODO: Unfinished
 void MyLevelEditorLayer::updateLevelFont(int p0) {
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
-    if (!gameManager->m_fields->m_isInLobby || m_fields->m_wasDataSent) {
+    if (!NetManager::getIsInLobby() || m_fields->m_wasDataSent) {
         LevelEditorLayer::updateLevelFont(p0);
         return;
     }
-
-    matjson::Value object = matjson::makeObject({
-        {"Type", static_cast<int>(eActionUpdatedFont)},
-        {"FontID", p0}
-    });
-
-    gameManager->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
 
     LevelEditorLayer::updateLevelFont(p0);
 }
@@ -132,7 +106,7 @@ void MyLevelEditorLayer::addToGroup(GameObject* p0, int p1, bool p2) {
 
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
-    if (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent || !this->m_fields->m_loadingFinished) {
+    if (!NetManager::getIsInLobby() || this->m_fields->m_wasDataSent || !this->m_fields->m_loadingFinished) {
         LevelEditorLayer::addToGroup(p0, p1, p2);
         return;
     }

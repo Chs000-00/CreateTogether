@@ -1,10 +1,15 @@
-#include "NetManager.hpp"
 #include "../hooks/ModifyGameManager.hpp"
-#include "../ui/WaitingForHostPopup.hpp"
+#include "NetManager.hpp"
 
-NetManager* NetManager::get() {
-    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-    return gameManager->m_fields->m_netManager;
+
+// Why the f*** can't c++ inline this f***ing shit properly without some stupid use of header guards
+static NetManager* get() {
+	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+	return gameManager->m_fields->m_netManager;
+}
+
+bool NetManager::getIsInLobby() {
+	return NetManager::get()->m_isInEditorLayer;
 }
 
 void NetManager::update() {
@@ -44,15 +49,16 @@ void NetManager::leaveCurrentSteamLobby() {
 	}
 }
 
-void NetManager::sendMessageHeaderToUser(SteamNetworkingIdentity usr, flatbuffers::FlatBufferBuilder* out) {
+void NetManager::sendMessageHeaderToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out) {
+	this->m_builder.Finish(out);
 	#ifndef USE_TEST_SERVER
-		SteamNetworkingMessages()->SendMessageToUser(usr, out->GetBufferPointer(), out->GetSize(), k_nSteamNetworkingSend_Reliable, 0);
+		SteamNetworkingMessages()->SendMessageToUser(usr, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
 	#else
         log::warn("Attempted to sendMessageHeaderToUser yet server is dedicated! Ignoring.");
     #endif
 }
 
-void NetManager::sendData(flatbuffers::FlatBufferBuilder* out) {
+void NetManager::sendData(flatbuffers::Offset<CTSerialize::MessageHeader> out) {
 
 
 	// log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
