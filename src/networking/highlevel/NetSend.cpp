@@ -9,10 +9,14 @@ void sendCreateObjects(const char* uniqueID, CCPoint pos, float rotation, bool i
     
 }
 
-void sendMoveObjects(std::vector<const char*> uniqueIDList, CCPoint offset) {
+void sendMoveObjects(std::vector<const char*>& uniqueIDList, CCPoint offset) {
 
 }
 
-void sendRotateObjects(std::vector<const char*> uniqueIDList, float rotation, CCPoint anchor) {
+void sendRotateObjects(std::vector<const char*>& uniqueIDList, float rotation, CCPoint anchor) {
 
+}
+
+void sendDeleteObjects(std::vector<const char*>& uniqueIDList) {
+    auto deleteObjectsMessage = CTSerialize::CreateDeleteObjectsDirect(NetManager::get()->m_builder, uniqueIDList);
 }
