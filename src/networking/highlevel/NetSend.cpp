@@ -18,5 +18,16 @@ void sendRotateObjects(std::vector<const char*>& uniqueIDList, float rotation, C
 }
 
 void sendDeleteObjects(std::vector<const char*>& uniqueIDList) {
-    auto deleteObjectsMessage = CTSerialize::CreateDeleteObjectsDirect(NetManager::get()->m_builder, uniqueIDList);
+    std::vector<flatbuffers::Offset<flatbuffers::String>> uniqueIDStringListInternal;
+
+    auto netManager = NetManager::get();
+
+
+    // TS IS GOING TO BE MORE INEFFICIENT THEN MATJSON 🔥🔥🔥
+    for (auto id : uniqueIDList) {
+        flatbuffers::Offset<flatbuffers::String> sID = netManager->m_builder.CreateString(id);
+        uniqueIDStringListInternal.push_back(sID);
+    }
+
+    auto deleteObjectsMessage = CTSerialize::CreateDeleteObjects(netManager->m_builder, netManager->m_builder.CreateVector(uniqueIDStringListInternal));
 }

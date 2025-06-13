@@ -13,7 +13,6 @@
 #include <ctserialize_generated.h>
 #include "../types/ActionTypes.hpp"
 #include "../types/LobbyData.hpp"
-#include "ModifyEditorUI.hpp"
 #include "ModifyEditorLayer.hpp"
 #include "ModifyGameObject.hpp"
 #include "ModifyGameManager.hpp"

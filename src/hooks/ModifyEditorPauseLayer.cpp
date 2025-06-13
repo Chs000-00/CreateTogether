@@ -4,6 +4,8 @@
 #include "ModifyGameManager.hpp"
 #include "ModifyEditorLayer.hpp"
 #include "../ui/LobbyPopup.hpp"
+#include "../networking/NetManager.hpp"
+
 
 using namespace geode::prelude;
 
@@ -36,15 +38,14 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 
 	void onHostPopupButton(CCObject* sender) {
 		// TODO: add if condition over cast
-		auto gameManager = GameManager::get();
-		auto gameManagerFields = static_cast<MyGameManager*>(gameManager)->m_fields.self();
+		auto netManager = NetManager::get();
 
-		if (!gameManagerFields->m_isInLobby) {
+		if (!netManager->m_isInLobby) {
 			// TODO: Shorten this
 			m_fields->m_lobbyPopup = LobbyPopup::create(eLobbyHostPopup);
 			
 		} 
-		else if (gameManagerFields->m_isHost) {
+		else if (netManager->m_isHost) {
 			m_fields->m_lobbyPopup = LobbyPopup::create(eLobbyHostingPopup);
 		} 
 		else {
@@ -62,22 +63,22 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 	void onExitEditor(CCObject* sender) {
 		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 		static_cast<MyLevelEditorLayer*>(this->m_editorLayer)->m_fields->m_pUniqueIDOfGameObject->release();
-		gameManager->leaveLobby(); // Leave Lobby
+		NetManager::get()->leaveCurrentSteamLobby();
 		EditorPauseLayer::onExitEditor(sender); // And exit editor (whoops)
 	}
 
 	void onExitNoSave(CCObject* sender) {
 		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 		static_cast<MyLevelEditorLayer*>(this->m_editorLayer)->m_fields->m_pUniqueIDOfGameObject->release();
-		gameManager->leaveLobby(); // Leave Lobby
+		NetManager::get()->leaveCurrentSteamLobby();
 		EditorPauseLayer::onExitNoSave(sender);
 	}
 
 	void onSaveAndPlay(CCObject* sender) {
-		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+		auto netManager = NetManager::get();
 		// gameManager->leaveLobby(); // Leave Lobby
 
-		if (!gameManager->m_fields->m_isInLobby) {
+		if (!netManager->m_isInLobby) {
 			EditorPauseLayer::onSaveAndPlay(sender); // And exit editor (whoops)
 		}
 		else {

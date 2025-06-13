@@ -9,7 +9,6 @@
 #include "../networking/NetManager.hpp"
 #include "ModifyGameObject.hpp"
 #include "ModifyEditorLayer.hpp"
-#include "ModifyEditorUI.hpp"
 
 
 using namespace geode::prelude;
@@ -76,85 +75,4 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
     sendCreateObjects(uid.c_str(), p1, selected->getRotation(), selected->m_isHighDetail, selected->m_hasNoGlow, selected->m_isDontEnter, selected->m_isFlipX, selected->m_isFlipY);
      
     return createdGameObject;
-}
-
-// TODO: Unfinished
-void MyLevelEditorLayer::updateLevelFont(int p0) {
-
-    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-
-    if (!NetManager::getIsInLobby() || m_fields->m_wasDataSent) {
-        LevelEditorLayer::updateLevelFont(p0);
-        return;
-    }
-
-    LevelEditorLayer::updateLevelFont(p0);
-}
-
-void MyLevelEditorLayer::deleteObject(GameObject *obj) {
-    // log::debug("Cleaning up.. Deleting sent object!");
-    auto betterGameObject = static_cast<MyGameObject*>(obj);
-    EditorUI::get()->deselectObject(obj);
-    this->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(betterGameObject->m_fields->m_veryUniqueID);
-    obj->deactivateObject(true);
-    LevelEditorLayer::removeObjectFromSection(obj);
-    this->removeSpecial(obj);
-}
-
-// TODO: Figure out args
-void MyLevelEditorLayer::addToGroup(GameObject* p0, int p1, bool p2) {
-
-    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-
-    if (!NetManager::getIsInLobby() || this->m_fields->m_wasDataSent || !this->m_fields->m_loadingFinished) {
-        LevelEditorLayer::addToGroup(p0, p1, p2);
-        return;
-    }
-
-    MyGameObject* betterGameObject = static_cast<MyGameObject*>(p0);
-
-    if (!gameManager->m_fields->m_sharedMassEdit.m_sendGroupIDEdits) {
-        gameManager->m_fields->m_sharedMassEdit.m_sendGroupIDEdits = true;
-        // Lets just hope you dont add and remove groups at the same time.
-        gameManager->m_fields->m_sharedMassEdit.m_isAddingGroupID = true;
-        // Or that we edit the same ID in one frame
-        gameManager->m_fields->m_sharedMassEdit.m_groupIDToEdit = p1;
-        gameManager->m_fields->m_sharedMassEdit.m_groupIDEdits = matjson::Value::array();
-
-        gameManager->m_fields->m_sharedMassEdit.m_groupIDEdits.push(betterGameObject->m_fields->m_veryUniqueID);
-
-    }
-
-    // Or that EditUUIDs exists!
-    gameManager->m_fields->m_sharedMassEdit.m_groupIDEdits.push(betterGameObject->m_fields->m_veryUniqueID);
-
-
-    LevelEditorLayer::addToGroup(p0, p1, p2);
-}
-
-
-void MyLevelEditorLayer::removeFromGroup(GameObject* p0, int p1) {
-      
-    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-    MyGameObject* betterGameObject = static_cast<MyGameObject*>(p0);
-
-    if  (!gameManager->m_fields->m_isInLobby || this->m_fields->m_wasDataSent || !this->m_fields->m_loadingFinished) {
-        LevelEditorLayer::removeFromGroup(p0, p1);
-        return;
-    }
-
-    if (!gameManager->m_fields->m_sharedMassEdit.m_sendGroupIDEdits) {
-        gameManager->m_fields->m_sharedMassEdit.m_sendGroupIDEdits = true;
-        // Lets just hope you dont add and remove groups at the same time.
-        gameManager->m_fields->m_sharedMassEdit.m_isAddingGroupID = false;
-        // Or that we edit the same ID in one frame
-        gameManager->m_fields->m_sharedMassEdit.m_groupIDToEdit = p1;
-        gameManager->m_fields->m_sharedMassEdit.m_groupIDEdits = matjson::Value::array();
-    }
-
-    // Or that EditUUIDs exists!
-    gameManager->m_fields->m_sharedMassEdit.m_groupIDEdits.push(betterGameObject->m_fields->m_veryUniqueID);
-
-
-    LevelEditorLayer::removeFromGroup(p0, p1);
 }
