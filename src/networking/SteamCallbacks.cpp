@@ -5,6 +5,7 @@ void SteamCallbacks::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 
 
 	// Alexa, how do I copy an object from a pointer in c++?
+	// Please forgive me.
 	auto callback = new GameLobbyJoinRequested_t;
 	callback->m_steamIDFriend = pCallback->m_steamIDFriend;
 	callback->m_steamIDLobby = pCallback->m_steamIDLobby;
@@ -18,7 +19,7 @@ void SteamCallbacks::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 				// TODO: Remove this
 				log::debug("JoinLobbyRequest Called with steamID: {} | friendID: {} | friendName: {}", callback->m_steamIDLobby.ConvertToUint64(), callback->m_steamIDFriend.ConvertToUint64(), SteamFriends()->GetFriendPersonaName(callback->m_steamIDFriend));
                 
-                NetManager::get()->joinSteamLobby(callback->m_steamIDLobby);
+                NetManager::get()->joinSteamLobby(callback);
 			}
 			delete callback;
 		}

@@ -17,7 +17,7 @@ void NetManager::update() {
 
 	if (this->m_isInLobby) {
 		this->receiveData();
-		this->flushQueue();
+		this->sendQueuedData();
 	}
 }
 
@@ -49,7 +49,7 @@ void NetManager::leaveCurrentSteamLobby() {
 	}
 }
 
-void NetManager::sendMessageHeaderToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out) {
+void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out) {
 	this->m_builder.Finish(out);
 	#ifndef USE_TEST_SERVER
 		SteamNetworkingMessages()->SendMessageToUser(usr, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
@@ -58,7 +58,7 @@ void NetManager::sendMessageHeaderToUser(SteamNetworkingIdentity usr, flatbuffer
     #endif
 }
 
-void NetManager::sendData(flatbuffers::Offset<CTSerialize::MessageHeader> out) {
+void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out) {
 
 
 	// log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
@@ -66,34 +66,15 @@ void NetManager::sendData(flatbuffers::Offset<CTSerialize::MessageHeader> out) {
 	#ifndef USE_TEST_SERVER        
 
 		for (auto const& member : this->m_playersInLobby) {
-			this->sendMessageHeaderToUser(member, out);
+			this->sendMessageToUser(member, out);
 		}
 		// log::debug("Done sending messages");
 
 	#else
+		// :despair~1:
 		send(this->m_fields->m_socket, data.c_str(), strlen(data.c_str()), 0);
 	#endif
 }
-
-
-
-void NetManager::flushQueue() {
-	if (this->m_massEdit.m_sendGroupIDEdits) {
-
-		// matjson::Value object = matjson::makeObject({
-		// 	{"Type", static_cast<int>(eActionChangeGroupID)},
-		// 	{"Add", this->m_massEdit.m_isAddingGroupID},
-		// 	{"GroupID", this->m_massEdit.m_groupIDToEdit},
-		// 	{"EditUUIDs", this->m_massEdit.m_groupIDEdits}
-		// });
-
-		//this->sendDataToMembers(object.dump(matjson::NO_INDENTATION));
-	
-		this->m_massEdit.m_sendGroupIDEdits = false;
-	}
-}
-
-
 
 void NetManager::enterLevelEditor() {
 	WaitingForHostPopup::create();
@@ -189,4 +170,15 @@ void NetManager::receiveData() {
 		data = nullptr;	// just in case
 		msg->Release();
 	}
+}
+
+void NetManager::sendQueuedData() {
+
+
+}
+
+void NetManager::joinSteamLobby(GameLobbyJoinRequested_t* lobbyInfo) {
+	// TODO: Remove this
+	log::debug("JoinLobbyRequest Called with steamID: {} | friendID: {} | friendName: {}", lobbyInfo->m_steamIDLobby.ConvertToUint64(), lobbyInfo->m_steamIDFriend.ConvertToUint64(), SteamFriends()->GetFriendPersonaName(lobbyInfo->m_steamIDFriend));
+	this->m_isInLobby = SteamMatchmaking()->JoinLobby(lobbyInfo->m_steamIDLobby); // I'm not sure if this is needed
 }

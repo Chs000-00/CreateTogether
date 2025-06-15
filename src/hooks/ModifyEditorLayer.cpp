@@ -48,31 +48,33 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
 // TODO: Implement group id sync
 GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p2) {
 
-    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-    MyGameObject* createdGameObject = static_cast<MyGameObject*>(LevelEditorLayer::createObject(p0, p1, p2));
+    return LevelEditorLayer::createObject(p0, p1, p2);
 
-    if (p2 || m_fields->m_wasDataSent) {
-        return createdGameObject;
-    }
+    // auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+    // MyGameObject* createdGameObject = static_cast<MyGameObject*>(LevelEditorLayer::createObject(p0, p1, p2));
 
-    auto stringSteamID = std::to_string(this->m_fields->m_userID);
-    // This string should be unique for every user
-    auto uid = stringSteamID + "!" + std::to_string(this->m_fields->m_blocksPlaced);
-    this->m_fields->m_blocksPlaced += 1;
+    // if (p2 || m_fields->m_wasDataSent) {
+    //     return createdGameObject;
+    // }
 
-    createdGameObject->m_fields->m_veryUniqueID = uid;
+    // auto stringSteamID = std::to_string(this->m_fields->m_userID);
+    // // This string should be unique for every user
+    // auto uid = stringSteamID + "!" + std::to_string(this->m_fields->m_blocksPlaced);
+    // this->m_fields->m_blocksPlaced += 1;
 
-    this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, uid);
+    // createdGameObject->m_fields->m_veryUniqueID = uid;
 
-    // WHAT THE HELL IS THIS????? TODO: CHANGE THIS!!
-    auto selected = this->m_editorUI->m_selectedObject;
+    // this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, uid);
 
-    // Assign UUIds when a user is not in lobby
-    if (!NetManager::getIsInLobby()) {
-        return createdGameObject;
-    }
+    // // WHAT THE HELL IS THIS????? TODO: CHANGE THIS!!
+    // auto selected = this->m_editorUI->m_selectedObject;
 
-    sendCreateObjects(uid.c_str(), p1, selected->getRotation(), selected->m_isHighDetail, selected->m_hasNoGlow, selected->m_isDontEnter, selected->m_isFlipX, selected->m_isFlipY);
+    // // Assign UUIds when a user is not in lobby
+    // if (!NetManager::getIsInLobby()) {
+    //     return createdGameObject;
+    // }
+
+    // sendCreateObjects(uid.c_str(), p1, selected->getRotation(), selected->m_isHighDetail, selected->m_hasNoGlow, selected->m_isDontEnter, selected->m_isFlipX, selected->m_isFlipY);
      
-    return createdGameObject;
+    // return createdGameObject;
 }

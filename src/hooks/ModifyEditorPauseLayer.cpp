@@ -40,7 +40,7 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 		// TODO: add if condition over cast
 		auto netManager = NetManager::get();
 
-		if (!netManager->m_isInLobby) {
+		if (!NetManager::getIsInLobby()) {
 			// TODO: Shorten this
 			m_fields->m_lobbyPopup = LobbyPopup::create(eLobbyHostPopup);
 			
@@ -78,7 +78,7 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 		auto netManager = NetManager::get();
 		// gameManager->leaveLobby(); // Leave Lobby
 
-		if (!netManager->m_isInLobby) {
+		if (!NetManager::getIsInLobby()) {
 			EditorPauseLayer::onSaveAndPlay(sender); // And exit editor (whoops)
 		}
 		else {
