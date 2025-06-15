@@ -2,11 +2,13 @@
 #include <Geode/modify/LevelBrowserLayer.hpp>
 #include <isteammatchmaking.h>
 #include "../layers/LobbiesLayer.hpp"
+#include "../networking/NetManager.hpp"
 
 #ifdef USE_TEST_SERVER
     #include "ModifyGameManager.hpp"
 	#include <WinSock2.h>
 #endif
+
 
 
 using namespace geode::prelude;

@@ -3,7 +3,7 @@
 
 
 // Why the f*** can't c++ inline this f***ing shit properly without some stupid use of header guards
-static NetManager* get() {
+NetManager* NetManager::get() {
 	auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 	return gameManager->m_fields->m_netManager;
 }
@@ -174,6 +174,15 @@ void NetManager::receiveData() {
 
 void NetManager::sendQueuedData() {
 
+
+}
+
+        
+Result<int> NetManager::parseData() {
+	return Err("Vro...");
+}
+
+void receiveData() {
 
 }
 

@@ -68,6 +68,8 @@ class NetManager {
         // Flatbuffer builder for building flatbuffers, or something idk
         flatbuffers::FlatBufferBuilder m_builder;
         
+        flatbuffers::Offset<::flatbuffers::Vector<uint8_t>> m_body_type_list = 0;
+        flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<void>>> m_body_content_list = 0;
 
         
     private:
