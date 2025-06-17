@@ -12,8 +12,8 @@ using namespace geode::prelude;
 class $modify(MyGameManager, GameManager) {
 	
     struct Fields {
-		NetManager* m_netManager;
-		SteamCallbacks* m_callbackManager;
+		NetManager* m_netManager = new NetManager;
+		SteamCallbacks* m_callbackManager = new SteamCallbacks;
     };
 
 	void update(float p0);
