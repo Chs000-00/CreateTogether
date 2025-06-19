@@ -1,11 +1,6 @@
 
 #include "../config.hpp"
 
-#ifdef USE_TEST_SERVER
-	#include <WinSock2.h>
-	#include "../types/PlaceboMsg.hpp"
-#endif
-
 #include <Geode/Geode.hpp>
 #include <Geode/modify/GameManager.hpp>
 #include <Geode/binding/GameObject.hpp>

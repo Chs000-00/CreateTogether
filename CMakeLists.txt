@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.21)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "iOS" OR IOS)
+    set(CMAKE_OSX_ARCHITECTURES "arm64")
+else()
+    set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
+endif()
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 project(CreateTogether VERSION 0.3.1)
@@ -27,25 +31,43 @@ else()
 endif()
 
 set(GEODE_LINK_NIGHTLY ON)
-set(USE_TEST_SERVER OFF)
+set(NO_STEAMWORKS ON)
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 # Thankye globed
 # Can *Safely* be commented out when not compiling with test server
-if (WIN32 AND USE_TEST_SERVER)
-    message(STATUS "Compiling with test server")
+if (NO_STEAMWORKS)
+    message(STATUS "Compiling without steamworks")
 
-    # geode moment
+
     # Enable experimental support for a server at port 24018, address '127.0.0.1'
     # Incase you dont have friend's and need to test this mod out
     # A button should appear in your level list. One of them joins the server as host, the friends list joins the server as not-host
+    
+    # WARNING! Compiling this requires you to install GameNetworkingSockets and all
+    # of it's stuff into ./lib . If you want my lib binaries feel free to DM me or something idk.
+
+    target_link_libraries(${PROJECT_NAME}
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib/SteamWorkless/GameNetworkingSockets.lib
+    )
+
 
     add_compile_definitions(
-        WIN32_LEAN_AND_MEAN=1
-        USE_TEST_SERVER=1
+        NO_STEAMWORKS=1
     ) 
 
-    target_link_libraries(${PROJECT_NAME} ws2_32)
+else()
+
+    message(STATUS "Compiling with steamworks")
+
+    if (ANDROID OR IOS)
+        message(WARNING "IOS / Android has no support for steamworks. Please disable NO_STEAMWORKS.")
+    endif()
+
+    target_link_libraries(${PROJECT_NAME}
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib/steam_api64.lib
+    )
+
 endif()
 
 
@@ -54,10 +76,5 @@ target_include_directories(${PROJECT_NAME} PUBLIC include)
 # Set up dependencies, resources, and link Geode.
 setup_geode_mod(${PROJECT_NAME})
 
+# UUIDv4 was removed a long time ago, and is no longer used.
 # CPMAddPackage("gh:crashoz/uuid_v4#41238a4")
-
-# CPMAddPackage("gh:camila314/UIBuilder#cd0f953")
-
-target_link_libraries(${PROJECT_NAME}
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/steam_api64.lib
-)

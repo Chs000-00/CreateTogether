@@ -4,11 +4,6 @@
 #include "../layers/LobbiesLayer.hpp"
 #include "../networking/NetManager.hpp"
 
-#ifdef USE_TEST_SERVER
-    #include "ModifyGameManager.hpp"
-	#include <WinSock2.h>
-#endif
-
 
 
 using namespace geode::prelude;
@@ -35,7 +30,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
         auto menu = this->getChildByID("my-levels-menu");
 
         // Horrible
-        #ifdef USE_TEST_SERVER
+        #ifdef NO_STEAMWORKS
 
             auto joinAsHostBtn = CCMenuItemSpriteExtra::create(
                 // "GJ_hammerIcon_001.png" Possibly?
@@ -59,13 +54,13 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 	void onLobbySearchButton(cocos2d::CCObject* sender) {
 
         // If the test server is enabled, connect to it instead.
-        #ifdef USE_TEST_SERVER
+        #ifdef NO_STEAMWORKS
             joinServer(false);
         #else
             LobbiesLayer::scene();
         #endif
 	}
-    #ifdef USE_TEST_SERVER
+    #ifdef NO_STEAMWORKS
 	void onJoinServerAsHost(cocos2d::CCObject* sender) {
         // If the test server is enabled, connect to it instead.
         joinServer(true);
@@ -73,21 +68,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 
 
     void joinServer(bool asHost) {
-        auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-        gameManager->m_fields->m_socket = socket(AF_INET, SOCK_STREAM, 0);
-        sockaddr_in serverAddress;
-        serverAddress.sin_family = AF_INET;
-        serverAddress.sin_port = htons(DEDICATED_PORT);
-        serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
-        connect(gameManager->m_fields->m_socket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 
-        u_long mode = 1;  // 1 to enable non-blocking socket
-        ioctlsocket(gameManager->m_fields->m_socket, FIONBIO, &mode);
-
-
-        gameManager->m_fields->m_isInLobby = true;
-        gameManager->m_fields->m_isHost = asHost;
-        gameManager->enterLevelEditor();
     }
     #endif
     
