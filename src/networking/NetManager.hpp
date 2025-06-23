@@ -1,16 +1,18 @@
 #pragma once
 
-#include "NetworkingHeaders.hpp"
-#include "../types/LobbyData.hpp"
 #include <isteammatchmaking.h>
-#include "../ui/WaitingForHostPopup.hpp"
+#include <isteamnetworkingmessages.h>
 
-
-// TODO: Remove this.
-#ifdef USE_TEST_SERVER
-	#include <WinSock2.h>
-	#include "../types/PlaceboMsg.hpp"
+#ifdef STEAMWORKS
+    #include <isteamuser.h>
+    #include <isteammatchmaking.h>
 #endif
+
+#include <flatbuffers/flatbuffers.h>
+#include <ctserialize_generated.h>
+
+#include "../types/LobbyData.hpp"
+#include "../ui/WaitingForHostPopup.hpp"
 
 class NetManager {
     public:
@@ -58,9 +60,6 @@ class NetManager {
 		// m_options can be deconstructed for default values. Idk why I made this this way
         // Lobby options, such is if the server is private or not.
 		struct lobbyOptions m_options;
-
-        // Socket for internal testing. Im going to delete this piece of crap if I have the mental energy to do so.
-        SOCKET m_socket;
 
         // A list of players in the lobby. sendMessage() sends the data to all of these users, and fetchMemberList() updates it.
         std::vector<SteamNetworkingIdentity> m_playersInLobby;

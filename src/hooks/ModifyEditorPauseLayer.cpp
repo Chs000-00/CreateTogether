@@ -1,6 +1,5 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
-#include <isteammatchmaking.h>
 #include "ModifyGameManager.hpp"
 #include "ModifyEditorLayer.hpp"
 #include "../ui/LobbyPopup.hpp"

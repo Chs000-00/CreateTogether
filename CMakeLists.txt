@@ -68,6 +68,11 @@ else()
         ${CMAKE_CURRENT_SOURCE_DIR}/lib/steam_api64.lib
     )
 
+    # Small change to make code more readable, as it could get easy to mix ifndef NO_STEAMWORKS and ifdef NO_STEAMWORKS
+    add_compile_definitions(
+        STEAMWORKS=1
+    )
+
 endif()
 
 

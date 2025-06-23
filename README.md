@@ -19,7 +19,7 @@ This project requires steamworks sdk! Install `steam_api64.dll` and `steam_api64
 geode build
 ```
 ## Local testing (If you have no friends)
-1. Enable USE_TEST_SERVER in CmakeLists
+1. Enable NO_STEAMWORKS in CmakeLists
 2. Recompile
 3. Open test server (`node server.js`)
 4. The game now supports connecting to 127.0.0.1, to do so:

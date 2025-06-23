@@ -19,7 +19,7 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 
         bool m_loadingFinished = false;
         
-        #ifndef NO_STEAMWORKS
+        #ifdef STEAMWORKS
         uint64 m_userID = SteamUser()->GetSteamID().ConvertToUint64();
         #else
         uint64 m_userID;

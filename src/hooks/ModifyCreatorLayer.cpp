@@ -60,6 +60,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
             LobbiesLayer::scene();
         #endif
 	}
+    
     #ifdef NO_STEAMWORKS
 	void onJoinServerAsHost(cocos2d::CCObject* sender) {
         // If the test server is enabled, connect to it instead.

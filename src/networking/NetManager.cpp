@@ -27,7 +27,7 @@ void NetManager::leaveCurrentSteamLobby() {
 
         m_isInLobby = false;
 
-		#ifndef USE_TEST_SERVER
+		#ifdef STEAMWORKS
 
 			log::info("Leaving lobby with ID {}", this->m_lobbyId);
 			SteamMatchmaking()->LeaveLobby(this->m_lobbyId);
@@ -35,8 +35,6 @@ void NetManager::leaveCurrentSteamLobby() {
 
 		#else
 
-			// WHY DOES THIS CRASH????
-			close(this->m_socket);
 			
 		#endif
 
@@ -51,11 +49,7 @@ void NetManager::leaveCurrentSteamLobby() {
 
 void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out) {
 	this->m_builder.Finish(out);
-	#ifndef USE_TEST_SERVER
-		SteamNetworkingMessages()->SendMessageToUser(usr, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
-	#else
-        log::warn("Attempted to sendMessageHeaderToUser yet server is dedicated! Ignoring.");
-    #endif
+	SteamNetworkingMessages()->SendMessageToUser(usr, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
 }
 
 void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out) {
@@ -63,17 +57,11 @@ void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out
 
 	// log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
 
-	#ifndef USE_TEST_SERVER        
 
-		for (auto const& member : this->m_playersInLobby) {
-			this->sendMessageToUser(member, out);
-		}
-		// log::debug("Done sending messages");
-
-	#else
-		// :despair~1:
-		send(this->m_fields->m_socket, data.c_str(), strlen(data.c_str()), 0);
-	#endif
+	for (auto const& member : this->m_playersInLobby) {
+		this->sendMessageToUser(member, out);
+	}
+	// log::debug("Done sending messages");
 }
 
 void NetManager::enterLevelEditor() {
@@ -86,17 +74,25 @@ void NetManager::enterLevelEditor() {
 	// gameLevel->m_levelDesc += "Created with Create Together";
 	auto lev = LevelEditorLayer::create(gameLevel, false);
 	// TODO: Only send this to host!!!!!!!!!
-	auto msg = "{\"Type\": 7}";
 
 
-    #ifndef USE_TEST_SERVER
-        SteamNetworkingIdentity host;
-        host.SetSteamID(this->m_hostID);
-        SteamNetworkingMessages()->SendMessageToUser(host, msg, static_cast<uint32>(strlen(msg)), k_nSteamNetworkingSend_Reliable, 0);
-    #else
-		// FIX! THIS!
-        sendDataToMembers(msg);
-    #endif
+	SteamNetworkingIdentity host;
+	host.SetSteamID(this->m_hostID);
+
+	std::vector<uint8_t> bodyType;
+	bodyType.push_back(CTSerialize::MessageBody_RequestLevel);
+	auto bodyTypeOffset = this->m_builder.CreateVector(bodyType);
+
+	auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(this->m_builder);
+	std::vector<flatbuffers::Offset<void>> body;
+	body.push_back(requestLevelStringOffset.Union());
+	auto bodyOffset = this->m_builder.CreateVector(body);
+
+
+
+	auto messageHeader = CTSerialize::CreateMessageHeader(this->m_builder, bodyTypeOffset, bodyOffset);
+
+	this->sendMessageToUser(host, messageHeader);
 
 	this->fetchMemberList();
 	switchToScene(lev);
@@ -128,31 +124,13 @@ void NetManager::receiveData() {
 		return;
 	}
 
-	#ifndef USE_TEST_SERVER
-		SteamNetworkingMessage_t* messageList[128];
-		auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 128);
-	#else
-		// Compat with for loop
-		auto numMessages = 1;
+	SteamNetworkingMessage_t* messageList[128];
+	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 128);
 
-		// What is this used for?
-		// char tserverdat[8192];
-		// memset(tserverdat, 0, sizeof(tserverdat)); 
-		TestServerMsg* msg = new TestServerMsg;
-		auto outrec = recv(this->m_socket, msg->m_data, sizeof(msg->m_data), 0);
-
-		if (outrec == -1) {
-			msg->Release();
-			return;
-		}
-
-	#endif
 
 	for (int i = 0; i < numMessages; i++) {
 		
-		#ifndef USE_TEST_SERVER
-			SteamNetworkingMessage_t* msg = messageList[i];
-		#endif
+		SteamNetworkingMessage_t* msg = messageList[i];
 
 		// Uhh idk anymore what this is
 		const char* data = new char[msg->GetSize()];

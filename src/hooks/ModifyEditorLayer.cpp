@@ -2,7 +2,11 @@
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/binding/GameObject.hpp>
 #include <Geode/binding/EditorUI.hpp>
-#include <isteamuser.h>
+
+#ifdef STEAMWORKS
+    #include <isteamuser.h>
+#endif
+
 #include "../types/ActionTypes.hpp"
 #include "ModifyGameManager.hpp"
 #include "../networking/HighLevelHeader.hpp"
@@ -15,9 +19,9 @@ using namespace geode::prelude;
 
 bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
 
-    #ifdef USE_TEST_SERVER
-    std::srand(std::time(nullptr));
-    this->m_fields->m_userID = SteamUser()->GetSteamID().ConvertToUint64() + std::rand();
+    #ifdef NO_STEAMWORKS
+        std::srand(std::time(nullptr));
+        this->m_fields->m_userID = std::rand();
     #endif
 
     this->m_fields->m_pUniqueIDOfGameObject = CCDictionary::create();
@@ -29,7 +33,11 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
     // TODO: Check if you joined a lobby or not
     auto objectArr = CCArrayExt<MyGameObject*>(m_objects);
 
-    auto stringSteamID = std::to_string(SteamUser()->GetSteamID().ConvertToUint64());
+    #ifdef STEAMWORKS
+        auto stringSteamID = std::to_string(SteamUser()->GetSteamID().ConvertToUint64());
+    #else
+        auto stringSteamID = std::to_string(std::rand());
+    #endif
 
     // This might be inefficient as this requires looping over the arr twice.
     for (auto obj : objectArr) {
