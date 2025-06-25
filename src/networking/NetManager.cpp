@@ -1,5 +1,6 @@
 #include "../hooks/ModifyGameManager.hpp"
 #include "NetManager.hpp"
+#include "./highlevel/NetRecv.hpp"
 
 
 // Why the f*** can't c++ inline this f***ing shit properly without some stupid use of header guards
@@ -21,8 +22,11 @@ void NetManager::update() {
 	}
 }
 
-void NetManager::leaveCurrentSteamLobby() {
+void NetManager::leaveLobby() {
 	this->m_isInEditorLayer = false;
+
+	// Clear buffer so it dosen't cause issues later.
+	this->m_builder.Clear();
 	if (this->m_isInLobby) {
 
         m_isInLobby = false;
@@ -73,24 +77,23 @@ void NetManager::enterLevelEditor() {
 	gameLevel->m_levelType = GJLevelType::Editor;
 	// gameLevel->m_levelDesc += "Created with Create Together";
 	auto lev = LevelEditorLayer::create(gameLevel, false);
-	// TODO: Only send this to host!!!!!!!!!
 
+	// I AM VERY SORRY FOR THIS ):
+	flatbuffers::FlatBufferBuilder builder;
 
 	SteamNetworkingIdentity host;
 	host.SetSteamID(this->m_hostID);
 
 	std::vector<uint8_t> bodyType;
 	bodyType.push_back(CTSerialize::MessageBody_RequestLevel);
-	auto bodyTypeOffset = this->m_builder.CreateVector(bodyType);
+	auto bodyTypeOffset = builder.CreateVector(bodyType);
 
-	auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(this->m_builder);
+	auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(builder);
 	std::vector<flatbuffers::Offset<void>> body;
 	body.push_back(requestLevelStringOffset.Union());
-	auto bodyOffset = this->m_builder.CreateVector(body);
+	auto bodyOffset = builder.CreateVector(body);
 
-
-
-	auto messageHeader = CTSerialize::CreateMessageHeader(this->m_builder, bodyTypeOffset, bodyOffset);
+	auto messageHeader = CTSerialize::CreateMessageHeader(builder, bodyTypeOffset, bodyOffset);
 
 	this->sendMessageToUser(host, messageHeader);
 
@@ -136,12 +139,12 @@ void NetManager::receiveData() {
 		const char* data = new char[msg->GetSize()];
 		data = static_cast<const char*>(msg->GetData());
 		
-		CTSerialize::GetMessageHeader(data);
+		auto messageHeader = CTSerialize::GetMessageHeader(data);
 
-		auto out = this->parseData();
+		auto out = this->parseData(messageHeader);
 
 		if (!out) {
-			log::warn("Something went wrong with the parsing: {}", out.unwrapErr());
+			log::warn("Something went wrong while parsing: {}", out.unwrapErr());
 		}
 
 		delete data;
@@ -155,25 +158,32 @@ void NetManager::sendQueuedData() {
 	auto bodyTypeOffset = this->m_builder.CreateVector(this->m_bodyType);
 	auto bodyOffset = this->m_builder.CreateVector(this->m_body);
 
-
 	auto messageHeader = CTSerialize::CreateMessageHeader(this->m_builder, bodyTypeOffset, bodyOffset);
 
 	this->sendMessage(messageHeader);
-
-
+	this->m_builder.Clear();
 }
 
         
-Result<int> NetManager::parseData() {
-	return Err("Vro...");
+Result<int> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
+	auto messageUnionType = msg->body_type();
+	for (auto i = 0; i < messageUnionType->Length(); i++) {
+		switch (messageUnionType->Get(i)) {
+			case CTSerialize::MessageBody_CreateObjects:
+				recvCreateObjects(msg);
+				break;
+			
+			default:
+				return Err("Invalid Union Type");
+		}
+	}
+	
 }
 
-void receiveData() {
-
-}
-
+#ifdef USE_STEAMWORKS
 void NetManager::joinSteamLobby(GameLobbyJoinRequested_t* lobbyInfo) {
 	// TODO: Remove this
 	log::debug("JoinLobbyRequest Called with steamID: {} | friendID: {} | friendName: {}", lobbyInfo->m_steamIDLobby.ConvertToUint64(), lobbyInfo->m_steamIDFriend.ConvertToUint64(), SteamFriends()->GetFriendPersonaName(lobbyInfo->m_steamIDFriend));
 	this->m_isInLobby = SteamMatchmaking()->JoinLobby(lobbyInfo->m_steamIDLobby); // I'm not sure if this is needed
 }
+#endif

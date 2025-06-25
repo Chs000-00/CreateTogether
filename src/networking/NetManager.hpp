@@ -27,10 +27,12 @@ class NetManager {
 	    void enterLevelEditor();
         
         // Joins a steam lobby with a specified ID
+        #ifdef USE_STEAMWORKS
         void joinSteamLobby(GameLobbyJoinRequested_t* lobbyInfo);
+        #endif
 
         // Leaves the current steam lobby
-        void leaveCurrentSteamLobby();
+        void leaveLobby();
 
         // Uses port in config.hpp
         void joinIPLobby(const char* address);
@@ -79,7 +81,7 @@ class NetManager {
         // Receive data and then parse it
         void receiveData();
         // Parse data. Called in receiveData.
-        Result<int> parseData();
+        Result<int> parseData(const CTSerialize::MessageHeader* msg);
 
         // Steamnetworking has no way to kick/ban users. I think? Instead just remove the dudes access to m_playersInLobby and any
         // Further attempts to join (this member is specificaly for fetchMemberList())
