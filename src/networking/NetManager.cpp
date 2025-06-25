@@ -152,6 +152,14 @@ void NetManager::receiveData() {
 
 void NetManager::sendQueuedData() {
 
+	auto bodyTypeOffset = this->m_builder.CreateVector(this->m_bodyType);
+	auto bodyOffset = this->m_builder.CreateVector(this->m_body);
+
+
+	auto messageHeader = CTSerialize::CreateMessageHeader(this->m_builder, bodyTypeOffset, bodyOffset);
+
+	this->sendMessage(messageHeader);
+
 
 }
 

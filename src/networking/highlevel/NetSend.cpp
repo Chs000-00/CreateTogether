@@ -11,7 +11,14 @@ void sendCreateObjects(const char* uniqueID, CCPoint pos, float rotation, bool i
     auto netManager = NetManager::get();
     auto objectPos = CTSerialize::CCPosI(pos.x, pos.y);
     auto minObj = CTSerialize::CreateGDGameObjectMinDirect(netManager->m_builder, uniqueID, &objectPos, rotation, isHighDetail, noGlow, noEnter); //uhh add stuff here
-    auto createObjectsOffset = CTSerialize::CreateCreateObjects(netManager->m_builder, minObj);
+
+	netManager->m_bodyType.push_back(CTSerialize::MessageBody_CreateObjects);
+
+	auto createObjectsOffset = CTSerialize::CreateCreateObjects(netManager->m_builder, minObj);
+
+    netManager->m_body.push_back(createObjectsOffset.Union());
+	auto bodyOffset = netManager->m_builder.CreateVector(netManager->m_body);
+
 }
 
 void sendMoveObjects(IDList& uniqueIDList, CCPoint offset) {
