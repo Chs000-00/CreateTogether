@@ -2,4 +2,4 @@
 
 #include "SharedHighLevelHeaders.hpp"
 
-Result<int> recvCreateObjects(const CTSerialize::MessageHeader* msg);
+Result<uint8_t> recvCreateObjects(const CTSerialize::CreateObjects* msg);

@@ -1,6 +1,7 @@
 #include "../hooks/ModifyGameManager.hpp"
 #include "NetManager.hpp"
 #include "./highlevel/NetRecv.hpp"
+#include "../utils/Utills.hpp"
 
 
 // Why the f*** can't c++ inline this f***ing shit properly without some stupid use of header guards
@@ -58,12 +59,12 @@ void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Off
 
 void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out) {
 
-
+	this->m_builder.Finish(out);
 	// log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
 
 
 	for (auto const& member : this->m_playersInLobby) {
-		this->sendMessageToUser(member, out);
+		SteamNetworkingMessages()->SendMessageToUser(member, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
 	}
 	// log::debug("Done sending messages");
 }
@@ -127,19 +128,30 @@ void NetManager::receiveData() {
 		return;
 	}
 
-	SteamNetworkingMessage_t* messageList[128];
-	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, 128);
+	SteamNetworkingMessage_t* messageList[MAX_MESSAGES];
+	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, MAX_MESSAGES);
 
+	if (numMessages < 0) {
+		log::warn("NetManager::receiveData(): Error receiving messages");
+	}
 
 	for (int i = 0; i < numMessages; i++) {
 		
 		SteamNetworkingMessage_t* msg = messageList[i];
 
 		// Uhh idk anymore what this is
-		const char* data = new char[msg->GetSize()];
-		data = static_cast<const char*>(msg->GetData());
+		// This should create a msg->GetSize() sized data object.
+		const uint8_t* data = new uint8_t[msg->GetSize()];
+		data = static_cast<const uint8_t*>(msg->GetData());
 		
 		auto messageHeader = CTSerialize::GetMessageHeader(data);
+
+		
+		
+		flatbuffers::Verifier verifier(data, (size_t)msg->GetData());
+
+		bool isVerified = CTSerialize::VerifyMessageHeaderBuffer(verifier);
+
 
 		auto out = this->parseData(messageHeader);
 
@@ -148,7 +160,6 @@ void NetManager::receiveData() {
 		}
 
 		delete data;
-		data = nullptr;	// just in case
 		msg->Release();
 	}
 }
@@ -165,19 +176,23 @@ void NetManager::sendQueuedData() {
 }
 
         
-Result<int> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
+Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
 	auto messageUnionType = msg->body_type();
 	for (auto i = 0; i < messageUnionType->Length(); i++) {
+
+		auto dmsg = msg->body()->Get(i);
+
 		switch (messageUnionType->Get(i)) {
-			case CTSerialize::MessageBody_CreateObjects:
-				recvCreateObjects(msg);
+			case CTSerialize::MessageBody_CreateObjects: {
+				SERIALIZE_AND_RECEIVE(CreateObjects);
 				break;
-			
+			}
+
 			default:
 				return Err("Invalid Union Type");
 		}
 	}
-	
+	return Ok(0);
 }
 
 #ifdef USE_STEAMWORKS
