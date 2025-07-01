@@ -1,6 +1,7 @@
 #pragma once
 
 // DEPRICATED HEADERS!
+// Idk why this still here
 
 // TODO: Fix eOption messages "not working" if optionsLayer is open.
 enum EEditorActionType {

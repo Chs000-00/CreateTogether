@@ -1,7 +1,11 @@
 #pragma once
 #include <Geode/Geode.hpp>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
-#include <isteammatchmaking.h>
+
+#ifdef STEAMWORKS
+    #include <isteammatchmaking.h>
+#endif
+
 #include "../types/LobbyData.hpp"
 #include "../ui/LevelListBorders.hpp"
 

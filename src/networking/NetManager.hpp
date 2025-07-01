@@ -1,6 +1,5 @@
 #pragma once
 
-#include <isteammatchmaking.h>
 #include <isteamnetworkingmessages.h>
 
 #ifdef STEAMWORKS

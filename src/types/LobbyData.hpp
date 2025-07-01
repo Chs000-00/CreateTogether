@@ -2,9 +2,14 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/ui/ScrollLayer.hpp>
-#include <isteammatchmaking.h>
+
+#ifdef STEAMWORKS
+    #include <isteammatchmaking.h>
+#endif
 
 using namespace geode::prelude;
+
+#ifdef STEAMWORKS
 
 struct lobbyData {
     CSteamID steamId;
@@ -12,6 +17,9 @@ struct lobbyData {
     std::string levelName;
     bool isVersionMismatched;
 };
+
+#endif
+
 
 struct lobbyOptions {
     bool isPrivate = false;

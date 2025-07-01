@@ -1,7 +1,9 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/binding/GameManager.hpp>
-#include <isteammatchmaking.h>
+#ifdef STEAMWORKS
+    #include <isteammatchmaking.h>
+#endif
 #include "LobbyPopup.hpp"
 #include "../hooks/ModifyGameManager.hpp"
 #include "../networking/NetManager.hpp"

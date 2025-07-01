@@ -1,6 +1,10 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelBrowserLayer.hpp>
-#include <isteammatchmaking.h>
+
+#ifdef STEAMWORKS
+    #include <isteammatchmaking.h>
+#endif
+
 #include "../layers/LobbiesLayer.hpp"
 #include "../networking/NetManager.hpp"
 
@@ -62,6 +66,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 	}
     
     #ifdef NO_STEAMWORKS
+
 	void onJoinServerAsHost(cocos2d::CCObject* sender) {
         // If the test server is enabled, connect to it instead.
         joinServer(true);
@@ -71,6 +76,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
     void joinServer(bool asHost) {
 
     }
+    
     #endif
     
 };

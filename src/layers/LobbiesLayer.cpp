@@ -2,7 +2,11 @@
 #include <Geode/ui/General.hpp>
 #include <Geode/ui/LoadingSpinner.hpp>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
-#include <isteammatchmaking.h>
+
+#ifdef STEAMWORKS
+    #include <isteammatchmaking.h>
+#endif
+
 #include "LobbiesLayer.hpp"
 #include "../hooks/ModifyGameManager.hpp"
 #include "../ui/LevelListBorders.hpp"
