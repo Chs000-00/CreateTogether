@@ -60,14 +60,14 @@ void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Off
 void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out) {
 
 	this->m_builder.Finish(out);
-	// log::info("Sending MSG {} {}", data, static_cast<uint32>(strlen(data.c_str())));
 
 
 	for (auto const& member : this->m_playersInLobby) {
 		SteamNetworkingMessages()->SendMessageToUser(member, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
 	}
-	// log::debug("Done sending messages");
 }
+
+ 
 
 void NetManager::enterLevelEditor() {
 	WaitingForHostPopup::create();
@@ -103,22 +103,35 @@ void NetManager::enterLevelEditor() {
 }
 
 void NetManager::fetchMemberList() {
-	int lobbyMemberCount = SteamMatchmaking()->GetNumLobbyMembers(this->m_lobbyId);
-	SteamNetworkingIdentity member;
 
-	log::debug("FetchMemberList Called; Fetching {} users:", lobbyMemberCount);
+	#ifdef STEAMWORKS
+		int lobbyMemberCount = SteamMatchmaking()->GetNumLobbyMembers(this->m_lobbyId);
+		SteamNetworkingIdentity member;
 
-	for (int i = 0; i < lobbyMemberCount; i++) {
-		CSteamID steamIDLobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex(this->m_lobbyId, i);
-		if (steamIDLobbyMember == SteamUser()->GetSteamID()) {
-			log::debug("(Self) - {} with SteamID: {}", SteamFriends()->GetPersonaName(), steamIDLobbyMember.ConvertToUint64());
-			continue;
-		}
+		log::debug("FetchMemberList Called; Fetching {} users:", lobbyMemberCount);
 
-		member.SetSteamID(steamIDLobbyMember);
-		log::debug("{} with SteamID: {}", SteamFriends()->GetFriendPersonaName(steamIDLobbyMember), steamIDLobbyMember.ConvertToUint64());
-		this->m_playersInLobby.push_back(member);   
-	} 
+		for (int i = 0; i < lobbyMemberCount; i++) {
+			CSteamID steamIDLobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex(this->m_lobbyId, i);
+			if (steamIDLobbyMember == SteamUser()->GetSteamID()) {
+				log::debug("(Self) - {} with SteamID: {}", SteamFriends()->GetPersonaName(), steamIDLobbyMember.ConvertToUint64());
+				continue;
+			}
+
+			member.SetSteamID(steamIDLobbyMember);
+			log::debug("{} with SteamID: {}", SteamFriends()->GetFriendPersonaName(steamIDLobbyMember), steamIDLobbyMember.ConvertToUint64());
+			this->m_playersInLobby.push_back(member);   
+		} 
+	#else
+
+	// log::warn("fetchMemberList without STEAMWORKS. Ignoring...");
+	SteamNetworkingIdentity server;
+
+	server.SetIPv4Addr(0x7f000001, DEDICATED_PORT);
+
+	this->m_playersInLobby.push_back(server);
+
+	#endif
+
 }
 
 
@@ -175,7 +188,6 @@ void NetManager::sendQueuedData() {
 	this->m_builder.Clear();
 }
 
-        
 Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
 	auto messageUnionType = msg->body_type();
 	for (auto i = 0; i < messageUnionType->Length(); i++) {

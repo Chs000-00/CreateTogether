@@ -26,7 +26,7 @@ union MessageBody {
 }
 
 table MessageHeader {
-  // This might be broken. Needs testing
+  // This might not be needed, now that I am using GameNetworkingSockets
   body:[MessageBody]; 
 }
 

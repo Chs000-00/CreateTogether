@@ -8,7 +8,7 @@ else()
 endif()
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(CreateTogether VERSION 0.3.1)
+project(CreateTogether VERSION 0.5.1)
 
 file(GLOB SOURCES
     src/hooks/*.cpp

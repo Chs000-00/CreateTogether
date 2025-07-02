@@ -5,17 +5,13 @@
 	},
 	"id": "chs000.createtogether",
 	"name": "Create Together",
-	"version": "v0.3.1",
+	"version": "v0.5.1",
 	"developer": "chs000",
 	"description": "Multiplayer level editing with steamworks",
 	"links": {
 		"source": "https://github.com/Chs000-00/CreateTogether"
 	},
-	"dependencies": [
-		{
-			"id": "geode.node-ids",
-			"version": "v1.10.0",
-			"importance": "required"
-		}
-	]
+	"dependencies": {
+  		"geode.node-ids": "v1.10.0"
+ }
 }

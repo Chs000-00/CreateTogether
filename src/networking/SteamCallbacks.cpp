@@ -1,5 +1,6 @@
 #include "SteamCallbacks.hpp"
 
+#ifdef STEAMWORKS
 
 void SteamCallbacks::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 
@@ -17,7 +18,11 @@ void SteamCallbacks::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 		[callback](auto, bool btn2) {
 			if (btn2) {
 				// TODO: Remove this
-				log::debug("JoinLobbyRequest Called with steamID: {} | friendID: {} | friendName: {}", callback->m_steamIDLobby.ConvertToUint64(), callback->m_steamIDFriend.ConvertToUint64(), SteamFriends()->GetFriendPersonaName(callback->m_steamIDFriend));
+				log::debug("JoinLobbyRequest Called with steamID: {} | friendID: {} | friendName: {}",
+					 callback->m_steamIDLobby.ConvertToUint64(),
+					 std::hash<uint64_t>{}(callback->m_steamIDFriend.ConvertToUint64()),
+					   SteamFriends()->GetFriendPersonaName(callback->m_steamIDFriend)
+				);
                 
                 NetManager::get()->joinSteamLobby(callback);
 			}
@@ -55,11 +60,6 @@ void SteamCallbacks::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 
 	netManager->fetchMemberList();
 }
-
-void SteamCallbacks::onNetworkingMessagesSessionRequest(SteamNetworkingMessagesSessionRequest_t* pCallback) {
-	SteamNetworkingMessages()->AcceptSessionWithUser(pCallback->m_identityRemote);
-}
-
 
 void SteamCallbacks::onLobbyEnter(LobbyEnter_t* pCallback) {
 
@@ -128,7 +128,7 @@ void SteamCallbacks::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) 
 		// Constants can be changed in CMakeLists.txt
 		// Kind of a bad idea but who cares
 
-		// SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "lobby_type", MOD_LOBBY_NAME); // TODO: Uncomment this
+		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "lobby_type", MOD_LOBBY_ID);
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "version", MOD_VERSION);
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "level_name", LevelEditorLayer::get()->m_level->m_levelName.c_str());
 		SteamMatchmaking()->SetLobbyData(pCallback->m_ulSteamIDLobby, "host_name", SteamFriends()->GetPersonaName());
@@ -142,4 +142,10 @@ void SteamCallbacks::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) 
 		this->m_lobbyCreated = 0;
 		this->m_lobbyJoined = 0;
 	}
+}
+
+#endif
+
+void SteamCallbacks::onNetworkingMessagesSessionRequest(SteamNetworkingMessagesSessionRequest_t* pCallback) {
+	SteamNetworkingMessages()->AcceptSessionWithUser(pCallback->m_identityRemote);
 }

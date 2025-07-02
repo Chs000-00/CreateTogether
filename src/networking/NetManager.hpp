@@ -87,6 +87,8 @@ class NetManager {
         // None of this has timeouts cause I am too lazy to implement them so idk
         std::vector<CSteamID> m_excludedMemberList;
 
+        // TODO: Check EResult
+
         // Sends an entire message to everyone in the lobby
         void sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out);
 

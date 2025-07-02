@@ -26,26 +26,12 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 
         auto openSearchForLobbyLayer = CCMenuItemSpriteExtra::create(
             // "GJ_hammerIcon_001.png" Possibly?
-            CircleButtonSprite::createWithSpriteFrameName("GJ_sFriendsIcon_001.png", (1.0F), geode::CircleBaseColor::Green),	
+            CircleButtonSprite::createWithSpriteFrameName("GJ_sFriendsIcon_001.png", (1.0F), geode::CircleBaseColor::Cyan),	
             this,
             menu_selector(MyLevelBrowserLayer::onLobbySearchButton)
         );
 
         auto menu = this->getChildByID("my-levels-menu");
-
-        // Horrible
-        #ifdef NO_STEAMWORKS
-
-            auto joinAsHostBtn = CCMenuItemSpriteExtra::create(
-                // "GJ_hammerIcon_001.png" Possibly?
-                CircleButtonSprite::createWithSpriteFrameName("ring_01_001.png", (1.0F), geode::CircleBaseColor::Cyan),	
-                this,
-                menu_selector(MyLevelBrowserLayer::onJoinServerAsHost)
-            );
-
-            menu->addChild(joinAsHostBtn);
-
-        #endif
 
 
         menu->addChild(openSearchForLobbyLayer);
@@ -59,7 +45,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 
         // If the test server is enabled, connect to it instead.
         #ifdef NO_STEAMWORKS
-            joinServer(false);
+            joinServer();
         #else
             LobbiesLayer::scene();
         #endif
@@ -67,14 +53,9 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
     
     #ifdef NO_STEAMWORKS
 
-	void onJoinServerAsHost(cocos2d::CCObject* sender) {
-        // If the test server is enabled, connect to it instead.
-        joinServer(true);
-	}
-
-
-    void joinServer(bool asHost) {
-
+    void joinServer() {
+        auto networkInterface = SteamNetworkingMessages();
+        NetManager::get()->enterLevelEditor();
     }
     
     #endif
