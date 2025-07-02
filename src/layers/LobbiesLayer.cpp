@@ -1,11 +1,13 @@
+#ifdef STEAMWORKS
+
 #include <Geode/Geode.hpp>
 #include <Geode/ui/General.hpp>
 #include <Geode/ui/LoadingSpinner.hpp>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
 
-#ifdef STEAMWORKS
+// #ifdef STEAMWORKS
     #include <isteammatchmaking.h>
-#endif
+// s#endif
 
 #include "LobbiesLayer.hpp"
 #include "../hooks/ModifyGameManager.hpp"
@@ -184,3 +186,5 @@ void LobbiesLayer::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOF
 
     this->loadDataToList();
 }
+
+#endif

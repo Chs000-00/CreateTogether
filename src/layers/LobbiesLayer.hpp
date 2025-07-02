@@ -1,10 +1,13 @@
 #pragma once
+
+#ifdef STEAMWORKS
+
 #include <Geode/Geode.hpp>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
 
-#ifdef STEAMWORKS
+//#ifdef STEAMWORKS
     #include <isteammatchmaking.h>
-#endif
+//#endif
 
 #include "../types/LobbyData.hpp"
 #include "../ui/LevelListBorders.hpp"
@@ -40,3 +43,5 @@ public:
     void onJoin(CCObject* sender);
     void loadDataToList();
 };
+
+#endif STEAMWORKS

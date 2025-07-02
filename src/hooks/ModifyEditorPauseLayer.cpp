@@ -62,14 +62,14 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 	void onExitEditor(CCObject* sender) {
 		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 		static_cast<MyLevelEditorLayer*>(this->m_editorLayer)->m_fields->m_pUniqueIDOfGameObject->release();
-		NetManager::get()->leaveCurrentSteamLobby();
+		NetManager::get()->leaveLobby();
 		EditorPauseLayer::onExitEditor(sender); // And exit editor (whoops)
 	}
 
 	void onExitNoSave(CCObject* sender) {
 		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 		static_cast<MyLevelEditorLayer*>(this->m_editorLayer)->m_fields->m_pUniqueIDOfGameObject->release();
-		NetManager::get()->leaveCurrentSteamLobby();
+		NetManager::get()->leaveLobby();
 		EditorPauseLayer::onExitNoSave(sender);
 	}
 
