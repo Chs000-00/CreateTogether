@@ -1,23 +1,21 @@
-
 #include "../config.hpp"
 
 #include <Geode/Geode.hpp>
 #include <Geode/modify/GameManager.hpp>
-#include <Geode/binding/GameObject.hpp>
-#include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
-#include <ctserialize_generated.h>
-#include "../types/ActionTypes.hpp"
-#include "../types/LobbyData.hpp"
-#include "ModifyEditorLayer.hpp"
-#include "ModifyGameObject.hpp"
 #include "ModifyGameManager.hpp"
-#include "../utils/Utills.hpp"
+
+#include <isteamnetworkingsockets.h>
 
 
 using namespace geode::prelude;
 
 void MyGameManager::update(float p0) {
-	SteamAPI_RunCallbacks();
+
+	#ifdef STEAMWORKS
+		SteamAPI_RunCallbacks();
+	#else
+		SteamNetworkingSockets()->RunCallbacks();
+	#endif
 
 	NetManager::get()->update();
 

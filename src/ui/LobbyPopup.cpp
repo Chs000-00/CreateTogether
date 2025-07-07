@@ -1,15 +1,18 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/binding/GameManager.hpp>
+
 #ifdef STEAMWORKS
     #include <isteammatchmaking.h>
 #endif
+
 #include "LobbyPopup.hpp"
 #include "../hooks/ModifyGameManager.hpp"
 #include "../networking/NetManager.hpp"
 
 using namespace geode::prelude;
 
+#ifdef STEAMWORKS
 
 // specify parameters for the setup function in the Popup<...> template
 bool LobbyPopup::setup(EPopupType type) {
@@ -134,12 +137,22 @@ void LobbyPopup::startHosting(CCObject* sender) {
     netManager->m_isHost = true;
     steamCallbacks->m_isInLobbyCallResult.Set(steamCallbacks->m_lobbyCreated, steamCallbacks, &SteamCallbacks::onLobbyCreated);
 
+
+    void LobbyPopup::inviteFriends(CCObject* sender) {
+        auto netManager = NetManager::get();
+        SteamFriends()->ActivateGameOverlayInviteDialog(netManager->m_lobbyId);
+    }
+
 }
 
-void LobbyPopup::inviteFriends(CCObject* sender) {
-    auto netManager = NetManager::get();
-    SteamFriends()->ActivateGameOverlayInviteDialog(netManager->m_lobbyId);
+#else
+
+bool LobbyPopup::setup(EPopupType type) {
+    this->setTitle("Unavailable due to debug mode:");
+    return true;
 }
+
+#endif
 
 LobbyPopup* LobbyPopup::create(EPopupType type) {
     auto ret = new LobbyPopup();
@@ -154,3 +167,4 @@ LobbyPopup* LobbyPopup::create(EPopupType type) {
     delete ret;
     return nullptr;
 }
+

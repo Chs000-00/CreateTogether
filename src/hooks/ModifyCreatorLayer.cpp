@@ -1,10 +1,5 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelBrowserLayer.hpp>
-
-#ifdef STEAMWORKS
-    #include <isteammatchmaking.h>
-#endif
-
 #include "../layers/LobbiesLayer.hpp"
 #include "../networking/NetManager.hpp"
 
@@ -54,7 +49,6 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
     #ifdef NO_STEAMWORKS
 
     void joinServer() {
-        auto networkInterface = SteamNetworkingMessages();
         NetManager::get()->enterLevelEditor();
     }
     

@@ -9,6 +9,8 @@
 
 using namespace geode::prelude;
 
+#ifdef STEAMWORKS
+
 ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData> lobbyList) {
     auto scrollLayer = ScrollLayer::create({ 356, 220 });
   
@@ -97,3 +99,4 @@ ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData> lobbyList) {
   	return scrollLayer;
 }
 
+#endif
