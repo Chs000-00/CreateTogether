@@ -6,7 +6,26 @@ if ("${CMAKE_SYSTEM_NAME}" STREQUAL "iOS" OR IOS)
 else()
     set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 endif()
+
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+
+set(NO_STEAMWORKS ON)
+
+# This is different from NO_STEAMWORKS.
+set(COMPILE_DEBUG_SERVER ON)
+
+if (COMPILE_DEBUG_SERVER)
+    message(status "Compiling debug server")
+
+    # project(CTDebugServer VERSION 1.0.0)
+
+    file(GLOB SERVER_SOURCES
+        src/debug/*.cpp
+    )
+
+    add_executable(server ${SERVER_SOURCES})
+
+endif()
 
 project(CreateTogether VERSION 0.5.1)
 
@@ -31,7 +50,6 @@ else()
 endif()
 
 set(GEODE_LINK_NIGHTLY ON)
-set(NO_STEAMWORKS ON)
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 # Thankye globed
