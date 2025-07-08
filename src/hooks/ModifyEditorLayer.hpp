@@ -3,7 +3,13 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/binding/GameObject.hpp>
-#include <isteamnetworkingmessages.h>
+
+#ifdef STEAMWORKS
+    #include <isteamnetworkingmessages.h>
+#else
+    #include <isteamnetworklessmessages.h>
+#endif
+
 #include "../types/ActionTypes.hpp"
 #include "ModifyGameManager.hpp"
 #include <isteamuser.h>

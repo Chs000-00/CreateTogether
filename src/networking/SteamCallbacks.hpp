@@ -1,11 +1,13 @@
 #pragma once
 
 #ifdef STEAMWORKS
+    #include <isteamnetworkingmessages.h>
     #include <isteamuser.h>
     #include <isteammatchmaking.h>
+#else
+    #include <isteamnetworklessmessages.h>
 #endif
 
-#include <isteamnetworkingmessages.h>
 #include "NetManager.hpp"
 #include "../layers/LobbiesLayer.hpp"
 #include "../config.hpp"

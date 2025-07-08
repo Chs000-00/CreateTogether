@@ -3,6 +3,11 @@
 #include "./highlevel/NetRecv.hpp"
 #include "../utils/Utills.hpp"
 
+// TODO: Try compiling ValveSoftware/GameNetworkingSockets:partner to possibly fix this ugly crap?
+#ifdef NO_STEAMWORKS
+	#include <isteamnetworkingsocketsfix.h>
+#endif
+
 
 // Why the f*** can't c++ inline this f***ing shit properly without some stupid use of header guards
 NetManager* NetManager::get() {
@@ -15,7 +20,12 @@ bool NetManager::getIsInLobby() {
 }
 
 void NetManager::update() {
-    SteamAPI_RunCallbacks();
+
+	#ifdef STEAMWORKS
+		SteamAPI_RunCallbacks();
+	#else
+		SteamNetworkingSockets()->RunCallbacks();
+	#endif
 
 	if (this->m_isInLobby) {
 		this->receiveData();
