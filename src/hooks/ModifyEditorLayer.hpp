@@ -7,7 +7,7 @@
 #ifdef STEAMWORKS
     #include <isteamnetworkingmessages.h>
 #else
-    #include <isteamnetworklessmessages.h>
+    #include <debug/isteamnetworkingmessages.h>
 #endif
 
 #include "../types/ActionTypes.hpp"

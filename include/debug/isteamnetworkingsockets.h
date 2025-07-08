@@ -4,8 +4,8 @@
 #define ISTEAMNETWORKINGSOCKETS
 #pragma once
 
-#include "steamnetworklesstypes.h"
-#include "steamworklessapi.h"
+#include "debug/steamnetworkingtypes.h"
+#include "debug/steam_api_common.h"
 
 struct SteamNetAuthenticationStatus_t;
 struct SteamNetworkingFakeIPResult_t;

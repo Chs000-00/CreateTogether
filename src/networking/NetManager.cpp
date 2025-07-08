@@ -5,7 +5,7 @@
 
 // TODO: Try compiling ValveSoftware/GameNetworkingSockets:partner to possibly fix this ugly crap?
 #ifdef NO_STEAMWORKS
-	#include <isteamnetworkingsocketsfix.h>
+	#include <debug/steamnetworkingsockets.h>
 #endif
 
 

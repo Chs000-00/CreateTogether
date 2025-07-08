@@ -5,7 +5,7 @@
     #include <isteamuser.h>
     #include <isteammatchmaking.h>
 #else
-    #include <isteamnetworklessmessages.h>
+    #include <debug/isteamnetworkingmessages.h>
 #endif
 
 #include "NetManager.hpp"
@@ -27,7 +27,7 @@ class SteamCallbacks {
         void onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure);
 	    void onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure);
 
-        #endif STEAMWORKS
+        #endif
 
     private:
         
@@ -36,10 +36,12 @@ class SteamCallbacks {
         STEAM_CALLBACK(SteamCallbacks, onGameJoinRequest, GameLobbyJoinRequested_t);
         STEAM_CALLBACK(SteamCallbacks, onLobbyChatUpdateWrapper, LobbyChatUpdate_t);
         STEAM_CALLBACK(SteamCallbacks, onLobbyEnter, LobbyEnter_t);
-
-        #endif STEAMWORKS
-
-
         STEAM_CALLBACK(SteamCallbacks, onNetworkingMessagesSessionRequest, SteamNetworkingMessagesSessionRequest_t);
+
+        #else
+            
+        STEAM_CALL_BACK(SteamCallbacks, onNetworkingMessagesSessionRequest, SteamNetworkingMessagesSessionRequest_t)
+        
+        #endif
 };
 

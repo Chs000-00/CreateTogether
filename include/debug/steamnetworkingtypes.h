@@ -10,8 +10,8 @@
 
 #include <string.h>
 #include <stdint.h>
-#include "steamtypes.h"
-#include "steamclientpublic.h"
+#include "debug/steamtypes.h"
+#include "debug/steamclientpublic.h"
 
 //----------------------------------------
 // SteamNetworkingSockets library config

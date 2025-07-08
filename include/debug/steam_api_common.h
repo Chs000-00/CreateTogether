@@ -6,12 +6,12 @@
 // for callbacks, etc.  In the OpenSource version, it's a stub with
 // just a few things.
 
-#include "steamtypes.h"
-#include "steamclientpublic.h"
+#include "debug/steamtypes.h"
+#include "debug/steamclientpublic.h"
 
-// enum { k_iSteamNetworkingSocketsCallbacks = 1220 };
-// enum { k_iSteamNetworkingMessagesCallbacks = 1250 };
-// enum { k_iSteamNetworkingUtilsCallbacks = 1280 };
+enum { k_iSteamNetworkingSocketsCallbacks = 1220 };
+enum { k_iSteamNetworkingMessagesCallbacks = 1250 };
+enum { k_iSteamNetworkingUtilsCallbacks = 1280 };
 
 // handle to a communication pipe to the Steam client
 typedef int32 HSteamPipe;

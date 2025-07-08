@@ -5,7 +5,7 @@
     #include <isteamuser.h>
     #include <isteammatchmaking.h>
 #else
-    #include <isteamnetworklessmessages.h>
+    #include <debug/isteamnetworkingmessages.h>
 #endif
 
 

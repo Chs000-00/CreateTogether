@@ -1,9 +1,11 @@
 #include <Geode/Geode.hpp>
 #include <Geode/ui/ScrollLayer.hpp>
+
 #ifdef STEAMWORKS
   #include <isteammatchmaking.h>
   #include <isteamfriends.h>
 #endif
+
 #include "../layers/LobbiesLayer.hpp"
 #include "../types/LobbyData.hpp"
 
