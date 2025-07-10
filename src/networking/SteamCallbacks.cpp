@@ -1,5 +1,9 @@
 #include "SteamCallbacks.hpp"
 
+#ifdef NO_STEAMWORKS
+	#include <debug/isteamnetworkingutils.h>
+#endif
+
 #ifdef STEAMWORKS
 
 void SteamCallbacks::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
@@ -144,8 +148,20 @@ void SteamCallbacks::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) 
 	}
 }
 
-#endif
-
 void SteamCallbacks::onNetworkingMessagesSessionRequest(SteamNetworkingMessagesSessionRequest_t* pCallback) {
 	SteamNetworkingMessages()->AcceptSessionWithUser(pCallback->m_identityRemote);
 }
+
+#else
+
+void onNetworkingMessagesSessionRequestCallbackFix(SteamNetworkingMessagesSessionRequest_t* pCallback) {
+	SteamNetworkingMessages()->AcceptSessionWithUser(pCallback->m_identityRemote);
+}
+
+
+// Note this is only called if NO_STEAMWORKS is defined
+SteamCallbacks::SteamCallbacks() {
+	SteamNetworkingUtils()->SetGlobalCallback_MessagesSessionRequest( &onNetworkingMessagesSessionRequestCallbackFix );
+}
+
+#endif

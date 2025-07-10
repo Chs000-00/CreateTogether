@@ -27,6 +27,10 @@ class SteamCallbacks {
         void onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure);
 	    void onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure);
 
+        #else
+
+        SteamCallbacks();
+
         #endif
 
     private:
@@ -37,10 +41,6 @@ class SteamCallbacks {
         STEAM_CALLBACK(SteamCallbacks, onLobbyChatUpdateWrapper, LobbyChatUpdate_t);
         STEAM_CALLBACK(SteamCallbacks, onLobbyEnter, LobbyEnter_t);
         STEAM_CALLBACK(SteamCallbacks, onNetworkingMessagesSessionRequest, SteamNetworkingMessagesSessionRequest_t);
-
-        #else
-            
-        STEAM_CALL_BACK(SteamCallbacks, onNetworkingMessagesSessionRequest, SteamNetworkingMessagesSessionRequest_t)
         
         #endif
 };

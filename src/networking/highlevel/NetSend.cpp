@@ -21,7 +21,7 @@ void sendCreateObjects(const char* uniqueID, CCPoint pos, float rotation, bool i
 
 void sendMoveObjects(IDList& uniqueIDList, CCPoint offset) {
     auto netManager = NetManager::get();
-    auto createMobeObjectsOffset = CTSerialize::CreateMoveObjects(netManager->m_builder, netManager->m_builder.CreateVector(uniqueIDList))
+    auto createMobeObjectsOffset = CTSerialize::CreateMoveObjects(netManager->m_builder, netManager->m_builder.CreateVector(uniqueIDList));
 }
 
 void sendRotateObjects(IDList& uniqueIDList, float rotation, CCPoint anchor) {

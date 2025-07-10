@@ -6,13 +6,13 @@
 
 #ifdef STEAMWORKS
     #include <isteamnetworkingmessages.h>
+    #include <isteamuser.h>
 #else
     #include <debug/isteamnetworkingmessages.h>
 #endif
 
 #include "../types/ActionTypes.hpp"
 #include "ModifyGameManager.hpp"
-#include <isteamuser.h>
 
 using namespace geode::prelude;
 class $modify(MyLevelEditorLayer, LevelEditorLayer) {
