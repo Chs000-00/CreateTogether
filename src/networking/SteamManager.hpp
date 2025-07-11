@@ -13,7 +13,7 @@
 #include "../config.hpp"
 
 
-class SteamCallbacks {
+class SteamManager {
     public:
         SteamAPICall_t m_lobbyCreated;
         SteamAPICall_t m_lobbyJoined;
@@ -21,15 +21,16 @@ class SteamCallbacks {
 
         #ifdef STEAMWORKS
 
-        CCallResult< SteamCallbacks, LobbyCreated_t > m_isInLobbyCallResult;
-		CCallResult< SteamCallbacks, LobbyEnter_t > m_enterLobbyCallResult;
+        CCallResult< SteamManager, LobbyCreated_t > m_isInLobbyCallResult;
+		CCallResult< SteamManager, LobbyEnter_t > m_enterLobbyCallResult;
 
         void onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure);
 	    void onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure);
 
         #else
 
-        SteamCallbacks();
+        SteamManager();
+        void initP2P();
 
         #endif
 
@@ -37,10 +38,10 @@ class SteamCallbacks {
         
         #ifdef STEAMWORKS
 
-        STEAM_CALLBACK(SteamCallbacks, onGameJoinRequest, GameLobbyJoinRequested_t);
-        STEAM_CALLBACK(SteamCallbacks, onLobbyChatUpdateWrapper, LobbyChatUpdate_t);
-        STEAM_CALLBACK(SteamCallbacks, onLobbyEnter, LobbyEnter_t);
-        STEAM_CALLBACK(SteamCallbacks, onNetworkingMessagesSessionRequest, SteamNetworkingMessagesSessionRequest_t);
+        STEAM_CALLBACK(SteamManager, onGameJoinRequest, GameLobbyJoinRequested_t);
+        STEAM_CALLBACK(SteamManager, onLobbyChatUpdateWrapper, LobbyChatUpdate_t);
+        STEAM_CALLBACK(SteamManager, onLobbyEnter, LobbyEnter_t);
+        STEAM_CALLBACK(SteamManager, onNetworkingMessagesSessionRequest, SteamNetworkingMessagesSessionRequest_t);
         
         #endif
 };

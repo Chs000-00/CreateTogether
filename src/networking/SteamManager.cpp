@@ -1,4 +1,4 @@
-#include "SteamCallbacks.hpp"
+#include "SteamManager.hpp"
 
 #ifdef NO_STEAMWORKS
 	#include <debug/isteamnetworkingutils.h>
@@ -7,7 +7,7 @@
 
 #ifdef STEAMWORKS
 
-void SteamCallbacks::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
+void SteamManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 
 
 	// Alexa, how do I copy an object from a pointer in c++?
@@ -37,7 +37,7 @@ void SteamCallbacks::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {
 	);
 }
 
-void SteamCallbacks::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
+void SteamManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 
     auto netManager = NetManager::get();
 	if (netManager->m_lobbyId != pCallback->m_ulSteamIDLobby) {
@@ -66,7 +66,7 @@ void SteamCallbacks::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 	netManager->fetchMemberList();
 }
 
-void SteamCallbacks::onLobbyEnter(LobbyEnter_t* pCallback) {
+void SteamManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 
 	if (pCallback->m_EChatRoomEnterResponse != k_EChatRoomEnterResponseSuccess) {
 		log::error("Failed to enter lobby with error code {}", pCallback->m_EChatRoomEnterResponse);
@@ -104,7 +104,7 @@ void SteamCallbacks::onLobbyEnter(LobbyEnter_t* pCallback) {
 }
 
 
-void SteamCallbacks::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
+void SteamManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 
 	auto netManager = NetManager::get();
 
@@ -149,7 +149,7 @@ void SteamCallbacks::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) 
 	}
 }
 
-void SteamCallbacks::onNetworkingMessagesSessionRequest(SteamNetworkingMessagesSessionRequest_t* pCallback) {
+void SteamManager::onNetworkingMessagesSessionRequest(SteamNetworkingMessagesSessionRequest_t* pCallback) {
 	SteamNetworkingMessages()->AcceptSessionWithUser(pCallback->m_identityRemote);
 }
 
@@ -161,7 +161,7 @@ void onNetworkingMessagesSessionRequestCallbackFix(SteamNetworkingMessagesSessio
 
 
 // Note this is only called if NO_STEAMWORKS is defined
-SteamCallbacks::SteamCallbacks() {
+SteamManager::SteamManager() {
 
 	SteamDatagramErrMsg errMsg;
 	if ( !GameNetworkingSockets_Init( nullptr, errMsg ) ) {
@@ -169,6 +169,20 @@ SteamCallbacks::SteamCallbacks() {
 	}
 
 	SteamNetworkingUtils()->SetGlobalCallback_MessagesSessionRequest(&onNetworkingMessagesSessionRequestCallbackFix);
+
+	// Allow sharing of any kind of ICE address.
+	// We don't have any method of relaying (TURN) in this example, so we are essentially
+	// forced to disclose our public address if we want to pierce NAT.  But if we
+	// had relay fallback, or if we only wanted to connect on the LAN, we could restrict
+	// to only sharing private addresses.
+	SteamNetworkingUtils()->SetGlobalConfigValueInt32(k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable, k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_All );
+
+	this->initP2P();
 }
+
+void SteamManager::initP2P() {
+	std::vector< SteamNetworkingConfigValue_t > vecOpts;
+}
+
 
 #endif
