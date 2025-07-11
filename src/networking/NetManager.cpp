@@ -24,7 +24,7 @@ void NetManager::update() {
 	#ifdef STEAMWORKS
 		SteamAPI_RunCallbacks();
 	#else
-		SteamNetworkingSockets()->RunCallbacks();
+		// SteamNetworkingSockets()->RunCallbacks();
 	#endif
 
 	if (this->m_isInLobby) {
@@ -63,6 +63,7 @@ void NetManager::leaveLobby() {
 }
 
 void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out) {
+	log::info("SendingMessageToUser");
 	this->m_builder.Finish(out);
 	SteamNetworkingMessages()->SendMessageToUser(usr, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
 }
@@ -70,7 +71,6 @@ void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Off
 void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out) {
 
 	this->m_builder.Finish(out);
-
 
 	for (auto const& member : this->m_playersInLobby) {
 		SteamNetworkingMessages()->SendMessageToUser(member, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
@@ -92,8 +92,15 @@ void NetManager::enterLevelEditor() {
 	// I AM VERY SORRY FOR THIS ):
 	flatbuffers::FlatBufferBuilder builder;
 
+	this->fetchMemberList();
+
 	SteamNetworkingIdentity host;
-	host.SetSteamID(this->m_hostID);
+
+	#ifdef STEAMWORKS
+		host.SetSteamID(this->m_hostID);
+	#else
+		host.SetIPv4Addr(0x7f000001, DEDICATED_PORT);
+	#endif
 
 	std::vector<uint8_t> bodyType;
 	bodyType.push_back(CTSerialize::MessageBody_RequestLevel);
@@ -108,7 +115,6 @@ void NetManager::enterLevelEditor() {
 
 	this->sendMessageToUser(host, messageHeader);
 
-	this->fetchMemberList();
 	switchToScene(lev);
 }
 

@@ -2,6 +2,7 @@
 
 #ifdef NO_STEAMWORKS
 	#include <debug/isteamnetworkingutils.h>
+	#include <debug/steamnetworkingsockets.h>
 #endif
 
 #ifdef STEAMWORKS
@@ -161,7 +162,13 @@ void onNetworkingMessagesSessionRequestCallbackFix(SteamNetworkingMessagesSessio
 
 // Note this is only called if NO_STEAMWORKS is defined
 SteamCallbacks::SteamCallbacks() {
-	SteamNetworkingUtils()->SetGlobalCallback_MessagesSessionRequest( &onNetworkingMessagesSessionRequestCallbackFix );
+
+	SteamDatagramErrMsg errMsg;
+	if ( !GameNetworkingSockets_Init( nullptr, errMsg ) ) {
+		log::error("GameNetworkingSockets_Init failed {}", errMsg);
+	}
+
+	SteamNetworkingUtils()->SetGlobalCallback_MessagesSessionRequest(&onNetworkingMessagesSessionRequestCallbackFix);
 }
 
 #endif

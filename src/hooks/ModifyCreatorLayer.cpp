@@ -49,7 +49,9 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
     #ifdef NO_STEAMWORKS
 
     void joinServer() {
-        NetManager::get()->enterLevelEditor();
+        auto netManager = NetManager::get();
+        netManager->m_isInLobby = true;
+        netManager->enterLevelEditor();
     }
     
     #endif

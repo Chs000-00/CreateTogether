@@ -25,6 +25,12 @@ if (COMPILE_DEBUG_SERVER)
 
     add_executable(server ${SERVER_SOURCES})
 
+    target_link_libraries(server
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib/SteamWorkless/GameNetworkingSockets.lib
+    )
+
+    target_include_directories(server PUBLIC include)
+
 endif()
 
 project(CreateTogether VERSION 0.5.1)
