@@ -30,7 +30,7 @@ class SteamManager {
         #else
 
         SteamManager();
-        void initP2P();
+        void initSockets();
 
         #endif
 

@@ -155,9 +155,6 @@ void SteamManager::onNetworkingMessagesSessionRequest(SteamNetworkingMessagesSes
 
 #else
 
-void onNetworkingMessagesSessionRequestCallbackFix(SteamNetworkingMessagesSessionRequest_t* pCallback) {
-	SteamNetworkingMessages()->AcceptSessionWithUser(pCallback->m_identityRemote);
-}
 
 
 // Note this is only called if NO_STEAMWORKS is defined
@@ -168,8 +165,6 @@ SteamManager::SteamManager() {
 		log::error("GameNetworkingSockets_Init failed {}", errMsg);
 	}
 
-	SteamNetworkingUtils()->SetGlobalCallback_MessagesSessionRequest(&onNetworkingMessagesSessionRequestCallbackFix);
-
 	// Allow sharing of any kind of ICE address.
 	// We don't have any method of relaying (TURN) in this example, so we are essentially
 	// forced to disclose our public address if we want to pierce NAT.  But if we
@@ -177,11 +172,11 @@ SteamManager::SteamManager() {
 	// to only sharing private addresses.
 	SteamNetworkingUtils()->SetGlobalConfigValueInt32(k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable, k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_All );
 
-	this->initP2P();
+	this->initSockets();
 }
 
-void SteamManager::initP2P() {
-	std::vector< SteamNetworkingConfigValue_t > vecOpts;
+void SteamManager::initSockets() {
+
 }
 
 

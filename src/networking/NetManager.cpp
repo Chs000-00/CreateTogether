@@ -6,6 +6,8 @@
 // TODO: Try compiling ValveSoftware/GameNetworkingSockets:partner to possibly fix this ugly crap?
 #ifdef NO_STEAMWORKS
 	#include <debug/steamnetworkingsockets.h>
+	#include <debug/isteamnetworkingutils.h>
+	#include "../debug/client.hpp"
 #endif
 
 
@@ -24,7 +26,7 @@ void NetManager::update() {
 	#ifdef STEAMWORKS
 		SteamAPI_RunCallbacks();
 	#else
-		// SteamNetworkingSockets()->RunCallbacks();
+		SteamNetworkingSockets()->RunCallbacks();
 	#endif
 
 	if (this->m_isInLobby) {
@@ -80,6 +82,7 @@ void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out
  
 
 void NetManager::enterLevelEditor() {
+
 	WaitingForHostPopup::create();
 	this->m_isRequestingLevelString = true;
 	this->m_isInEditorLayer = false;
@@ -89,33 +92,48 @@ void NetManager::enterLevelEditor() {
 	// gameLevel->m_levelDesc += "Created with Create Together";
 	auto lev = LevelEditorLayer::create(gameLevel, false);
 
-	// I AM VERY SORRY FOR THIS ):
-	flatbuffers::FlatBufferBuilder builder;
-
-	this->fetchMemberList();
-
-	SteamNetworkingIdentity host;
-
 	#ifdef STEAMWORKS
+
+		// I AM VERY SORRY FOR THIS ):
+		flatbuffers::FlatBufferBuilder builder;
+
+		this->fetchMemberList();
+
+		SteamNetworkingIdentity host;
+
 		host.SetSteamID(this->m_hostID);
+
+		std::vector<uint8_t> bodyType;
+		bodyType.push_back(CTSerialize::MessageBody_RequestLevel);
+		auto bodyTypeOffset = builder.CreateVector(bodyType);
+
+		auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(builder);
+		std::vector<flatbuffers::Offset<void>> body;
+		body.push_back(requestLevelStringOffset.Union());
+		auto bodyOffset = builder.CreateVector(body);
+
+		auto messageHeader = CTSerialize::CreateMessageHeader(builder, bodyTypeOffset, bodyOffset);
+
+		this->sendMessageToUser(host, messageHeader);
+
+		
+
 	#else
-		host.SetIPv4Addr(0x7f000001, DEDICATED_PORT);
+
+		SteamNetworkingIPAddr serverAddr;
+		serverAddr.SetIPv4(0x7f000001, DEDICATED_PORT);
+		char szAddr[ SteamNetworkingIPAddr::k_cchMaxString ];
+		serverAddr.ToString( szAddr, sizeof(szAddr), true );
+		log::info("Connecting to {}", szAddr);
+
+		SteamNetworkingConfigValue_t opt;
+		opt.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallback );
+		this->connection = SteamNetworkingSockets()->ConnectByIPAddress( serverAddr, 1, &opt );
+
 	#endif
 
-	std::vector<uint8_t> bodyType;
-	bodyType.push_back(CTSerialize::MessageBody_RequestLevel);
-	auto bodyTypeOffset = builder.CreateVector(bodyType);
-
-	auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(builder);
-	std::vector<flatbuffers::Offset<void>> body;
-	body.push_back(requestLevelStringOffset.Union());
-	auto bodyOffset = builder.CreateVector(body);
-
-	auto messageHeader = CTSerialize::CreateMessageHeader(builder, bodyTypeOffset, bodyOffset);
-
-	this->sendMessageToUser(host, messageHeader);
-
 	switchToScene(lev);
+
 }
 
 void NetManager::fetchMemberList() {
@@ -139,12 +157,13 @@ void NetManager::fetchMemberList() {
 		} 
 	#else
 
-	// log::warn("fetchMemberList without STEAMWORKS. Ignoring...");
-	SteamNetworkingIdentity server;
+	log::warn("fetchMemberList without STEAMWORKS. Ignoring...");
+	
+	// SteamNetworkingIdentity server;
 
-	server.SetIPv4Addr(0x7f000001, DEDICATED_PORT);
+	// server.SetIPv4Addr(0x7f000001, DEDICATED_PORT);
 
-	this->m_playersInLobby.push_back(server);
+	// this->m_playersInLobby.push_back(server);
 
 	#endif
 

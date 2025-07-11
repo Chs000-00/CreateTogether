@@ -11,6 +11,28 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 set(NO_STEAMWORKS ON)
 
+# This is different from NO_STEAMWORKS.
+set(COMPILE_DEBUG_SERVER ON)
+
+if (COMPILE_DEBUG_SERVER)
+    message(status "Compiling debug server")
+
+    # project(CTDebugServer VERSION 1.0.0)
+
+    file(GLOB SERVER_SOURCES
+        src/debug/server.cpp
+    )
+
+    add_executable(server ${SERVER_SOURCES})
+
+    target_link_libraries(server
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib/SteamWorkless/GameNetworkingSockets.lib
+    )
+
+    target_include_directories(server PUBLIC include)
+
+endif()
+
 project(CreateTogether VERSION 0.5.1)
 
 file(GLOB SOURCES

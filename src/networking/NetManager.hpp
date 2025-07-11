@@ -59,7 +59,6 @@ class NetManager {
         // Are you in an editing lobby
         bool m_isInLobby = false;
 
-
 		// m_options can be deconstructed for default values. Idk why I made this this way
         // Lobby options, such is if the server is private or not.
 		struct lobbyOptions m_options;
@@ -73,6 +72,10 @@ class NetManager {
         std::vector<uint8_t> m_bodyType;
         std::vector<flatbuffers::Offset<void>> m_body;
 
+
+        #ifdef NO_STEAMWORKS
+            HSteamNetConnection connection;
+        #endif
 
         
     private:
