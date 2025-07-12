@@ -257,31 +257,142 @@ struct MessageHeader FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_BODY_TYPE = 4,
     VT_BODY = 6
   };
-  const ::flatbuffers::Vector<uint8_t> *body_type() const {
-    return GetPointer<const ::flatbuffers::Vector<uint8_t> *>(VT_BODY_TYPE);
+  CTSerialize::MessageBody body_type() const {
+    return static_cast<CTSerialize::MessageBody>(GetField<uint8_t>(VT_BODY_TYPE, 0));
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *body() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *>(VT_BODY);
+  const void *body() const {
+    return GetPointer<const void *>(VT_BODY);
+  }
+  template<typename T> const T *body_as() const;
+  const CTSerialize::CreateObjects *body_as_CreateObjects() const {
+    return body_type() == CTSerialize::MessageBody_CreateObjects ? static_cast<const CTSerialize::CreateObjects *>(body()) : nullptr;
+  }
+  const CTSerialize::DeleteObjects *body_as_DeleteObjects() const {
+    return body_type() == CTSerialize::MessageBody_DeleteObjects ? static_cast<const CTSerialize::DeleteObjects *>(body()) : nullptr;
+  }
+  const CTSerialize::MoveObjects *body_as_MoveObjects() const {
+    return body_type() == CTSerialize::MessageBody_MoveObjects ? static_cast<const CTSerialize::MoveObjects *>(body()) : nullptr;
+  }
+  const CTSerialize::LevelSettingChange *body_as_LevelSettingChange() const {
+    return body_type() == CTSerialize::MessageBody_LevelSettingChange ? static_cast<const CTSerialize::LevelSettingChange *>(body()) : nullptr;
+  }
+  const CTSerialize::RotateObject *body_as_RotateObject() const {
+    return body_type() == CTSerialize::MessageBody_RotateObject ? static_cast<const CTSerialize::RotateObject *>(body()) : nullptr;
+  }
+  const CTSerialize::PasteObjects *body_as_PasteObjects() const {
+    return body_type() == CTSerialize::MessageBody_PasteObjects ? static_cast<const CTSerialize::PasteObjects *>(body()) : nullptr;
+  }
+  const CTSerialize::ModifyObjects *body_as_ModifyObjects() const {
+    return body_type() == CTSerialize::MessageBody_ModifyObjects ? static_cast<const CTSerialize::ModifyObjects *>(body()) : nullptr;
+  }
+  const CTSerialize::UpdateFont *body_as_UpdateFont() const {
+    return body_type() == CTSerialize::MessageBody_UpdateFont ? static_cast<const CTSerialize::UpdateFont *>(body()) : nullptr;
+  }
+  const CTSerialize::UpdateSong *body_as_UpdateSong() const {
+    return body_type() == CTSerialize::MessageBody_UpdateSong ? static_cast<const CTSerialize::UpdateSong *>(body()) : nullptr;
+  }
+  const CTSerialize::ChangeGroupID *body_as_ChangeGroupID() const {
+    return body_type() == CTSerialize::MessageBody_ChangeGroupID ? static_cast<const CTSerialize::ChangeGroupID *>(body()) : nullptr;
+  }
+  const CTSerialize::RequestLevel *body_as_RequestLevel() const {
+    return body_type() == CTSerialize::MessageBody_RequestLevel ? static_cast<const CTSerialize::RequestLevel *>(body()) : nullptr;
+  }
+  const CTSerialize::ChangeArt *body_as_ChangeArt() const {
+    return body_type() == CTSerialize::MessageBody_ChangeArt ? static_cast<const CTSerialize::ChangeArt *>(body()) : nullptr;
+  }
+  const CTSerialize::SpeedChange *body_as_SpeedChange() const {
+    return body_type() == CTSerialize::MessageBody_SpeedChange ? static_cast<const CTSerialize::SpeedChange *>(body()) : nullptr;
+  }
+  const CTSerialize::ReturnLevelString *body_as_ReturnLevelString() const {
+    return body_type() == CTSerialize::MessageBody_ReturnLevelString ? static_cast<const CTSerialize::ReturnLevelString *>(body()) : nullptr;
+  }
+  const CTSerialize::GameModeChange *body_as_GameModeChange() const {
+    return body_type() == CTSerialize::MessageBody_GameModeChange ? static_cast<const CTSerialize::GameModeChange *>(body()) : nullptr;
+  }
+  const CTSerialize::AdminAction *body_as_AdminAction() const {
+    return body_type() == CTSerialize::MessageBody_AdminAction ? static_cast<const CTSerialize::AdminAction *>(body()) : nullptr;
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyOffset(verifier, VT_BODY_TYPE) &&
-           verifier.VerifyVector(body_type()) &&
+           VerifyField<uint8_t>(verifier, VT_BODY_TYPE, 1) &&
            VerifyOffset(verifier, VT_BODY) &&
-           verifier.VerifyVector(body()) &&
-           VerifyMessageBodyVector(verifier, body(), body_type()) &&
+           VerifyMessageBody(verifier, body(), body_type()) &&
            verifier.EndTable();
   }
 };
+
+template<> inline const CTSerialize::CreateObjects *MessageHeader::body_as<CTSerialize::CreateObjects>() const {
+  return body_as_CreateObjects();
+}
+
+template<> inline const CTSerialize::DeleteObjects *MessageHeader::body_as<CTSerialize::DeleteObjects>() const {
+  return body_as_DeleteObjects();
+}
+
+template<> inline const CTSerialize::MoveObjects *MessageHeader::body_as<CTSerialize::MoveObjects>() const {
+  return body_as_MoveObjects();
+}
+
+template<> inline const CTSerialize::LevelSettingChange *MessageHeader::body_as<CTSerialize::LevelSettingChange>() const {
+  return body_as_LevelSettingChange();
+}
+
+template<> inline const CTSerialize::RotateObject *MessageHeader::body_as<CTSerialize::RotateObject>() const {
+  return body_as_RotateObject();
+}
+
+template<> inline const CTSerialize::PasteObjects *MessageHeader::body_as<CTSerialize::PasteObjects>() const {
+  return body_as_PasteObjects();
+}
+
+template<> inline const CTSerialize::ModifyObjects *MessageHeader::body_as<CTSerialize::ModifyObjects>() const {
+  return body_as_ModifyObjects();
+}
+
+template<> inline const CTSerialize::UpdateFont *MessageHeader::body_as<CTSerialize::UpdateFont>() const {
+  return body_as_UpdateFont();
+}
+
+template<> inline const CTSerialize::UpdateSong *MessageHeader::body_as<CTSerialize::UpdateSong>() const {
+  return body_as_UpdateSong();
+}
+
+template<> inline const CTSerialize::ChangeGroupID *MessageHeader::body_as<CTSerialize::ChangeGroupID>() const {
+  return body_as_ChangeGroupID();
+}
+
+template<> inline const CTSerialize::RequestLevel *MessageHeader::body_as<CTSerialize::RequestLevel>() const {
+  return body_as_RequestLevel();
+}
+
+template<> inline const CTSerialize::ChangeArt *MessageHeader::body_as<CTSerialize::ChangeArt>() const {
+  return body_as_ChangeArt();
+}
+
+template<> inline const CTSerialize::SpeedChange *MessageHeader::body_as<CTSerialize::SpeedChange>() const {
+  return body_as_SpeedChange();
+}
+
+template<> inline const CTSerialize::ReturnLevelString *MessageHeader::body_as<CTSerialize::ReturnLevelString>() const {
+  return body_as_ReturnLevelString();
+}
+
+template<> inline const CTSerialize::GameModeChange *MessageHeader::body_as<CTSerialize::GameModeChange>() const {
+  return body_as_GameModeChange();
+}
+
+template<> inline const CTSerialize::AdminAction *MessageHeader::body_as<CTSerialize::AdminAction>() const {
+  return body_as_AdminAction();
+}
 
 struct MessageHeaderBuilder {
   typedef MessageHeader Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_body_type(::flatbuffers::Offset<::flatbuffers::Vector<uint8_t>> body_type) {
-    fbb_.AddOffset(MessageHeader::VT_BODY_TYPE, body_type);
+  void add_body_type(CTSerialize::MessageBody body_type) {
+    fbb_.AddElement<uint8_t>(MessageHeader::VT_BODY_TYPE, static_cast<uint8_t>(body_type), 0);
   }
-  void add_body(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<void>>> body) {
+  void add_body(::flatbuffers::Offset<void> body) {
     fbb_.AddOffset(MessageHeader::VT_BODY, body);
   }
   explicit MessageHeaderBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
@@ -297,24 +408,12 @@ struct MessageHeaderBuilder {
 
 inline ::flatbuffers::Offset<MessageHeader> CreateMessageHeader(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::Vector<uint8_t>> body_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<void>>> body = 0) {
+    CTSerialize::MessageBody body_type = CTSerialize::MessageBody_NONE,
+    ::flatbuffers::Offset<void> body = 0) {
   MessageHeaderBuilder builder_(_fbb);
   builder_.add_body(body);
   builder_.add_body_type(body_type);
   return builder_.Finish();
-}
-
-inline ::flatbuffers::Offset<MessageHeader> CreateMessageHeaderDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<uint8_t> *body_type = nullptr,
-    const std::vector<::flatbuffers::Offset<void>> *body = nullptr) {
-  auto body_type__ = body_type ? _fbb.CreateVector<uint8_t>(*body_type) : 0;
-  auto body__ = body ? _fbb.CreateVector<::flatbuffers::Offset<void>>(*body) : 0;
-  return CTSerialize::CreateMessageHeader(
-      _fbb,
-      body_type__,
-      body__);
 }
 
 struct CreateObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {

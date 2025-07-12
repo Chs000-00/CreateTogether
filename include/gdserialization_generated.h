@@ -20,6 +20,90 @@ namespace CTSerialize {
 struct GDGameObjectMin;
 struct GDGameObjectMinBuilder;
 
+enum Speed : int8_t {
+  Speed_Normal = 0,
+  Speed_Slow = 1,
+  Speed_Fast = 2,
+  Speed_Faster = 3,
+  Speed_Fastest = 4,
+  Speed_MIN = Speed_Normal,
+  Speed_MAX = Speed_Fastest
+};
+
+inline const Speed (&EnumValuesSpeed())[5] {
+  static const Speed values[] = {
+    Speed_Normal,
+    Speed_Slow,
+    Speed_Fast,
+    Speed_Faster,
+    Speed_Fastest
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesSpeed() {
+  static const char * const names[6] = {
+    "Normal",
+    "Slow",
+    "Fast",
+    "Faster",
+    "Fastest",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameSpeed(Speed e) {
+  if (::flatbuffers::IsOutRange(e, Speed_Normal, Speed_Fastest)) return "";
+  const size_t index = static_cast<size_t>(e);
+  return EnumNamesSpeed()[index];
+}
+
+enum UndoCommand : int8_t {
+  UndoCommand_Invalid = 0,
+  UndoCommand_Delete = 1,
+  UndoCommand_New = 2,
+  UndoCommand_Paste = 3,
+  UndoCommand_DeleteMulti = 4,
+  UndoCommand_Transform = 5,
+  UndoCommand_Select = 6,
+  UndoCommand_MIN = UndoCommand_Invalid,
+  UndoCommand_MAX = UndoCommand_Select
+};
+
+inline const UndoCommand (&EnumValuesUndoCommand())[7] {
+  static const UndoCommand values[] = {
+    UndoCommand_Invalid,
+    UndoCommand_Delete,
+    UndoCommand_New,
+    UndoCommand_Paste,
+    UndoCommand_DeleteMulti,
+    UndoCommand_Transform,
+    UndoCommand_Select
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesUndoCommand() {
+  static const char * const names[8] = {
+    "Invalid",
+    "Delete",
+    "New",
+    "Paste",
+    "DeleteMulti",
+    "Transform",
+    "Select",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameUndoCommand(UndoCommand e) {
+  if (::flatbuffers::IsOutRange(e, UndoCommand_Invalid, UndoCommand_Select)) return "";
+  const size_t index = static_cast<size_t>(e);
+  return EnumNamesUndoCommand()[index];
+}
+
 /// The data a GD Game Object has when placed in the editor
 struct GDGameObjectMin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GDGameObjectMinBuilder Builder;

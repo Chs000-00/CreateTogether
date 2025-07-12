@@ -18,7 +18,7 @@ NetManager* NetManager::get() {
 }
 
 bool NetManager::getIsInLobby() {
-	return NetManager::get()->m_isInEditorLayer;
+	return NetManager::get()->m_isInLobby;
 }
 
 void NetManager::update() {
@@ -31,7 +31,7 @@ void NetManager::update() {
 
 	if (this->m_isInLobby) {
 		this->receiveData();
-		this->sendQueuedData();
+		// this->sendQueuedData();
 	}
 }
 
@@ -65,7 +65,6 @@ void NetManager::leaveLobby() {
 }
 
 void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out) {
-	log::info("SendingMessageToUser");
 	this->m_builder.Finish(out);
 
 	#ifdef STEAMWORKS
@@ -79,9 +78,13 @@ void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out
 
 	this->m_builder.Finish(out);
 
-	for (auto const& member : this->m_playersInLobby) {
-		SteamNetworkingMessages()->SendMessageToUser(member, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
-	}
+	#ifdef STEAMWORKS
+		for (auto const& member : this->m_playersInLobby) {
+			SteamNetworkingMessages()->SendMessageToUser(member, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
+		}
+	#else
+		SteamNetworkingSockets()->SendMessageToConnection(this->connection, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, nullptr);
+	#endif
 }
 
  
@@ -112,6 +115,8 @@ void NetManager::enterLevelEditor() {
 		if (this->connection == k_HSteamNetConnection_Invalid) {
 			log::warn("Could not create a connection");
 		}
+		this->m_isInLobby = true;
+		log::info("IsInLobby {}", this->m_isInLobby);
 
 	#endif
 
@@ -125,16 +130,8 @@ void NetManager::enterLevelEditor() {
 
 	host.SetSteamID(this->m_hostID);
 
-	std::vector<uint8_t> bodyType;
-	bodyType.push_back(CTSerialize::MessageBody_RequestLevel);
-	auto bodyTypeOffset = builder.CreateVector(bodyType);
-
 	auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(builder);
-	std::vector<flatbuffers::Offset<void>> body;
-	body.push_back(requestLevelStringOffset.Union());
-	auto bodyOffset = builder.CreateVector(body);
-
-	auto messageHeader = CTSerialize::CreateMessageHeader(builder, bodyTypeOffset, bodyOffset);
+	auto messageHeader = CTSerialize::CreateMessageHeader(builder, CTSerialize::MessageBody_RequestLevel, requestLevelStringOffset.Union());
 
 	this->sendMessageToUser(host, messageHeader);
 
@@ -222,33 +219,18 @@ void NetManager::receiveData() {
 	}
 }
 
-void NetManager::sendQueuedData() {
-
-	auto bodyTypeOffset = this->m_builder.CreateVector(this->m_bodyType);
-	auto bodyOffset = this->m_builder.CreateVector(this->m_body);
-
-	auto messageHeader = CTSerialize::CreateMessageHeader(this->m_builder, bodyTypeOffset, bodyOffset);
-
-	this->sendMessage(messageHeader);
-	this->m_builder.Clear();
-}
-
 Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
-	auto messageUnionType = msg->body_type();
-	for (auto i = 0; i < messageUnionType->Length(); i++) {
-
-		auto dmsg = msg->body()->Get(i);
-
-		switch (messageUnionType->Get(i)) {
-			case CTSerialize::MessageBody_CreateObjects: {
-				SERIALIZE_AND_RECEIVE(CreateObjects);
-				break;
-			}
-
-			default:
-				return Err("Invalid Union Type");
+	auto dmsg = msg->body();
+	switch (msg->body_type()) {
+		case CTSerialize::MessageBody_CreateObjects: {
+			SERIALIZE_AND_RECEIVE(CreateObjects);
+			break;
 		}
+
+		default:
+			return Err("Invalid Union Type");
 	}
+	
 	return Ok(0);
 }
 

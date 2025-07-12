@@ -5,6 +5,9 @@
 #include <debug/steamnetworkingsockets.h>
 #include <debug/isteamnetworkingutils.h>
 
+#include <flatbuffers/flatbuffers.h>
+#include <ctserialize_generated.h>
+
 #include "../config.hpp"
 
 void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCallback_t *pInfo );
@@ -23,8 +26,6 @@ void pollMessages() {
     if ( numMessages == 0 )
         return;
 
-    std::cout << "MessageCountRecv" << numMessages << '\n';
-
     if ( numMessages < 0 ) {
         std::cout << "Error checking for messages" << '\n';
         exit(EXIT_FAILURE);
@@ -32,6 +33,20 @@ void pollMessages() {
 
     for (int idxMsg = 0; idxMsg < numMessages; idxMsg++) {
 		SteamNetworkingMessage_t* message = msgs[idxMsg];
+
+		const uint8_t* data = new uint8_t[message->GetSize()];
+		data = static_cast<const uint8_t*>(message->GetData());
+		
+		auto messageHeader = CTSerialize::GetMessageHeader(data);
+
+        flatbuffers::Verifier verifier(data, (size_t)message->GetData());
+
+		bool isVerified = CTSerialize::VerifyMessageHeaderBuffer(verifier);
+
+        std::cout << isVerified << '\n';
+
+        std::cout << "T:" << messageHeader->body_type() << '\n';
+
         message->Release();
     }
 }
@@ -85,7 +100,6 @@ int main(int argc, char *argv[]) {
 void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCallback_t *pInfo ) {
 
         // std::cout << "Accepted message request from someone " << '\n'; // << pCallback->m_identityRemote.GetIPv4()
-        _beep(1000, 100);
 
 		// What's the state of the connection?
 		switch ( pInfo->m_info.m_eState ) {
@@ -102,6 +116,7 @@ void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCal
 
                 else if ( pInfo->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally ) {
                     std::cout << "A local problem occured; " << pInfo->m_info.m_szEndDebug << '\n';
+                    _beep(700, 100);
                 }
                 else {
                     std::cout << "Peer has decided to quit; " << pInfo->m_info.m_szEndDebug << '\n';
@@ -123,6 +138,8 @@ void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCal
 				// assert( m_mapClients.find( pInfo->m_hConn ) == m_mapClients.end() );
 
 				std::cout <<  "Connection request from " << pInfo->m_info.m_szConnectionDescription << '\n';
+
+                _beep(1400, 100);
 
 				// A client is attempting to connect
 				// Try to accept the connection.

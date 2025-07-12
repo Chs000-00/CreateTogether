@@ -68,19 +68,24 @@ class NetManager {
 
         // Flatbuffer builder for building flatbuffers, or something idk
         flatbuffers::FlatBufferBuilder m_builder;
-        
-        std::vector<uint8_t> m_bodyType;
-        std::vector<flatbuffers::Offset<void>> m_body;
-
 
         #ifdef NO_STEAMWORKS
             HSteamNetConnection connection;
         #endif
-
         
+        // TODO: Check EResult
+
+        // Sends an entire message to everyone in the lobby
+        void sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out);
+
+        // Sends an entire message to a single person
+        void sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out);
+
+
+
     private:
         // Sends all the currently queued data. Oh and also deletes the data afterward.
-        void sendQueuedData();
+        // void sendQueuedData();
 
         // Receive data and then parse it
         void receiveData();
@@ -91,13 +96,4 @@ class NetManager {
         // Further attempts to join (this member is specificaly for fetchMemberList())
         // None of this has timeouts cause I am too lazy to implement them so idk
         std::vector<CSteamID> m_excludedMemberList;
-
-        // TODO: Check EResult
-
-        // Sends an entire message to everyone in the lobby
-        void sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out);
-
-        // Sends an entire message to a single person
-        void sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out);
-
 };

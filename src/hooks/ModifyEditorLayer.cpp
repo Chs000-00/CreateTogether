@@ -63,6 +63,8 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
         return createdGameObject;
     }
 
+    log::info("creating obj");
+
     auto stringSteamID = std::to_string(this->m_fields->m_userID);
     // This string should be unique for every user
     auto uid = stringSteamID + "!" + std::to_string(this->m_fields->m_blocksPlaced);
@@ -72,9 +74,14 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
 
     this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, uid);
 
-    // WHAT THE HELL IS THIS????? TODO: CHANGE THIS!!
-    auto selected = this->m_editorUI->m_selectedObject;
+    GameObject* selected;
 
+    if (this->m_editorUI->m_selectedObject) {
+        selected = this->m_editorUI->m_selectedObject;
+    } else {
+        selected = createdGameObject;
+    }
+    
     // Assign UUIds when a user is not in lobby
     if (!NetManager::getIsInLobby()) {
         return createdGameObject;
