@@ -1,4 +1,4 @@
-// This is in a seperate file to make the code more bearable to read
+// This file is used to make the code more bearable to read
 
 void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCallback_t* pInfo ) {
 	auto netManager = NetManager::get();

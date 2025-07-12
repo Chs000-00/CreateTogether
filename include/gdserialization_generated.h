@@ -20,19 +20,24 @@ namespace CTSerialize {
 struct GDGameObjectMin;
 struct GDGameObjectMinBuilder;
 
+/// The data a GD Game Object has when placed in the editor
 struct GDGameObjectMin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GDGameObjectMinBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_UNIQUEID = 4,
-    VT_POS = 6,
-    VT_ROTATION = 8,
-    VT_ISHIGHDETAIL = 10,
-    VT_NOGLOW = 12,
-    VT_NOENTER = 14,
-    VT_FLIP = 16
+    VT_OBJID = 6,
+    VT_POS = 8,
+    VT_ROTATION = 10,
+    VT_ISHIGHDETAIL = 12,
+    VT_NOGLOW = 14,
+    VT_NOENTER = 16,
+    VT_FLIP = 18
   };
   const ::flatbuffers::String *uniqueID() const {
     return GetPointer<const ::flatbuffers::String *>(VT_UNIQUEID);
+  }
+  uint64_t objID() const {
+    return GetField<uint64_t>(VT_OBJID, 0);
   }
   const CTSerialize::CCPosI *pos() const {
     return GetStruct<const CTSerialize::CCPosI *>(VT_POS);
@@ -56,6 +61,7 @@ struct GDGameObjectMin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_UNIQUEID) &&
            verifier.VerifyString(uniqueID()) &&
+           VerifyField<uint64_t>(verifier, VT_OBJID, 8) &&
            VerifyField<CTSerialize::CCPosI>(verifier, VT_POS, 4) &&
            VerifyField<float>(verifier, VT_ROTATION, 4) &&
            VerifyField<uint8_t>(verifier, VT_ISHIGHDETAIL, 1) &&
@@ -72,6 +78,9 @@ struct GDGameObjectMinBuilder {
   ::flatbuffers::uoffset_t start_;
   void add_uniqueID(::flatbuffers::Offset<::flatbuffers::String> uniqueID) {
     fbb_.AddOffset(GDGameObjectMin::VT_UNIQUEID, uniqueID);
+  }
+  void add_objID(uint64_t objID) {
+    fbb_.AddElement<uint64_t>(GDGameObjectMin::VT_OBJID, objID, 0);
   }
   void add_pos(const CTSerialize::CCPosI *pos) {
     fbb_.AddStruct(GDGameObjectMin::VT_POS, pos);
@@ -105,6 +114,7 @@ struct GDGameObjectMinBuilder {
 inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMin(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     ::flatbuffers::Offset<::flatbuffers::String> uniqueID = 0,
+    uint64_t objID = 0,
     const CTSerialize::CCPosI *pos = nullptr,
     float rotation = 0.0f,
     bool isHighDetail = false,
@@ -112,6 +122,7 @@ inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMin(
     bool noEnter = false,
     const CTSerialize::ObjectFlip *flip = nullptr) {
   GDGameObjectMinBuilder builder_(_fbb);
+  builder_.add_objID(objID);
   builder_.add_flip(flip);
   builder_.add_rotation(rotation);
   builder_.add_pos(pos);
@@ -125,6 +136,7 @@ inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMin(
 inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMinDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     const char *uniqueID = nullptr,
+    uint64_t objID = 0,
     const CTSerialize::CCPosI *pos = nullptr,
     float rotation = 0.0f,
     bool isHighDetail = false,
@@ -135,6 +147,7 @@ inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMinDirect(
   return CTSerialize::CreateGDGameObjectMin(
       _fbb,
       uniqueID__,
+      objID,
       pos,
       rotation,
       isHighDetail,

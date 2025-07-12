@@ -6,10 +6,10 @@ void addStringToIDList(IDList& uniqueIDList, const char* str) {
     uniqueIDList.push_back(netManager->m_builder.CreateString(str));
 }
 
-void sendCreateObjects(const char* uniqueID, CCPoint pos, float rotation, bool isHighDetail, bool noGlow, bool noEnter, bool flipX, bool flipY) {
+void sendCreateObjects(const char* uniqueID, uint64_t objectID, CCPoint pos, float rotation, bool isHighDetail, bool noGlow, bool noEnter, bool flipX, bool flipY) {
     auto netManager = NetManager::get();
     auto objectPos = CTSerialize::CCPosI(pos.x, pos.y);
-    auto minObj = CTSerialize::CreateGDGameObjectMinDirect(netManager->m_builder, uniqueID, &objectPos, rotation, isHighDetail, noGlow, noEnter); //uhh add stuff here
+    auto minObj = CTSerialize::CreateGDGameObjectMinDirect(netManager->m_builder, uniqueID, objectID, &objectPos, rotation, isHighDetail, noGlow, noEnter); //uhh add stuff here
 
 	netManager->m_bodyType.push_back(CTSerialize::MessageBody_CreateObjects);
 

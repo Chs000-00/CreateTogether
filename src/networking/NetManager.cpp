@@ -67,7 +67,12 @@ void NetManager::leaveLobby() {
 void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out) {
 	log::info("SendingMessageToUser");
 	this->m_builder.Finish(out);
-	SteamNetworkingMessages()->SendMessageToUser(usr, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
+
+	#ifdef STEAMWORKS
+		SteamNetworkingMessages()->SendMessageToUser(usr, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
+	#else
+		SteamNetworkingSockets()->SendMessageToConnection(this->connection, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, nullptr);
+	#endif
 }
 
 void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out) {
@@ -83,6 +88,8 @@ void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out
 
 void NetManager::enterLevelEditor() {
 
+	log::info("Enter Level Editor Called.");
+
 	WaitingForHostPopup::create();
 	this->m_isRequestingLevelString = true;
 	this->m_isInEditorLayer = false;
@@ -92,34 +99,7 @@ void NetManager::enterLevelEditor() {
 	// gameLevel->m_levelDesc += "Created with Create Together";
 	auto lev = LevelEditorLayer::create(gameLevel, false);
 
-	#ifdef STEAMWORKS
-
-		// I AM VERY SORRY FOR THIS ):
-		flatbuffers::FlatBufferBuilder builder;
-
-		this->fetchMemberList();
-
-		SteamNetworkingIdentity host;
-
-		host.SetSteamID(this->m_hostID);
-
-		std::vector<uint8_t> bodyType;
-		bodyType.push_back(CTSerialize::MessageBody_RequestLevel);
-		auto bodyTypeOffset = builder.CreateVector(bodyType);
-
-		auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(builder);
-		std::vector<flatbuffers::Offset<void>> body;
-		body.push_back(requestLevelStringOffset.Union());
-		auto bodyOffset = builder.CreateVector(body);
-
-		auto messageHeader = CTSerialize::CreateMessageHeader(builder, bodyTypeOffset, bodyOffset);
-
-		this->sendMessageToUser(host, messageHeader);
-
-		
-
-	#else
-
+	#ifdef NO_STEAMWORKS
 		SteamNetworkingIPAddr serverAddr;
 		serverAddr.SetIPv4(0x7f000001, DEDICATED_PORT);
 		char szAddr[ SteamNetworkingIPAddr::k_cchMaxString ];
@@ -129,8 +109,34 @@ void NetManager::enterLevelEditor() {
 		SteamNetworkingConfigValue_t opt;
 		opt.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallback );
 		this->connection = SteamNetworkingSockets()->ConnectByIPAddress( serverAddr, 1, &opt );
+		if (this->connection == k_HSteamNetConnection_Invalid) {
+			log::warn("Could not create a connection");
+		}
 
 	#endif
+
+
+	// I AM VERY SORRY FOR THIS ):
+	flatbuffers::FlatBufferBuilder builder;
+
+	this->fetchMemberList();
+
+	SteamNetworkingIdentity host;
+
+	host.SetSteamID(this->m_hostID);
+
+	std::vector<uint8_t> bodyType;
+	bodyType.push_back(CTSerialize::MessageBody_RequestLevel);
+	auto bodyTypeOffset = builder.CreateVector(bodyType);
+
+	auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(builder);
+	std::vector<flatbuffers::Offset<void>> body;
+	body.push_back(requestLevelStringOffset.Union());
+	auto bodyOffset = builder.CreateVector(body);
+
+	auto messageHeader = CTSerialize::CreateMessageHeader(builder, bodyTypeOffset, bodyOffset);
+
+	this->sendMessageToUser(host, messageHeader);
 
 	switchToScene(lev);
 
@@ -169,7 +175,6 @@ void NetManager::fetchMemberList() {
 
 }
 
-
 void NetManager::receiveData() {
 
 	if (this->m_isInEditorLayer) {
@@ -177,7 +182,12 @@ void NetManager::receiveData() {
 	}
 
 	SteamNetworkingMessage_t* messageList[MAX_MESSAGES];
-	auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, MAX_MESSAGES);
+
+	#ifdef STEAMWORKS
+		auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, MAX_MESSAGES);
+	#else
+    	auto numMessages = SteamNetworkingSockets()->ReceiveMessagesOnConnection(this->connection, messageList, MAX_MESSAGES);
+	#endif
 
 	if (numMessages < 0) {
 		log::warn("NetManager::receiveData(): Error receiving messages");

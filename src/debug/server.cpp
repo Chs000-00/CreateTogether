@@ -17,18 +17,22 @@ void handleSignal(int signum) {
 }
 
 void pollMessages() {
-    SteamNetworkingMessage_t* msgs[128];
+    SteamNetworkingMessage_t* msgs[MAX_MESSAGES];
     int numMessages = SteamNetworkingSockets()->ReceiveMessagesOnPollGroup(pollGroup, msgs, MAX_MESSAGES);
     
     if ( numMessages == 0 )
         return;
 
-    if ( numMessages < 0 )
+    std::cout << "MessageCountRecv" << numMessages << '\n';
+
+    if ( numMessages < 0 ) {
         std::cout << "Error checking for messages" << '\n';
         exit(EXIT_FAILURE);
+    }
 
     for (int idxMsg = 0; idxMsg < numMessages; idxMsg++) {
 		SteamNetworkingMessage_t* message = msgs[idxMsg];
+        message->Release();
     }
 }
 
@@ -56,11 +60,11 @@ void initLib() {
         std::cout << "ERROR: GameNetworkingSockets_Init failed: " << errMsg;
         exit(EXIT_FAILURE);
     }
-    SteamNetworkingUtils()->SetGlobalConfigValueInt32(k_ESteamNetworkingConfig_LogLevel_Message, k_ESteamNetworkingSocketsDebugOutputType_Msg);
+    SteamNetworkingUtils()->SetGlobalConfigValueInt32(k_ESteamNetworkingConfig_LogLevel_Message, k_ESteamNetworkingSocketsDebugOutputType_Debug);
 }
 
 int main(int argc, char *argv[]) {
-    
+
     std::cout << "MOD_LOBBY_ID == " MOD_LOBBY_ID "\n";
     std::cout << "MOD_VERSION == " MOD_VERSION "\n";
     std::cout << "DEDICATED_PORT == " << DEDICATED_PORT << '\n';
@@ -73,26 +77,36 @@ int main(int argc, char *argv[]) {
 
     while (true) {
         pollMessages();
+        SteamNetworkingSockets()->RunCallbacks();
     }
 }
 
 
 void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCallback_t *pInfo ) {
 
-        std::cout << "Accepted message request from... someone " << '\n'; // << pCallback->m_identityRemote.GetIPv4()
+        // std::cout << "Accepted message request from someone " << '\n'; // << pCallback->m_identityRemote.GetIPv4()
         _beep(1000, 100);
 
 		// What's the state of the connection?
-		switch ( pInfo->m_info.m_eState )
-		{
+		switch ( pInfo->m_info.m_eState ) {
 			case k_ESteamNetworkingConnectionState_None:
 				// NOTE: We will get callbacks here when we destroy connections.  You can ignore these.
 				break;
 
 			case k_ESteamNetworkingConnectionState_ClosedByPeer:
-			case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
-			{
+			case k_ESteamNetworkingConnectionState_ProblemDetectedLocally: {
 
+                if ( pInfo->m_eOldState == k_ESteamNetworkingConnectionState_Connecting ) {
+                    std::cout << "A networking issue occured; " << pInfo->m_info.m_szEndDebug << '\n';
+                }
+
+                else if ( pInfo->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally ) {
+                    std::cout << "A local problem occured; " << pInfo->m_info.m_szEndDebug << '\n';
+                }
+                else {
+                    std::cout << "Peer has decided to quit; " << pInfo->m_info.m_szEndDebug << '\n';
+                }
+            
 				// Clean up the connection.  This is important!
 				// The connection is "closed" in the network sense, but
 				// it has not been destroyed.  We must close it on our end, too
@@ -117,15 +131,15 @@ void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCal
 					// This could fail.  If the remote host tried to connect, but then
 					// disconnected, the connection may already be half closed.  Just
 					// destroy whatever we have on our side.
+                    std::cout << "Can't accept connection.  (It was already closed?)" << '\n';
 					SteamNetworkingSockets()->CloseConnection( pInfo->m_hConn, 0, nullptr, false );
-					std::cout << "Can't accept connection.  (It was already closed?)" << '\n';
 					break;
 				}
 
 				// Assign the poll group
 				if ( !SteamNetworkingSockets()->SetConnectionPollGroup( pInfo->m_hConn, pollGroup ) ) {
+                    std::cout << "Failed to set poll group?" << '\n';
 					SteamNetworkingSockets()->CloseConnection( pInfo->m_hConn, 0, nullptr, false );
-					std::cout << "Failed to set poll group?" << '\n';
 					break;
 				}
 
