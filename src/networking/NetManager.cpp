@@ -83,7 +83,6 @@ void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Off
 }
 
 void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out) {
-
 	this->m_builder.Finish(out);
 
 	#ifdef STEAMWORKS
