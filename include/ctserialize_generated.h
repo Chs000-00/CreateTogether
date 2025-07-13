@@ -69,6 +69,40 @@ struct ReturnLevelStringBuilder;
 struct AdminAction;
 struct AdminActionBuilder;
 
+inline const ::flatbuffers::TypeTable *MessageHeaderTypeTable();
+
+inline const ::flatbuffers::TypeTable *CreateObjectsTypeTable();
+
+inline const ::flatbuffers::TypeTable *DeleteObjectsTypeTable();
+
+inline const ::flatbuffers::TypeTable *MoveObjectsTypeTable();
+
+inline const ::flatbuffers::TypeTable *LevelSettingChangeTypeTable();
+
+inline const ::flatbuffers::TypeTable *RotateObjectTypeTable();
+
+inline const ::flatbuffers::TypeTable *PasteObjectsTypeTable();
+
+inline const ::flatbuffers::TypeTable *ModifyObjectsTypeTable();
+
+inline const ::flatbuffers::TypeTable *UpdateFontTypeTable();
+
+inline const ::flatbuffers::TypeTable *UpdateSongTypeTable();
+
+inline const ::flatbuffers::TypeTable *ChangeGroupIDTypeTable();
+
+inline const ::flatbuffers::TypeTable *ChangeArtTypeTable();
+
+inline const ::flatbuffers::TypeTable *SpeedChangeTypeTable();
+
+inline const ::flatbuffers::TypeTable *GameModeChangeTypeTable();
+
+inline const ::flatbuffers::TypeTable *RequestLevelTypeTable();
+
+inline const ::flatbuffers::TypeTable *ReturnLevelStringTypeTable();
+
+inline const ::flatbuffers::TypeTable *AdminActionTypeTable();
+
 enum MessageBody : uint8_t {
   MessageBody_NONE = 0,
   MessageBody_CreateObjects = 1,
@@ -253,6 +287,9 @@ inline const char *EnumNameAdminActions(AdminActions e) {
 
 struct MessageHeader FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef MessageHeaderBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return MessageHeaderTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_BODY_TYPE = 4,
     VT_BODY = 6
@@ -418,6 +455,9 @@ inline ::flatbuffers::Offset<MessageHeader> CreateMessageHeader(
 
 struct CreateObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef CreateObjectsBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return CreateObjectsTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_OBJ = 4
   };
@@ -460,6 +500,9 @@ inline ::flatbuffers::Offset<CreateObjects> CreateCreateObjects(
 
 struct DeleteObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef DeleteObjectsBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return DeleteObjectsTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_UNIQUEIDLIST = 4
   };
@@ -512,6 +555,9 @@ inline ::flatbuffers::Offset<DeleteObjects> CreateDeleteObjectsDirect(
 
 struct MoveObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef MoveObjectsBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return MoveObjectsTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_UNIQUEIDLIST = 4,
     VT_POSITIONOFFSET = 6
@@ -576,6 +622,9 @@ inline ::flatbuffers::Offset<MoveObjects> CreateMoveObjectsDirect(
 
 struct LevelSettingChange FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef LevelSettingChangeBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return LevelSettingChangeTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SETTINGID = 4
   };
@@ -617,6 +666,9 @@ inline ::flatbuffers::Offset<LevelSettingChange> CreateLevelSettingChange(
 
 struct RotateObject FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef RotateObjectBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return RotateObjectTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ROTATION = 4,
     VT_ANCHOR = 6,
@@ -693,6 +745,9 @@ inline ::flatbuffers::Offset<RotateObject> CreateRotateObjectDirect(
 
 struct PasteObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef PasteObjectsBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return PasteObjectsTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_UNIQUEIDLIST = 4,
     VT_PASTEDSTRING = 6
@@ -759,6 +814,9 @@ inline ::flatbuffers::Offset<PasteObjects> CreatePasteObjectsDirect(
 
 struct ModifyObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ModifyObjectsBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return ModifyObjectsTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_UNIQUEIDLIST = 4,
     VT_PASTEDSTRING = 6
@@ -825,6 +883,9 @@ inline ::flatbuffers::Offset<ModifyObjects> CreateModifyObjectsDirect(
 
 struct UpdateFont FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef UpdateFontBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return UpdateFontTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_FONTID = 4
   };
@@ -866,6 +927,9 @@ inline ::flatbuffers::Offset<UpdateFont> CreateUpdateFont(
 
 struct UpdateSong FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef UpdateSongBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return UpdateSongTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SONGID = 4
   };
@@ -907,6 +971,9 @@ inline ::flatbuffers::Offset<UpdateSong> CreateUpdateSong(
 
 struct ChangeGroupID FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ChangeGroupIDBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return ChangeGroupIDTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_GROUPID = 4,
     VT_ISADDING = 6,
@@ -983,6 +1050,9 @@ inline ::flatbuffers::Offset<ChangeGroupID> CreateChangeGroupIDDirect(
 
 struct ChangeArt FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ChangeArtBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return ChangeArtTypeTable();
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            verifier.EndTable();
@@ -1012,6 +1082,9 @@ inline ::flatbuffers::Offset<ChangeArt> CreateChangeArt(
 
 struct SpeedChange FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef SpeedChangeBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return SpeedChangeTypeTable();
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            verifier.EndTable();
@@ -1041,6 +1114,9 @@ inline ::flatbuffers::Offset<SpeedChange> CreateSpeedChange(
 
 struct GameModeChange FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GameModeChangeBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return GameModeChangeTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_GAMEMODE = 4
   };
@@ -1082,8 +1158,18 @@ inline ::flatbuffers::Offset<GameModeChange> CreateGameModeChange(
 
 struct RequestLevel FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef RequestLevelBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return RequestLevelTypeTable();
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_ANTIEVILFLATBUFFERBUGGYCODETHINGIDK = 4
+  };
+  uint8_t antievilflatbufferbuggycodethingidk() const {
+    return GetField<uint8_t>(VT_ANTIEVILFLATBUFFERBUGGYCODETHINGIDK, 0);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_ANTIEVILFLATBUFFERBUGGYCODETHINGIDK, 1) &&
            verifier.EndTable();
   }
 };
@@ -1092,6 +1178,9 @@ struct RequestLevelBuilder {
   typedef RequestLevel Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
+  void add_antievilflatbufferbuggycodethingidk(uint8_t antievilflatbufferbuggycodethingidk) {
+    fbb_.AddElement<uint8_t>(RequestLevel::VT_ANTIEVILFLATBUFFERBUGGYCODETHINGIDK, antievilflatbufferbuggycodethingidk, 0);
+  }
   explicit RequestLevelBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -1104,13 +1193,18 @@ struct RequestLevelBuilder {
 };
 
 inline ::flatbuffers::Offset<RequestLevel> CreateRequestLevel(
-    ::flatbuffers::FlatBufferBuilder &_fbb) {
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t antievilflatbufferbuggycodethingidk = 0) {
   RequestLevelBuilder builder_(_fbb);
+  builder_.add_antievilflatbufferbuggycodethingidk(antievilflatbufferbuggycodethingidk);
   return builder_.Finish();
 }
 
 struct ReturnLevelString FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ReturnLevelStringBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return ReturnLevelStringTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_UNIQUEIDLIST = 4,
     VT_LEVELSTRING = 6
@@ -1177,6 +1271,9 @@ inline ::flatbuffers::Offset<ReturnLevelString> CreateReturnLevelStringDirect(
 
 struct AdminAction FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef AdminActionBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return AdminActionTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ACTION = 4,
     VT_USERID = 6,
@@ -1345,6 +1442,339 @@ inline bool VerifyMessageBodyVector(::flatbuffers::Verifier &verifier, const ::f
     }
   }
   return true;
+}
+
+inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_SEQUENCE, 0, -1 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 0 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 1 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 2 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 3 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 4 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 5 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 6 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 7 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 8 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 9 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 10 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 11 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 12 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 13 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 14 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 15 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::CreateObjectsTypeTable,
+    CTSerialize::DeleteObjectsTypeTable,
+    CTSerialize::MoveObjectsTypeTable,
+    CTSerialize::LevelSettingChangeTypeTable,
+    CTSerialize::RotateObjectTypeTable,
+    CTSerialize::PasteObjectsTypeTable,
+    CTSerialize::ModifyObjectsTypeTable,
+    CTSerialize::UpdateFontTypeTable,
+    CTSerialize::UpdateSongTypeTable,
+    CTSerialize::ChangeGroupIDTypeTable,
+    CTSerialize::RequestLevelTypeTable,
+    CTSerialize::ChangeArtTypeTable,
+    CTSerialize::SpeedChangeTypeTable,
+    CTSerialize::ReturnLevelStringTypeTable,
+    CTSerialize::GameModeChangeTypeTable,
+    CTSerialize::AdminActionTypeTable
+  };
+  static const char * const names[] = {
+    "NONE",
+    "CreateObjects",
+    "DeleteObjects",
+    "MoveObjects",
+    "LevelSettingChange",
+    "RotateObject",
+    "PasteObjects",
+    "ModifyObjects",
+    "UpdateFont",
+    "UpdateSong",
+    "ChangeGroupID",
+    "RequestLevel",
+    "ChangeArt",
+    "SpeedChange",
+    "ReturnLevelString",
+    "GameModeChange",
+    "AdminAction"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_UNION, 17, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *AdminActionsTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::AdminActionsTypeTable
+  };
+  static const char * const names[] = {
+    "Invalid",
+    "SteamUserIDBan",
+    "DisableInteraction",
+    "Kick"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_ENUM, 4, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *MessageHeaderTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_UTYPE, 0, 0 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::MessageBodyTypeTable
+  };
+  static const char * const names[] = {
+    "body_type",
+    "body"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 2, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *CreateObjectsTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_SEQUENCE, 0, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::GDGameObjectMinTypeTable
+  };
+  static const char * const names[] = {
+    "obj"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 1, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *DeleteObjectsTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_STRING, 1, -1 }
+  };
+  static const char * const names[] = {
+    "uniqueIDList"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *MoveObjectsTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_STRING, 1, -1 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::CCPosITypeTable
+  };
+  static const char * const names[] = {
+    "uniqueIDList",
+    "positionOffset"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 2, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *LevelSettingChangeTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_USHORT, 0, -1 }
+  };
+  static const char * const names[] = {
+    "settingID"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *RotateObjectTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_FLOAT, 0, -1 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 0 },
+    { ::flatbuffers::ET_STRING, 1, -1 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::CCPosTypeTable
+  };
+  static const char * const names[] = {
+    "rotation",
+    "anchor",
+    "uniqueIDList"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *PasteObjectsTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_STRING, 1, -1 },
+    { ::flatbuffers::ET_STRING, 0, -1 }
+  };
+  static const char * const names[] = {
+    "uniqueIDList",
+    "pastedString"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 2, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *ModifyObjectsTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_STRING, 1, -1 },
+    { ::flatbuffers::ET_STRING, 0, -1 }
+  };
+  static const char * const names[] = {
+    "uniqueIDList",
+    "pastedString"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 2, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *UpdateFontTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_USHORT, 0, -1 }
+  };
+  static const char * const names[] = {
+    "fontID"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *UpdateSongTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_ULONG, 0, -1 }
+  };
+  static const char * const names[] = {
+    "songID"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *ChangeGroupIDTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_UINT, 0, -1 },
+    { ::flatbuffers::ET_BOOL, 0, -1 },
+    { ::flatbuffers::ET_STRING, 1, -1 }
+  };
+  static const char * const names[] = {
+    "groupID",
+    "isAdding",
+    "uniqueIDList"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 3, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *ChangeArtTypeTable() {
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 0, nullptr, nullptr, nullptr, nullptr, nullptr
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *SpeedChangeTypeTable() {
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 0, nullptr, nullptr, nullptr, nullptr, nullptr
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *GameModeChangeTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_UCHAR, 0, -1 }
+  };
+  static const char * const names[] = {
+    "gameMode"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *RequestLevelTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_UCHAR, 0, -1 }
+  };
+  static const char * const names[] = {
+    "antievilflatbufferbuggycodethingidk"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *ReturnLevelStringTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_STRING, 1, -1 },
+    { ::flatbuffers::ET_STRING, 0, -1 }
+  };
+  static const char * const names[] = {
+    "uniqueIDList",
+    "levelString"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 2, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *AdminActionTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_ULONG, 0, -1 },
+    { ::flatbuffers::ET_ULONG, 0, -1 },
+    { ::flatbuffers::ET_STRING, 0, -1 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::AdminActionsTypeTable
+  };
+  static const char * const names[] = {
+    "action",
+    "userId",
+    "timeoutEpoch",
+    "reason"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 4, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
 }
 
 inline const CTSerialize::MessageHeader *GetMessageHeader(const void *buf) {

@@ -91,7 +91,9 @@ table GameModeChange {
   gameMode:uint8; // I guess... this dosen't use enums?
 }
 
-table RequestLevel { }
+table RequestLevel { 
+  antievilflatbufferbuggycodethingidk:uint8;
+}
 
 table ReturnLevelString {
   uniqueIDList:[string];

@@ -6,6 +6,7 @@
 #include <debug/isteamnetworkingutils.h>
 
 #include <flatbuffers/flatbuffers.h>
+#include <flatbuffers/minireflect.h>
 #include <ctserialize_generated.h>
 
 #include "../config.hpp"
@@ -34,20 +35,32 @@ void pollMessages() {
     for (int idxMsg = 0; idxMsg < numMessages; idxMsg++) {
 		SteamNetworkingMessage_t* message = msgs[idxMsg];
 
-		const uint8_t* data = new uint8_t[message->GetSize()];
-		data = static_cast<const uint8_t*>(message->GetData());
-		
+
+        uint8_t* data = new uint8_t[message->GetSize()];
+		memcpy(data, message->GetData(), message->GetSize());
+        message->Release();
+		// data = static_cast<const uint8_t*>(message->GetData());
+
+
+        // Delete the message after it's usage
+        
+
 		auto messageHeader = CTSerialize::GetMessageHeader(data);
 
-        flatbuffers::Verifier verifier(data, (size_t)message->GetData());
+        flatbuffers::Verifier verifier(data, message->GetSize());
 
 		bool isVerified = CTSerialize::VerifyMessageHeaderBuffer(verifier);
 
-        std::cout << isVerified << '\n';
+        // std::cout << "isVerified = " << isVerified << '\n';
+        // std::cout << "message->GetSize() = " << message->GetSize() << '\n';
+        // std::cout << "sizeof(data) = " << sizeof(data) << '\n';
 
-        std::cout << "T:" << messageHeader->body_type() << '\n';
+        auto s = flatbuffers::FlatBufferToString(data, CTSerialize::MessageHeaderTypeTable());
 
-        message->Release();
+        std::cout << "RecMessage:" << s << '\n';
+
+        // Cleanup
+        delete data;
     }
 }
 
@@ -116,7 +129,7 @@ void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCal
 
                 else if ( pInfo->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally ) {
                     std::cout << "A local problem occured; " << pInfo->m_info.m_szEndDebug << '\n';
-                    _beep(700, 100);
+                    // _beep(700, 100);
                 }
                 else {
                     std::cout << "Peer has decided to quit; " << pInfo->m_info.m_szEndDebug << '\n';
@@ -139,7 +152,7 @@ void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCal
 
 				std::cout <<  "Connection request from " << pInfo->m_info.m_szConnectionDescription << '\n';
 
-                _beep(1400, 100);
+                // _beep(1400, 100);
 
 				// A client is attempting to connect
 				// Try to accept the connection.

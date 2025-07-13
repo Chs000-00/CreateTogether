@@ -31,6 +31,8 @@ if (COMPILE_DEBUG_SERVER)
 
     target_include_directories(server PUBLIC include)
 
+    string( REPLACE "/DNDEBUG" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+
 endif()
 
 project(CreateTogether VERSION 0.5.1)

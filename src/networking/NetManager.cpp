@@ -7,6 +7,7 @@
 #ifdef NO_STEAMWORKS
 	#include <debug/steamnetworkingsockets.h>
 	#include <debug/isteamnetworkingutils.h>
+	#include <flatbuffers/minireflect.h>
 	#include "../debug/client.hpp"
 #endif
 
@@ -36,10 +37,10 @@ void NetManager::update() {
 }
 
 void NetManager::leaveLobby() {
-	this->m_isInEditorLayer = false;
+	
 
-	// Clear buffer so it dosen't cause issues later.
-	this->m_builder.Clear();
+	log::info("ISINLOBBY! {}", this->m_isInLobby);
+
 	if (this->m_isInLobby) {
 
         m_isInLobby = false;
@@ -52,6 +53,7 @@ void NetManager::leaveLobby() {
 
 		#else
 
+			log::info("Leaving debug lobby");
 			
 		#endif
 
@@ -62,6 +64,12 @@ void NetManager::leaveLobby() {
 	else {
 		log::info("Can't leave lobby because not in lobby!");
 	}
+
+	// this->m_isInEditorLayer = false;
+
+	// Clear buffer so it dosen't cause issues later.
+	this->m_builder.Clear();
+	
 }
 
 void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out) {
@@ -95,7 +103,7 @@ void NetManager::enterLevelEditor() {
 
 	WaitingForHostPopup::create();
 	this->m_isRequestingLevelString = true;
-	this->m_isInEditorLayer = false;
+	// this->m_isInEditorLayer = false;
 	auto gameLevel = GJGameLevel::create();
 	gameLevel->m_isEditable = true;
 	gameLevel->m_levelType = GJLevelType::Editor;
@@ -130,10 +138,10 @@ void NetManager::enterLevelEditor() {
 
 	host.SetSteamID(this->m_hostID);
 
-	auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(builder);
-	auto messageHeader = CTSerialize::CreateMessageHeader(builder, CTSerialize::MessageBody_RequestLevel, requestLevelStringOffset.Union());
+	// auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(builder, 12);
+	// auto messageHeader = CTSerialize::CreateMessageHeader(builder, CTSerialize::MessageBody_RequestLevel, requestLevelStringOffset.Union());
 
-	this->sendMessageToUser(host, messageHeader);
+	// this->sendMessageToUser(host, messageHeader);
 
 	switchToScene(lev);
 
@@ -174,9 +182,9 @@ void NetManager::fetchMemberList() {
 
 void NetManager::receiveData() {
 
-	if (this->m_isInEditorLayer) {
-		return;
-	}
+	// if (this->m_isInEditorLayer) {
+	// 	return;
+	// }
 
 	SteamNetworkingMessage_t* messageList[MAX_MESSAGES];
 
@@ -196,26 +204,31 @@ void NetManager::receiveData() {
 
 		// Uhh idk anymore what this is
 		// This should create a msg->GetSize() sized data object.
-		const uint8_t* data = new uint8_t[msg->GetSize()];
-		data = static_cast<const uint8_t*>(msg->GetData());
+        uint8_t* data = new uint8_t[msg->GetSize()];
+		memcpy(data, msg->GetData(), msg->GetSize());
+		msg->Release();
+		// data = static_cast<const uint8_t*>(message->GetData());
 		
 		auto messageHeader = CTSerialize::GetMessageHeader(data);
-
-		
-		
-		flatbuffers::Verifier verifier(data, (size_t)msg->GetData());
-
+        flatbuffers::Verifier verifier(data, msg->GetSize());
 		bool isVerified = CTSerialize::VerifyMessageHeaderBuffer(verifier);
 
-
+		if (!isVerified) {
+			log::warn("Failed to verify message");
+			return;
+		}
+		
 		auto out = this->parseData(messageHeader);
+
+		auto s = flatbuffers::FlatBufferToString(data, CTSerialize::MessageHeaderTypeTable());
+		log::debug("RecMessage:{}", s);
+
 
 		if (!out) {
 			log::warn("Something went wrong while parsing: {}", out.unwrapErr());
 		}
 
 		delete data;
-		msg->Release();
 	}
 }
 

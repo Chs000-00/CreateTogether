@@ -120,7 +120,7 @@ void SteamManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 		// Although this would work, this shouldnt be relied on for checking if
 		// the player is in the editor layer.
 		// TODO: Change this inside EditorLayer::init instead!
-		netManager->m_isInEditorLayer = false;
+		// netManager->m_isInEditorLayer = false;
 
 		netManager->m_lobbyId = pCallback->m_ulSteamIDLobby;
 
@@ -141,7 +141,7 @@ void SteamManager::onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure) {
 	else {
 		log::warn("Failed to create lobby with error code {}!", fmt::underlying(pCallback->m_eResult));
 		
-		netManager->m_isInEditorLayer = false;
+		// netManager->m_isInEditorLayer = false;
 		netManager->m_isInLobby = false;
 
 		this->m_lobbyCreated = 0;

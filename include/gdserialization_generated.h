@@ -20,6 +20,8 @@ namespace CTSerialize {
 struct GDGameObjectMin;
 struct GDGameObjectMinBuilder;
 
+inline const ::flatbuffers::TypeTable *GDGameObjectMinTypeTable();
+
 enum Speed : int8_t {
   Speed_Normal = 0,
   Speed_Slow = 1,
@@ -107,6 +109,9 @@ inline const char *EnumNameUndoCommand(UndoCommand e) {
 /// The data a GD Game Object has when placed in the editor
 struct GDGameObjectMin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GDGameObjectMinBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return GDGameObjectMinTypeTable();
+  }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_UNIQUEID = 4,
     VT_OBJID = 6,
@@ -238,6 +243,89 @@ inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMinDirect(
       noGlow,
       noEnter,
       flip);
+}
+
+inline const ::flatbuffers::TypeTable *SpeedTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::SpeedTypeTable
+  };
+  static const char * const names[] = {
+    "Normal",
+    "Slow",
+    "Fast",
+    "Faster",
+    "Fastest"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_ENUM, 5, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *UndoCommandTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::UndoCommandTypeTable
+  };
+  static const char * const names[] = {
+    "Invalid",
+    "Delete",
+    "New",
+    "Paste",
+    "DeleteMulti",
+    "Transform",
+    "Select"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_ENUM, 7, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *GDGameObjectMinTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_STRING, 0, -1 },
+    { ::flatbuffers::ET_ULONG, 0, -1 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 0 },
+    { ::flatbuffers::ET_FLOAT, 0, -1 },
+    { ::flatbuffers::ET_BOOL, 0, -1 },
+    { ::flatbuffers::ET_BOOL, 0, -1 },
+    { ::flatbuffers::ET_BOOL, 0, -1 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 1 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::CCPosITypeTable,
+    CTSerialize::ObjectFlipTypeTable
+  };
+  static const char * const names[] = {
+    "uniqueID",
+    "objID",
+    "pos",
+    "rotation",
+    "isHighDetail",
+    "noGlow",
+    "noEnter",
+    "flip"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 8, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
 }
 
 }  // namespace CTSerialize

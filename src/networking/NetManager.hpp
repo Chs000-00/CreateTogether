@@ -45,7 +45,7 @@ class NetManager {
         bool m_isRequestingLevelString = false;
 
         // Is the user currently in the editor layer? Yeah idk what this does.
-        bool m_isInEditorLayer = false;
+        // bool m_isInEditorLayer = false;
 
         // Steam LobbyID
         uint64 m_lobbyId;

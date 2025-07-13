@@ -21,12 +21,21 @@ struct CCPosI;
 
 struct ObjectFlip;
 
+inline const ::flatbuffers::TypeTable *CCPosTypeTable();
+
+inline const ::flatbuffers::TypeTable *CCPosITypeTable();
+
+inline const ::flatbuffers::TypeTable *ObjectFlipTypeTable();
+
 FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) CCPos FLATBUFFERS_FINAL_CLASS {
  private:
   float x_;
   float y_;
 
  public:
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return CCPosTypeTable();
+  }
   CCPos()
       : x_(0),
         y_(0) {
@@ -51,6 +60,9 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) CCPosI FLATBUFFERS_FINAL_CLASS {
   int32_t y_;
 
  public:
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return CCPosITypeTable();
+  }
   CCPosI()
       : x_(0),
         y_(0) {
@@ -75,6 +87,9 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(1) ObjectFlip FLATBUFFERS_FINAL_CLASS {
   uint8_t flipY_;
 
  public:
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return ObjectFlipTypeTable();
+  }
   ObjectFlip()
       : flipX_(0),
         flipY_(0) {
@@ -91,6 +106,54 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(1) ObjectFlip FLATBUFFERS_FINAL_CLASS {
   }
 };
 FLATBUFFERS_STRUCT_END(ObjectFlip, 2);
+
+inline const ::flatbuffers::TypeTable *CCPosTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_FLOAT, 0, -1 },
+    { ::flatbuffers::ET_FLOAT, 0, -1 }
+  };
+  static const int64_t values[] = { 0, 4, 8 };
+  static const char * const names[] = {
+    "x",
+    "y"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_STRUCT, 2, type_codes, nullptr, nullptr, values, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *CCPosITypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_INT, 0, -1 },
+    { ::flatbuffers::ET_INT, 0, -1 }
+  };
+  static const int64_t values[] = { 0, 4, 8 };
+  static const char * const names[] = {
+    "x",
+    "y"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_STRUCT, 2, type_codes, nullptr, nullptr, values, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *ObjectFlipTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_BOOL, 0, -1 },
+    { ::flatbuffers::ET_BOOL, 0, -1 }
+  };
+  static const int64_t values[] = { 0, 1, 2 };
+  static const char * const names[] = {
+    "flipX",
+    "flipY"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_STRUCT, 2, type_codes, nullptr, nullptr, values, names
+  };
+  return &tt;
+}
 
 }  // namespace CTSerialize
 
