@@ -22,7 +22,10 @@ void sendCreateObjects(const char* uniqueID, uint64_t objectID, CCPoint pos, flo
 
 void sendMoveObjects(IDList& uniqueIDList, CCPoint offset) {
     auto netManager = NetManager::get();
-    auto createMobeObjectsOffset = CTSerialize::CreateMoveObjects(netManager->m_builder, netManager->m_builder.CreateVector(uniqueIDList));
+    auto createMoveObjectsOffset = CTSerialize::CreateMoveObjects(netManager->m_builder, netManager->m_builder.CreateVector(uniqueIDList));
+    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_MoveObjects, createMoveObjectsOffset.Union());
+	netManager->sendMessage(messageHeaderOffset);
+	netManager->m_builder.Clear();
 }
 
 void sendRotateObjects(IDList& uniqueIDList, float rotation, CCPoint anchor) {
@@ -33,4 +36,7 @@ void sendDeleteObjects(IDList& uniqueIDList) {
     std::vector<flatbuffers::Offset<flatbuffers::String>> uniqueIDStringListInternal;
     auto netManager = NetManager::get();
     auto deleteObjectsMessage = CTSerialize::CreateDeleteObjects(netManager->m_builder, netManager->m_builder.CreateVector(uniqueIDList));
+    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_DeleteObjects, deleteObjectsMessage.Union());
+	netManager->sendMessage(messageHeaderOffset);
+	netManager->m_builder.Clear();
 }

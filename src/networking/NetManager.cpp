@@ -206,7 +206,7 @@ void NetManager::receiveData() {
 		// This should create a msg->GetSize() sized data object.
         uint8_t* data = new uint8_t[msg->GetSize()];
 		memcpy(data, msg->GetData(), msg->GetSize());
-		msg->Release();
+		
 		// data = static_cast<const uint8_t*>(message->GetData());
 		
 		auto messageHeader = CTSerialize::GetMessageHeader(data);
@@ -221,13 +221,15 @@ void NetManager::receiveData() {
 		auto out = this->parseData(messageHeader);
 
 		auto s = flatbuffers::FlatBufferToString(data, CTSerialize::MessageHeaderTypeTable());
-		log::debug("RecMessage:{}", s);
+		log::debug("RecvMessage:{}", s);
 
 
 		if (!out) {
 			log::warn("Something went wrong while parsing: {}", out.unwrapErr());
 		}
 
+		// TODO: Call release earlier
+		msg->Release();
 		delete data;
 	}
 }

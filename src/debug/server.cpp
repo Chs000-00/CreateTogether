@@ -14,10 +14,23 @@
 void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCallback_t *pInfo );
 
 static HSteamNetPollGroup pollGroup;
+// TODO: Destroy connection in vector when user leaves
+static std::vector<HSteamNetConnection> connections;
 
 void handleSignal(int signum) {
     std::cout << "Caught signal " << signum << "\n";
     exit(EXIT_SUCCESS);
+}
+
+void sendMessageToAllWithException(uint8_t* data, uint32 size, HSteamNetPollGroup exception) {
+	for (auto const& member : connections) {
+
+        if (member == exception) {
+            continue;
+        }
+
+        SteamNetworkingSockets()->SendMessageToConnection(member, data, size, k_nSteamNetworkingSend_Reliable, nullptr);
+    }
 }
 
 void pollMessages() {
@@ -38,7 +51,7 @@ void pollMessages() {
 
         uint8_t* data = new uint8_t[message->GetSize()];
 		memcpy(data, message->GetData(), message->GetSize());
-        message->Release();
+        
 		// data = static_cast<const uint8_t*>(message->GetData());
 
 
@@ -51,15 +64,14 @@ void pollMessages() {
 
 		bool isVerified = CTSerialize::VerifyMessageHeaderBuffer(verifier);
 
-        // std::cout << "isVerified = " << isVerified << '\n';
-        // std::cout << "message->GetSize() = " << message->GetSize() << '\n';
-        // std::cout << "sizeof(data) = " << sizeof(data) << '\n';
-
         auto s = flatbuffers::FlatBufferToString(data, CTSerialize::MessageHeaderTypeTable());
 
-        std::cout << "RecMessage:" << s << '\n';
+        std::cout << "RecvMessage:" << s << '\n';
 
-        // Cleanup
+        sendMessageToAllWithException(data, message->GetSize(), message->m_conn);
+
+		// TODO: Call release earlier
+        message->Release();
         delete data;
     }
 }
@@ -172,6 +184,8 @@ void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCal
 					SteamNetworkingSockets()->CloseConnection( pInfo->m_hConn, 0, nullptr, false );
 					break;
 				}
+
+                connections.push_back(pInfo->m_hConn);
 
 				break;
 			}

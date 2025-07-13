@@ -148,7 +148,7 @@ void LobbyPopup::startHosting(CCObject* sender) {
 #else
 
 bool LobbyPopup::setup(EPopupType type) {
-    this->setTitle("Unavailable due to debug mode:");
+    this->setTitle("Unavailable due to debug mode");
     return true;
 }
 
