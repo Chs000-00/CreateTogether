@@ -35,7 +35,6 @@ void sendRotateObjects(IDList& uniqueIDList, float rotation, CCPoint anchor) {
 }
 
 void sendDeleteObjects(IDList& uniqueIDList) {
-    std::vector<flatbuffers::Offset<flatbuffers::String>> uniqueIDStringListInternal;
     auto netManager = NetManager::get();
     auto deleteObjectsMessage = CTSerialize::CreateDeleteObjects(netManager->m_builder, netManager->m_builder.CreateVector(uniqueIDList));
     auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_DeleteObjects, deleteObjectsMessage.Union());

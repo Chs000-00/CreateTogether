@@ -12,16 +12,19 @@ Result<uint8_t> recvCreateObjects(const CTSerialize::CreateObjects* msg) {
 
     auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
     // TODO: Figure if a race condition is possible
-    level->m_fields->m_wasDataSent = true;
+    NetManager::get()->m_wasDataSent = true;
     GameObject* placedGameObject = level->createObject(minObj->objID(), gameObjectPos, false);
-    level->m_fields->m_wasDataSent = false;
+    NetManager::get()->m_wasDataSent = false;
 
     placedGameObject->setRotation(minObj->rotation());
     placedGameObject->m_isHighDetail = minObj->isHighDetail();
     placedGameObject->m_hasNoGlow = minObj->noGlow();
     placedGameObject->m_isDontEnter = minObj->noEnter();
-    placedGameObject->setFlipX(minObj->flip()->flipX());
-    placedGameObject->setFlipY(minObj->flip()->flipY());
+
+    if(auto flip = minObj->flip()) {
+        placedGameObject->setFlipX(flip->flipX()); // Crash here
+        placedGameObject->setFlipY(flip->flipY());
+    }
 
     MyGameObject* betterPlacedGameObject = static_cast<MyGameObject*>(placedGameObject);
     betterPlacedGameObject->m_fields->m_veryUniqueID = minObj->uniqueID()->str();

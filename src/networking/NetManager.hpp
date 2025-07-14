@@ -21,6 +21,10 @@ class NetManager {
 
         static bool getIsInLobby();
 
+        // Returns this->m_wasDataSent
+        static bool getWasDataSent();
+
+
         // Called each tick or smth idk how this shit works
         void update();
 
@@ -82,6 +86,10 @@ class NetManager {
         void sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out);
 
 
+        // Was the data sent from another user?
+        // Determines whether or not to run the original function. 
+        // This is set to true temporarily inside a recv function.
+        bool m_wasDataSent = false;
 
     private:
         // Sends all the currently queued data. Oh and also deletes the data afterward.

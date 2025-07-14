@@ -22,6 +22,11 @@ bool NetManager::getIsInLobby() {
 	return NetManager::get()->m_isInLobby;
 }
 
+bool NetManager::getWasDataSent() {
+	return NetManager::get()->m_wasDataSent;
+}
+
+
 void NetManager::update() {
 
 	#ifdef STEAMWORKS
@@ -137,14 +142,15 @@ void NetManager::enterLevelEditor() {
 
 	host.SetSteamID(this->m_hostID);
 
-	// auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(builder, 12);
-	// auto messageHeader = CTSerialize::CreateMessageHeader(builder, CTSerialize::MessageBody_RequestLevel, requestLevelStringOffset.Union());
+	auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(builder, 1);
+	auto messageHeaderOffset = CTSerialize::CreateMessageHeader(builder, CTSerialize::MessageBody_RequestLevel, requestLevelStringOffset.Union());
 
-	// this->sendMessageToUser(host, messageHeader);
+	this->sendMessageToUser(host, messageHeaderOffset);
+	this->m_builder.Clear();
 
 	switchToScene(lev);
-
 }
+
 
 void NetManager::fetchMemberList() {
 

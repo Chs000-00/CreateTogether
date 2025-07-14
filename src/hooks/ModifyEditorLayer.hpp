@@ -19,7 +19,7 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 
     struct Fields {
         // Was the data sent from another user?
-        bool m_wasDataSent = false;
+        // bool m_wasDataSent = false;
         unsigned int m_blocksPlaced = 0;
 
 

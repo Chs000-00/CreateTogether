@@ -1,13 +1,11 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/binding/GameObject.hpp>
-#include <Geode/binding/EditorUI.hpp>
 
 #ifdef STEAMWORKS
     #include <isteamuser.h>
 #endif
 
-#include "../types/ActionTypes.hpp"
 #include "ModifyGameManager.hpp"
 #include "../networking/HighLevelHeader.hpp"
 #include "../networking/NetManager.hpp"
@@ -59,11 +57,9 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
 
     MyGameObject* createdGameObject = static_cast<MyGameObject*>(LevelEditorLayer::createObject(p0, p1, p2));
 
-    if (p2 || m_fields->m_wasDataSent) {
+    if (p2 || NetManager::getWasDataSent()) {
         return createdGameObject;
     }
-
-    log::info("creating obj");
 
     auto stringSteamID = std::to_string(this->m_fields->m_userID);
     // This string should be unique for every user

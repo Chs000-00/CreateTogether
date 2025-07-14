@@ -5,7 +5,6 @@
 #include "../ui/LobbyPopup.hpp"
 #include "../networking/NetManager.hpp"
 
-
 using namespace geode::prelude;
 
 class $modify(MyEditorPauseLayer, EditorPauseLayer) {
@@ -62,6 +61,7 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 	// TODO: There might be an issue with exiting the lobby before you get to confirm exiting on the popup.
 
 	void onExitEditor(CCObject* sender) {
+		log::info("SAVEANDEXIT");
 		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 		static_cast<MyLevelEditorLayer*>(this->m_editorLayer)->m_fields->m_pUniqueIDOfGameObject->release();
 		NetManager::get()->leaveLobby();
@@ -69,6 +69,7 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 	}
 
 	void onExitNoSave(CCObject* sender) {
+		log::info("NOSAVEEXIT");
 		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 		static_cast<MyLevelEditorLayer*>(this->m_editorLayer)->m_fields->m_pUniqueIDOfGameObject->release();
 		NetManager::get()->leaveLobby();
