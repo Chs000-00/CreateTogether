@@ -38,7 +38,7 @@ table DeleteObjects {
 }
 
 table MoveObjects {
-  uniqueIDList:[string];
+  uniqueID:string;
   positionOffset:CCPosI;
 }
 

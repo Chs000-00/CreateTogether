@@ -87,3 +87,13 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
      
     return createdGameObject;
 }
+
+void MyLevelEditorLayer::deleteObject(GameObject *obj) {
+    log::debug("Cleaning up.. Deleting sent object!");
+    auto betterGameObject = static_cast<MyGameObject*>(obj);
+    EditorUI::get()->deselectObject(obj);
+    this->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(betterGameObject->m_fields->m_veryUniqueID);
+    obj->deactivateObject(true);
+    LevelEditorLayer::removeObjectFromSection(obj);
+    this->removeSpecial(obj); 
+}

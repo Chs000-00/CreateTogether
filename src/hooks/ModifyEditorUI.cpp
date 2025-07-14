@@ -6,6 +6,7 @@
 #include "../networking/NetManager.hpp"
 #include "ModifyGameObject.hpp"
 
+#include <Geode/modify/GJBaseGameLayer.hpp>
 
 using namespace geode::prelude;
 
@@ -21,6 +22,7 @@ class $modify(EditorUI) {
             return;
         }
 
+
         IDList idlist;
 
         auto editor = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
@@ -29,9 +31,27 @@ class $modify(EditorUI) {
             addStringToIDList(idlist, obj->m_fields->m_veryUniqueID.c_str());
         }
 
+        if (this->m_selectedObject) {
+            addStringToIDList(idlist, static_cast<MyGameObject*>(this->m_selectedObject)->m_fields->m_veryUniqueID.c_str());
+        }
+
+ 
         sendDeleteObjects(idlist);
 
         EditorUI::onDeleteSelected(sender);
     }
 
+    void moveObject(GameObject* p0, CCPoint p1) {
+      
+        if (NetManager::getWasDataSent() || !NetManager::getIsInLobby()) {
+            EditorUI::moveObject(p0, p1);
+            return;
+        }
+
+        MyGameObject* betterPlacedGameObject = static_cast<MyGameObject*>(p0);
+
+        sendMoveObjects(betterPlacedGameObject->m_fields->m_veryUniqueID.c_str(), p1);
+
+        EditorUI::moveObject(p0, p1);
+    }
 };

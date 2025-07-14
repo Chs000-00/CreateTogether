@@ -253,6 +253,11 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
 			break;
 		}
 
+		case CTSerialize::MessageBody_MoveObjects: {
+			SERIALIZE_AND_RECEIVE(MoveObjects);
+			break;
+		}
+
 		default:
 			return Err("Invalid Union Type");
 	}

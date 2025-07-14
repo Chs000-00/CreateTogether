@@ -17,9 +17,10 @@ void sendCreateObjects(const char* uniqueID, uint64_t objectID, CCPoint pos, flo
 
 }
 
-void sendMoveObjects(IDList& uniqueIDList, CCPoint offset) {
+void sendMoveObjects(const char* uniqueID, CCPoint offset) {
     auto netManager = NetManager::get();
-    auto moveObjectsOffset = CTSerialize::CreateMoveObjects(netManager->m_builder, netManager->m_builder.CreateVector(uniqueIDList));
+    auto offsetPos = CTSerialize::CCPosI(offset.x, offset.y);
+    auto moveObjectsOffset = CTSerialize::CreateMoveObjectsDirect(netManager->m_builder, uniqueID, &offsetPos);
     auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_MoveObjects, moveObjectsOffset.Union());
 	netManager->sendMessage(messageHeaderOffset);
 	netManager->m_builder.Clear();
