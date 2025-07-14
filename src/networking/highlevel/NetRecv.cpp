@@ -2,6 +2,7 @@
 #include "SharedHighLevelHeaders.hpp"
 #include "../../hooks/ModifyEditorLayer.hpp"
 #include "../../hooks/ModifyGameObject.hpp"
+#include <Geode/binding/EditorUI.hpp>
 
 
 // TODO: Verifier stuff
@@ -31,4 +32,8 @@ Result<uint8_t> recvCreateObjects(const CTSerialize::CreateObjects* msg) {
     level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, minObj->uniqueID()->str());
 
     return Ok(0);
+}
+
+Result<uint8_t> recvDeleteObjects(const CTSerialize::DeleteObjects* msg) {
+    auto idlist = msg->uniqueIDList();
 }

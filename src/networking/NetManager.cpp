@@ -80,6 +80,9 @@ void NetManager::leaveLobby() {
 void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out) {
 	this->m_builder.Finish(out);
 
+	auto s = flatbuffers::FlatBufferToString(this->m_builder.GetBufferPointer(), CTSerialize::MessageHeaderTypeTable());
+	log::debug("SentMessage:{}", s);
+
 	#ifdef STEAMWORKS
 		SteamNetworkingMessages()->SendMessageToUser(usr, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
 	#else
@@ -89,6 +92,9 @@ void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Off
 
 void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out) {
 	this->m_builder.Finish(out);
+
+	auto s = flatbuffers::FlatBufferToString(this->m_builder.GetBufferPointer(), CTSerialize::MessageHeaderTypeTable());
+	log::debug("SentMessage:{}", s);
 
 	#ifdef STEAMWORKS
 		for (auto const& member : this->m_playersInLobby) {
@@ -131,19 +137,14 @@ void NetManager::enterLevelEditor() {
 		log::info("IsInLobby {}", this->m_isInLobby);
 
 	#endif
-
-
-	// I AM VERY SORRY FOR THIS ):
-	flatbuffers::FlatBufferBuilder builder;
-
 	this->fetchMemberList();
 
 	SteamNetworkingIdentity host;
 
 	host.SetSteamID(this->m_hostID);
 
-	auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(builder, 1);
-	auto messageHeaderOffset = CTSerialize::CreateMessageHeader(builder, CTSerialize::MessageBody_RequestLevel, requestLevelStringOffset.Union());
+	auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(this->m_builder);
+	auto messageHeaderOffset = CTSerialize::CreateMessageHeader(this->m_builder, CTSerialize::MessageBody_RequestLevel, requestLevelStringOffset.Union());
 
 	this->sendMessageToUser(host, messageHeaderOffset);
 	this->m_builder.Clear();
@@ -244,6 +245,11 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
 	switch (msg->body_type()) {
 		case CTSerialize::MessageBody_CreateObjects: {
 			SERIALIZE_AND_RECEIVE(CreateObjects);
+			break;
+		}
+
+		case CTSerialize::MessageBody_DeleteObjects: {
+			SERIALIZE_AND_RECEIVE(DeleteObjects);
 			break;
 		}
 

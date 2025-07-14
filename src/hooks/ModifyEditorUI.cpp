@@ -16,7 +16,7 @@ class $modify(EditorUI) {
 
     void onDeleteSelected(CCObject* sender) {
 
-        if (NetManager::getWasDataSent() || NetManager::getIsInLobby()) {
+        if (NetManager::getWasDataSent() || !NetManager::getIsInLobby()) {
             EditorUI::onDeleteSelected(sender);
             return;
         }

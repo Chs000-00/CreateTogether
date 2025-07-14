@@ -1161,15 +1161,8 @@ struct RequestLevel FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
     return RequestLevelTypeTable();
   }
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_ANTIEVILFLATBUFFERBUGGYCODETHINGIDK = 4
-  };
-  uint8_t antievilflatbufferbuggycodethingidk() const {
-    return GetField<uint8_t>(VT_ANTIEVILFLATBUFFERBUGGYCODETHINGIDK, 0);
-  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint8_t>(verifier, VT_ANTIEVILFLATBUFFERBUGGYCODETHINGIDK, 1) &&
            verifier.EndTable();
   }
 };
@@ -1178,9 +1171,6 @@ struct RequestLevelBuilder {
   typedef RequestLevel Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_antievilflatbufferbuggycodethingidk(uint8_t antievilflatbufferbuggycodethingidk) {
-    fbb_.AddElement<uint8_t>(RequestLevel::VT_ANTIEVILFLATBUFFERBUGGYCODETHINGIDK, antievilflatbufferbuggycodethingidk, 0);
-  }
   explicit RequestLevelBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -1193,10 +1183,8 @@ struct RequestLevelBuilder {
 };
 
 inline ::flatbuffers::Offset<RequestLevel> CreateRequestLevel(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint8_t antievilflatbufferbuggycodethingidk = 0) {
+    ::flatbuffers::FlatBufferBuilder &_fbb) {
   RequestLevelBuilder builder_(_fbb);
-  builder_.add_antievilflatbufferbuggycodethingidk(antievilflatbufferbuggycodethingidk);
   return builder_.Finish();
 }
 
@@ -1728,14 +1716,8 @@ inline const ::flatbuffers::TypeTable *GameModeChangeTypeTable() {
 }
 
 inline const ::flatbuffers::TypeTable *RequestLevelTypeTable() {
-  static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_UCHAR, 0, -1 }
-  };
-  static const char * const names[] = {
-    "antievilflatbufferbuggycodethingidk"
-  };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 0, nullptr, nullptr, nullptr, nullptr, nullptr
   };
   return &tt;
 }
