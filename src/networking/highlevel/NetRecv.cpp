@@ -6,7 +6,7 @@
 
 
 // TODO: Verifier stuff
-
+// TODO: Fix long slopes offset being weird
 Result<uint8_t> recvCreateObjects(const CTSerialize::CreateObjects* msg) {
     auto minObj = msg->obj();
     cocos2d::CCPoint gameObjectPos = {static_cast<float>(minObj->pos()->x()), static_cast<float>(minObj->pos()->y())};
@@ -40,7 +40,6 @@ Result<uint8_t> recvDeleteObjects(const CTSerialize::DeleteObjects* msg) {
 
     auto editor = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
     for (auto i = 0; i < idlist->Length(); i++) {
-        log::info("c1");
         if (auto dObj = editor->m_fields->m_pUniqueIDOfGameObject->objectForKey(idlist->Get(i)->str())) {
             editor->deleteObject(static_cast<GameObject*>(dObj));
         }
@@ -51,7 +50,7 @@ Result<uint8_t> recvDeleteObjects(const CTSerialize::DeleteObjects* msg) {
 Result<uint8_t> recvMoveObjects(const CTSerialize::MoveObjects* msg) {
     auto id = msg->uniqueID();
     auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
-    cocos2d::CCPoint offsetPos = {static_cast<float>(msg->positionOffset()->x()), static_cast<float>(msg->positionOffset()->y())};
+    cocos2d::CCPoint offsetPos = {msg->positionOffset()->x(), msg->positionOffset()->y()};
 
 
     if (auto dObj = level->m_fields->m_pUniqueIDOfGameObject->objectForKey(id->str())) {
@@ -59,4 +58,31 @@ Result<uint8_t> recvMoveObjects(const CTSerialize::MoveObjects* msg) {
         level->m_editorUI->moveObject(static_cast<GameObject*>(dObj), offsetPos);
         NetManager::get()->m_wasDataSent = false;
     }
+    return Ok(0);
+}
+
+Result<uint8_t> recvPasteObjects(const CTSerialize::PasteObjects* msg) {
+    auto pasteString = msg->pastedString();
+    auto uniqueIDList = msg->uniqueIDList();
+    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
+
+    // TODO: Figure out args
+    auto objectArr = CCArrayExt<MyGameObject*>(level->createObjectsFromString(pasteString->str(), false, false));
+
+    // This might be inefficient as this requires looping over the arr twice.
+    for (auto i = 0; i != std::min(objectArr.size(), (size_t)uniqueIDList->size()); ++i) {
+        auto mObject = (objectArr[i]);
+        auto uid = uniqueIDList->Get(i)->str();
+        mObject->m_fields->m_veryUniqueID = uid;
+        level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, uid);
+    }
+    return Ok(0);
+}
+
+Result<uint8_t> recvUpdateSong(const CTSerialize::UpdateSong* msg) {
+    auto songID = msg->songID();
+    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
+    level->m_level->m_songID = songID;
+    level->levelSettingsUpdated();
+    return Ok(0);
 }

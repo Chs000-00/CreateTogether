@@ -136,14 +136,13 @@ void LobbyPopup::startHosting(CCObject* sender) {
 
     netManager->m_isHost = true;
     steamCallbacks->m_isInLobbyCallResult.Set(steamCallbacks->m_lobbyCreated, steamCallbacks, &SteamManager::onLobbyCreated);
-
-
-    void LobbyPopup::inviteFriends(CCObject* sender) {
-        auto netManager = NetManager::get();
-        SteamFriends()->ActivateGameOverlayInviteDialog(netManager->m_lobbyId);
-    }
-
 }
+
+void LobbyPopup::inviteFriends(CCObject* sender) {
+    auto netManager = NetManager::get();
+    SteamFriends()->ActivateGameOverlayInviteDialog(netManager->m_lobbyId);
+}
+
 
 #else
 

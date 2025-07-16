@@ -39,7 +39,7 @@ table DeleteObjects {
 
 table MoveObjects {
   uniqueID:string;
-  positionOffset:CCPosI;
+  positionOffset:CCPos;
 }
 
 table LevelSettingChange {

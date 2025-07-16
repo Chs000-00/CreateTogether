@@ -32,7 +32,7 @@ class NetManager {
 	    void enterLevelEditor();
         
         // Joins a steam lobby with a specified ID
-        #ifdef USE_STEAMWORKS
+        #ifdef STEAMWORKS
         void joinSteamLobby(GameLobbyJoinRequested_t* lobbyInfo);
         #endif
 

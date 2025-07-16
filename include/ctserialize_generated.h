@@ -565,14 +565,14 @@ struct MoveObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const ::flatbuffers::String *uniqueID() const {
     return GetPointer<const ::flatbuffers::String *>(VT_UNIQUEID);
   }
-  const CTSerialize::CCPosI *positionOffset() const {
-    return GetStruct<const CTSerialize::CCPosI *>(VT_POSITIONOFFSET);
+  const CTSerialize::CCPos *positionOffset() const {
+    return GetStruct<const CTSerialize::CCPos *>(VT_POSITIONOFFSET);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_UNIQUEID) &&
            verifier.VerifyString(uniqueID()) &&
-           VerifyField<CTSerialize::CCPosI>(verifier, VT_POSITIONOFFSET, 4) &&
+           VerifyField<CTSerialize::CCPos>(verifier, VT_POSITIONOFFSET, 4) &&
            verifier.EndTable();
   }
 };
@@ -584,7 +584,7 @@ struct MoveObjectsBuilder {
   void add_uniqueID(::flatbuffers::Offset<::flatbuffers::String> uniqueID) {
     fbb_.AddOffset(MoveObjects::VT_UNIQUEID, uniqueID);
   }
-  void add_positionOffset(const CTSerialize::CCPosI *positionOffset) {
+  void add_positionOffset(const CTSerialize::CCPos *positionOffset) {
     fbb_.AddStruct(MoveObjects::VT_POSITIONOFFSET, positionOffset);
   }
   explicit MoveObjectsBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
@@ -601,7 +601,7 @@ struct MoveObjectsBuilder {
 inline ::flatbuffers::Offset<MoveObjects> CreateMoveObjects(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     ::flatbuffers::Offset<::flatbuffers::String> uniqueID = 0,
-    const CTSerialize::CCPosI *positionOffset = nullptr) {
+    const CTSerialize::CCPos *positionOffset = nullptr) {
   MoveObjectsBuilder builder_(_fbb);
   builder_.add_positionOffset(positionOffset);
   builder_.add_uniqueID(uniqueID);
@@ -611,7 +611,7 @@ inline ::flatbuffers::Offset<MoveObjects> CreateMoveObjects(
 inline ::flatbuffers::Offset<MoveObjects> CreateMoveObjectsDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     const char *uniqueID = nullptr,
-    const CTSerialize::CCPosI *positionOffset = nullptr) {
+    const CTSerialize::CCPos *positionOffset = nullptr) {
   auto uniqueID__ = uniqueID ? _fbb.CreateString(uniqueID) : 0;
   return CTSerialize::CreateMoveObjects(
       _fbb,
@@ -1569,7 +1569,7 @@ inline const ::flatbuffers::TypeTable *MoveObjectsTypeTable() {
     { ::flatbuffers::ET_SEQUENCE, 0, 0 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
-    CTSerialize::CCPosITypeTable
+    CTSerialize::CCPosTypeTable
   };
   static const char * const names[] = {
     "uniqueID",

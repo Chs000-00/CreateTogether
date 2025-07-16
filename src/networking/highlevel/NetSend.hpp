@@ -14,3 +14,7 @@ void sendMoveObjects(const char* uniqueID, CCPoint offset);
 void sendRotateObjects(IDList& uniqueIDList, float rotation, CCPoint anchor);
 
 void sendDeleteObjects(IDList& uniqueIDList);
+
+void sendPasteObjects(IDList& uniqueIDList, const char* copyStr);
+
+void sendUpdateSong(uint64_t songID);

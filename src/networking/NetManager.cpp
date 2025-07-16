@@ -2,12 +2,13 @@
 #include "NetManager.hpp"
 #include "./highlevel/NetRecv.hpp"
 #include "../utils/Utills.hpp"
+	#include <flatbuffers/minireflect.h>
+
 
 // TODO: Try compiling ValveSoftware/GameNetworkingSockets:partner to possibly fix this ugly crap?
 #ifdef NO_STEAMWORKS
 	#include <debug/steamnetworkingsockets.h>
 	#include <debug/isteamnetworkingutils.h>
-	#include <flatbuffers/minireflect.h>
 	#include "../debug/client.hpp"
 #endif
 
@@ -258,6 +259,16 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
 			break;
 		}
 
+		case CTSerialize::MessageBody_PasteObjects: {
+			SERIALIZE_AND_RECEIVE(PasteObjects);
+			break;
+		}
+
+		case CTSerialize::MessageBody_UpdateSong: {
+			SERIALIZE_AND_RECEIVE(UpdateSong);
+			break;
+		}
+
 		default:
 			return Err("Invalid Union Type");
 	}
@@ -265,7 +276,7 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
 	return Ok(0);
 }
 
-#ifdef USE_STEAMWORKS
+#ifdef STEAMWORKS
 void NetManager::joinSteamLobby(GameLobbyJoinRequested_t* lobbyInfo) {
 	// TODO: Remove this
 	log::debug("JoinLobbyRequest Called with steamID: {} | friendID: {} | friendName: {}", lobbyInfo->m_steamIDLobby.ConvertToUint64(), lobbyInfo->m_steamIDFriend.ConvertToUint64(), SteamFriends()->GetFriendPersonaName(lobbyInfo->m_steamIDFriend));

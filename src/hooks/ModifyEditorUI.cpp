@@ -54,4 +54,33 @@ class $modify(EditorUI) {
 
         EditorUI::moveObject(p0, p1);
     }
+
+    CCArray* pasteObjects(gd::string p0, bool p1, bool p2) {
+        CCArray* ret = EditorUI::pasteObjects(p0, p1, p2);
+        
+        auto objectArr = CCArrayExt<MyGameObject*>(ret);
+        auto editorLayer = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
+
+        for (auto obj : objectArr) {
+            auto uid = editorLayer->m_fields->m_userID + "!" + std::to_string(editorLayer->m_fields->m_blocksPlaced);
+            obj->m_fields->m_veryUniqueID = uid;
+            editorLayer->m_fields->m_blocksPlaced += 1;
+            editorLayer->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID);
+        }
+        
+        if (NetManager::getWasDataSent() || !NetManager::getIsInLobby()) {
+            return ret;
+        }
+
+        IDList idlist;
+
+        for (auto obj : objectArr) {
+            addStringToIDList(idlist, obj->m_fields->m_veryUniqueID.c_str());
+        }
+
+        sendPasteObjects(idlist, p0.c_str());
+        return ret;
+    }
 };
+
+

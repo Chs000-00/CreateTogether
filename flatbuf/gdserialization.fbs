@@ -14,6 +14,7 @@ table GDGameObjectMin {
     noGlow:bool;
     noEnter:bool;
     flip:ObjectFlip;
+    scale:float;
 }
 
 enum Speed : byte {

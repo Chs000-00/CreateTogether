@@ -120,7 +120,8 @@ struct GDGameObjectMin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_ISHIGHDETAIL = 12,
     VT_NOGLOW = 14,
     VT_NOENTER = 16,
-    VT_FLIP = 18
+    VT_FLIP = 18,
+    VT_SCALE = 20
   };
   const ::flatbuffers::String *uniqueID() const {
     return GetPointer<const ::flatbuffers::String *>(VT_UNIQUEID);
@@ -146,6 +147,9 @@ struct GDGameObjectMin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const CTSerialize::ObjectFlip *flip() const {
     return GetStruct<const CTSerialize::ObjectFlip *>(VT_FLIP);
   }
+  float scale() const {
+    return GetField<float>(VT_SCALE, 0.0f);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_UNIQUEID) &&
@@ -157,6 +161,7 @@ struct GDGameObjectMin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            VerifyField<uint8_t>(verifier, VT_NOGLOW, 1) &&
            VerifyField<uint8_t>(verifier, VT_NOENTER, 1) &&
            VerifyField<CTSerialize::ObjectFlip>(verifier, VT_FLIP, 1) &&
+           VerifyField<float>(verifier, VT_SCALE, 4) &&
            verifier.EndTable();
   }
 };
@@ -189,6 +194,9 @@ struct GDGameObjectMinBuilder {
   void add_flip(const CTSerialize::ObjectFlip *flip) {
     fbb_.AddStruct(GDGameObjectMin::VT_FLIP, flip);
   }
+  void add_scale(float scale) {
+    fbb_.AddElement<float>(GDGameObjectMin::VT_SCALE, scale, 0.0f);
+  }
   explicit GDGameObjectMinBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -209,9 +217,11 @@ inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMin(
     bool isHighDetail = false,
     bool noGlow = false,
     bool noEnter = false,
-    const CTSerialize::ObjectFlip *flip = nullptr) {
+    const CTSerialize::ObjectFlip *flip = nullptr,
+    float scale = 0.0f) {
   GDGameObjectMinBuilder builder_(_fbb);
   builder_.add_objID(objID);
+  builder_.add_scale(scale);
   builder_.add_flip(flip);
   builder_.add_rotation(rotation);
   builder_.add_pos(pos);
@@ -231,7 +241,8 @@ inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMinDirect(
     bool isHighDetail = false,
     bool noGlow = false,
     bool noEnter = false,
-    const CTSerialize::ObjectFlip *flip = nullptr) {
+    const CTSerialize::ObjectFlip *flip = nullptr,
+    float scale = 0.0f) {
   auto uniqueID__ = uniqueID ? _fbb.CreateString(uniqueID) : 0;
   return CTSerialize::CreateGDGameObjectMin(
       _fbb,
@@ -242,7 +253,8 @@ inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMinDirect(
       isHighDetail,
       noGlow,
       noEnter,
-      flip);
+      flip,
+      scale);
 }
 
 inline const ::flatbuffers::TypeTable *SpeedTypeTable() {
@@ -306,7 +318,8 @@ inline const ::flatbuffers::TypeTable *GDGameObjectMinTypeTable() {
     { ::flatbuffers::ET_BOOL, 0, -1 },
     { ::flatbuffers::ET_BOOL, 0, -1 },
     { ::flatbuffers::ET_BOOL, 0, -1 },
-    { ::flatbuffers::ET_SEQUENCE, 0, 1 }
+    { ::flatbuffers::ET_SEQUENCE, 0, 1 },
+    { ::flatbuffers::ET_FLOAT, 0, -1 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
     CTSerialize::CCPosITypeTable,
@@ -320,10 +333,11 @@ inline const ::flatbuffers::TypeTable *GDGameObjectMinTypeTable() {
     "isHighDetail",
     "noGlow",
     "noEnter",
-    "flip"
+    "flip",
+    "scale"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 8, type_codes, type_refs, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 9, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }

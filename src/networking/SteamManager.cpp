@@ -49,7 +49,7 @@ void SteamManager::onLobbyChatUpdateWrapper(LobbyChatUpdate_t* pCallback) {
 			log::info("Host left server! Leaving lobby.");
 
 			LobbiesLayer::scene();
-			netManager->leaveCurrentSteamLobby();
+			netManager->leaveLobby();
 
 			FLAlertLayer::create(
 				"Host left server",    
@@ -98,7 +98,7 @@ void SteamManager::onLobbyEnter(LobbyEnter_t* pCallback) {
 	if (!netManager->m_isHost && netManager->m_hostID == SteamUser()->GetSteamID()) {
 		log::warn("Invalid host! onLobbyEntered was not called as host yet hostID is your steamID");
 		log::warn("This is a rare error (:");
-		netManager->leaveCurrentSteamLobby();
+		netManager->leaveLobby();
 	}
 
 }
