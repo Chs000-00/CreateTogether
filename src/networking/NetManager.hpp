@@ -91,8 +91,6 @@ class NetManager {
         // This is set to true temporarily inside a recv function.
         bool m_wasDataSent = false;
 
-        // bool m_rotationException = false;
-
     private:
         // Sends all the currently queued data. Oh and also deletes the data afterward.
         // void sendQueuedData();

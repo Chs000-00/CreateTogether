@@ -99,8 +99,12 @@ class $modify(EditorUI) {
         }
 
         sendRotateObjects(idlist, p1, p2);
-
+        
+        // Fix rotation
+        NetManager::get()->m_wasDataSent = true;
         EditorUI::rotateObjects(p0, p1, p2);
+        NetManager::get()->m_wasDataSent = false;
+
     }
 
 };
