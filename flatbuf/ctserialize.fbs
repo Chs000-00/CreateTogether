@@ -11,7 +11,7 @@ union MessageBody {
   DeleteObjects,
   MoveObjects,
   LevelSettingChange,
-  RotateObject,
+  RotateObjects,
   PasteObjects,
   ModifyObjects,
   UpdateFont,
@@ -46,7 +46,7 @@ table LevelSettingChange {
   settingID:uint16;
 }
 
-table RotateObject {
+table RotateObjects {
   rotation:float;
   // I... Think this is the anchor point... No clue...
   anchor:CCPos;

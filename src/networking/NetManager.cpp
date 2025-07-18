@@ -259,6 +259,11 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
 			break;
 		}
 
+		case CTSerialize::MessageBody_RotateObjects: {
+			SERIALIZE_AND_RECEIVE(RotateObjects);
+			break;
+		}
+
 		case CTSerialize::MessageBody_PasteObjects: {
 			SERIALIZE_AND_RECEIVE(PasteObjects);
 			break;

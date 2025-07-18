@@ -81,6 +81,28 @@ class $modify(EditorUI) {
         sendPasteObjects(idlist, p0.c_str());
         return ret;
     }
+
+    void rotateObjects(CCArray* p0, float p1, CCPoint p2) {
+        
+        if (NetManager::getWasDataSent() || !NetManager::getIsInLobby()) {
+            EditorUI::rotateObjects(p0, p1, p2);
+            return;
+        }
+
+        auto objectArr = CCArrayExt<MyGameObject*>(p0);
+        auto editorLayer = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
+
+        IDList idlist;
+
+        for (auto obj : objectArr) {
+            addStringToIDList(idlist, obj->m_fields->m_veryUniqueID.c_str());
+        }
+
+        sendRotateObjects(idlist, p1, p2);
+
+        EditorUI::rotateObjects(p0, p1, p2);
+    }
+
 };
 
 

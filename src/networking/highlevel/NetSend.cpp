@@ -38,8 +38,8 @@ void sendMoveObjects(const char* uniqueID, CCPoint offset) {
 void sendRotateObjects(IDList& uniqueIDList, float rotation, CCPoint anchor) {
     auto netManager = NetManager::get();
     auto objectPos = CTSerialize::CCPos(anchor.x, anchor.y);
-    auto rotateObjectsOffset = CTSerialize::CreateRotateObject(netManager->m_builder, rotation, &objectPos, netManager->m_builder.CreateVector(uniqueIDList));
-    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_RotateObject, rotateObjectsOffset.Union());
+    auto rotateObjectsOffset = CTSerialize::CreateRotateObjects(netManager->m_builder, rotation, &objectPos, netManager->m_builder.CreateVector(uniqueIDList));
+    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_RotateObjects, rotateObjectsOffset.Union());
 	netManager->sendMessage(messageHeaderOffset);
 	netManager->m_builder.Clear();
 }

@@ -5,6 +5,7 @@
 #include <Geode/binding/EditorUI.hpp>
 
 
+
 // TODO: Verifier stuff
 // TODO: Fix long slopes offset being weird
 Result<uint8_t> recvCreateObjects(const CTSerialize::CreateObjects* msg) {
@@ -40,8 +41,8 @@ Result<uint8_t> recvDeleteObjects(const CTSerialize::DeleteObjects* msg) {
 
     auto editor = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
     for (auto i = 0; i < idlist->Length(); i++) {
-        if (auto dObj = editor->m_fields->m_pUniqueIDOfGameObject->objectForKey(idlist->Get(i)->str())) {
-            editor->deleteObject(static_cast<GameObject*>(dObj));
+        if (auto dObj = static_cast<GameObject*>(editor->m_fields->m_pUniqueIDOfGameObject->objectForKey(idlist->Get(i)->str()))) {
+            editor->deleteObject(dObj);
         }
     }
     return Ok(0);
@@ -58,6 +59,33 @@ Result<uint8_t> recvMoveObjects(const CTSerialize::MoveObjects* msg) {
         level->m_editorUI->moveObject(static_cast<GameObject*>(dObj), offsetPos);
         NetManager::get()->m_wasDataSent = false;
     }
+    return Ok(0);
+}
+
+Result<uint8_t> recvRotateObjects(const CTSerialize::RotateObjects* msg) {
+    auto rot = msg->rotation();
+    cocos2d::CCPoint pos = {msg->anchor()->x(), msg->anchor()->y()};
+
+
+    auto idlist = msg->uniqueIDList();
+
+    auto editor = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
+    
+
+    auto arr = CCArray::create();
+
+    for (auto i = 0; i < idlist->Length(); i++) {
+        if (auto dObj = static_cast<GameObject*>(editor->m_fields->m_pUniqueIDOfGameObject->objectForKey(idlist->Get(i)->str()))) {
+            arr->addObject(dObj);
+            // dObj->setRotation(rot + dObj->getRotation());
+        }
+    }
+
+    NetManager::get()->m_wasDataSent = true;
+    editor->m_editorUI->rotateObjects(arr, rot, pos);
+    NetManager::get()->m_wasDataSent = false;
+
+
     return Ok(0);
 }
 

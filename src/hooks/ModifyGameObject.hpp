@@ -1,6 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/GameObject.hpp>
 
+
 using namespace geode::prelude;
 
 class $modify(MyGameObject, GameObject) {

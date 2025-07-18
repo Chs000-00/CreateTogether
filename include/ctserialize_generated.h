@@ -33,8 +33,8 @@ struct MoveObjectsBuilder;
 struct LevelSettingChange;
 struct LevelSettingChangeBuilder;
 
-struct RotateObject;
-struct RotateObjectBuilder;
+struct RotateObjects;
+struct RotateObjectsBuilder;
 
 struct PasteObjects;
 struct PasteObjectsBuilder;
@@ -79,7 +79,7 @@ inline const ::flatbuffers::TypeTable *MoveObjectsTypeTable();
 
 inline const ::flatbuffers::TypeTable *LevelSettingChangeTypeTable();
 
-inline const ::flatbuffers::TypeTable *RotateObjectTypeTable();
+inline const ::flatbuffers::TypeTable *RotateObjectsTypeTable();
 
 inline const ::flatbuffers::TypeTable *PasteObjectsTypeTable();
 
@@ -109,7 +109,7 @@ enum MessageBody : uint8_t {
   MessageBody_DeleteObjects = 2,
   MessageBody_MoveObjects = 3,
   MessageBody_LevelSettingChange = 4,
-  MessageBody_RotateObject = 5,
+  MessageBody_RotateObjects = 5,
   MessageBody_PasteObjects = 6,
   MessageBody_ModifyObjects = 7,
   MessageBody_UpdateFont = 8,
@@ -132,7 +132,7 @@ inline const MessageBody (&EnumValuesMessageBody())[17] {
     MessageBody_DeleteObjects,
     MessageBody_MoveObjects,
     MessageBody_LevelSettingChange,
-    MessageBody_RotateObject,
+    MessageBody_RotateObjects,
     MessageBody_PasteObjects,
     MessageBody_ModifyObjects,
     MessageBody_UpdateFont,
@@ -155,7 +155,7 @@ inline const char * const *EnumNamesMessageBody() {
     "DeleteObjects",
     "MoveObjects",
     "LevelSettingChange",
-    "RotateObject",
+    "RotateObjects",
     "PasteObjects",
     "ModifyObjects",
     "UpdateFont",
@@ -198,8 +198,8 @@ template<> struct MessageBodyTraits<CTSerialize::LevelSettingChange> {
   static const MessageBody enum_value = MessageBody_LevelSettingChange;
 };
 
-template<> struct MessageBodyTraits<CTSerialize::RotateObject> {
-  static const MessageBody enum_value = MessageBody_RotateObject;
+template<> struct MessageBodyTraits<CTSerialize::RotateObjects> {
+  static const MessageBody enum_value = MessageBody_RotateObjects;
 };
 
 template<> struct MessageBodyTraits<CTSerialize::PasteObjects> {
@@ -313,8 +313,8 @@ struct MessageHeader FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const CTSerialize::LevelSettingChange *body_as_LevelSettingChange() const {
     return body_type() == CTSerialize::MessageBody_LevelSettingChange ? static_cast<const CTSerialize::LevelSettingChange *>(body()) : nullptr;
   }
-  const CTSerialize::RotateObject *body_as_RotateObject() const {
-    return body_type() == CTSerialize::MessageBody_RotateObject ? static_cast<const CTSerialize::RotateObject *>(body()) : nullptr;
+  const CTSerialize::RotateObjects *body_as_RotateObjects() const {
+    return body_type() == CTSerialize::MessageBody_RotateObjects ? static_cast<const CTSerialize::RotateObjects *>(body()) : nullptr;
   }
   const CTSerialize::PasteObjects *body_as_PasteObjects() const {
     return body_type() == CTSerialize::MessageBody_PasteObjects ? static_cast<const CTSerialize::PasteObjects *>(body()) : nullptr;
@@ -374,8 +374,8 @@ template<> inline const CTSerialize::LevelSettingChange *MessageHeader::body_as<
   return body_as_LevelSettingChange();
 }
 
-template<> inline const CTSerialize::RotateObject *MessageHeader::body_as<CTSerialize::RotateObject>() const {
-  return body_as_RotateObject();
+template<> inline const CTSerialize::RotateObjects *MessageHeader::body_as<CTSerialize::RotateObjects>() const {
+  return body_as_RotateObjects();
 }
 
 template<> inline const CTSerialize::PasteObjects *MessageHeader::body_as<CTSerialize::PasteObjects>() const {
@@ -663,10 +663,10 @@ inline ::flatbuffers::Offset<LevelSettingChange> CreateLevelSettingChange(
   return builder_.Finish();
 }
 
-struct RotateObject FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef RotateObjectBuilder Builder;
+struct RotateObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef RotateObjectsBuilder Builder;
   static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
-    return RotateObjectTypeTable();
+    return RotateObjectsTypeTable();
   }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ROTATION = 4,
@@ -693,49 +693,49 @@ struct RotateObject FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
 };
 
-struct RotateObjectBuilder {
-  typedef RotateObject Table;
+struct RotateObjectsBuilder {
+  typedef RotateObjects Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
   void add_rotation(float rotation) {
-    fbb_.AddElement<float>(RotateObject::VT_ROTATION, rotation, 0.0f);
+    fbb_.AddElement<float>(RotateObjects::VT_ROTATION, rotation, 0.0f);
   }
   void add_anchor(const CTSerialize::CCPos *anchor) {
-    fbb_.AddStruct(RotateObject::VT_ANCHOR, anchor);
+    fbb_.AddStruct(RotateObjects::VT_ANCHOR, anchor);
   }
   void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList) {
-    fbb_.AddOffset(RotateObject::VT_UNIQUEIDLIST, uniqueIDList);
+    fbb_.AddOffset(RotateObjects::VT_UNIQUEIDLIST, uniqueIDList);
   }
-  explicit RotateObjectBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit RotateObjectsBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<RotateObject> Finish() {
+  ::flatbuffers::Offset<RotateObjects> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<RotateObject>(end);
+    auto o = ::flatbuffers::Offset<RotateObjects>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<RotateObject> CreateRotateObject(
+inline ::flatbuffers::Offset<RotateObjects> CreateRotateObjects(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     float rotation = 0.0f,
     const CTSerialize::CCPos *anchor = nullptr,
     ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList = 0) {
-  RotateObjectBuilder builder_(_fbb);
+  RotateObjectsBuilder builder_(_fbb);
   builder_.add_uniqueIDList(uniqueIDList);
   builder_.add_anchor(anchor);
   builder_.add_rotation(rotation);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<RotateObject> CreateRotateObjectDirect(
+inline ::flatbuffers::Offset<RotateObjects> CreateRotateObjectsDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     float rotation = 0.0f,
     const CTSerialize::CCPos *anchor = nullptr,
     const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList = nullptr) {
   auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*uniqueIDList) : 0;
-  return CTSerialize::CreateRotateObject(
+  return CTSerialize::CreateRotateObjects(
       _fbb,
       rotation,
       anchor,
@@ -1367,8 +1367,8 @@ inline bool VerifyMessageBody(::flatbuffers::Verifier &verifier, const void *obj
       auto ptr = reinterpret_cast<const CTSerialize::LevelSettingChange *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case MessageBody_RotateObject: {
-      auto ptr = reinterpret_cast<const CTSerialize::RotateObject *>(obj);
+    case MessageBody_RotateObjects: {
+      auto ptr = reinterpret_cast<const CTSerialize::RotateObjects *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case MessageBody_PasteObjects: {
@@ -1456,7 +1456,7 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     CTSerialize::DeleteObjectsTypeTable,
     CTSerialize::MoveObjectsTypeTable,
     CTSerialize::LevelSettingChangeTypeTable,
-    CTSerialize::RotateObjectTypeTable,
+    CTSerialize::RotateObjectsTypeTable,
     CTSerialize::PasteObjectsTypeTable,
     CTSerialize::ModifyObjectsTypeTable,
     CTSerialize::UpdateFontTypeTable,
@@ -1475,7 +1475,7 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     "DeleteObjects",
     "MoveObjects",
     "LevelSettingChange",
-    "RotateObject",
+    "RotateObjects",
     "PasteObjects",
     "ModifyObjects",
     "UpdateFont",
@@ -1594,7 +1594,7 @@ inline const ::flatbuffers::TypeTable *LevelSettingChangeTypeTable() {
   return &tt;
 }
 
-inline const ::flatbuffers::TypeTable *RotateObjectTypeTable() {
+inline const ::flatbuffers::TypeTable *RotateObjectsTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
     { ::flatbuffers::ET_FLOAT, 0, -1 },
     { ::flatbuffers::ET_SEQUENCE, 0, 0 },
