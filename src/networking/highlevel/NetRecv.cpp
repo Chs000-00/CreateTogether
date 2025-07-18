@@ -1,4 +1,4 @@
-#include "../HighLevelHeader.hpp"
+#include "HighLevelHeader.hpp"
 #include "SharedHighLevelHeaders.hpp"
 #include "../../hooks/ModifyEditorLayer.hpp"
 #include "../../hooks/ModifyGameObject.hpp"

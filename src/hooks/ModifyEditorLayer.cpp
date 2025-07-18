@@ -7,7 +7,7 @@
 #endif
 
 #include "ModifyGameManager.hpp"
-#include "../networking/HighLevelHeader.hpp"
+#include "HighLevelHeader.hpp"
 #include "../networking/NetManager.hpp"
 #include "ModifyGameObject.hpp"
 #include "ModifyEditorLayer.hpp"

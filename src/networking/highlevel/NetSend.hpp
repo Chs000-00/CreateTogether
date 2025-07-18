@@ -9,11 +9,11 @@ void addStringToIDList(IDList& uniqueIDList, const char* str);
 
 void sendCreateObjects(const char* uniqueID, uint64_t objectID, CCPoint pos, float rotation, bool isHighDetail, bool noGlow, bool noEnter, bool flipX, bool flipY);
 
+void sendDeleteObjects(IDList& uniqueIDList);
+
 void sendMoveObjects(const char* uniqueID, CCPoint offset);
 
 void sendRotateObjects(IDList& uniqueIDList, float rotation, CCPoint anchor);
-
-void sendDeleteObjects(IDList& uniqueIDList);
 
 void sendPasteObjects(IDList& uniqueIDList, const char* copyStr);
 

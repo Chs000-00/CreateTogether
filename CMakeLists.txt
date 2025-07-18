@@ -102,7 +102,11 @@ else()
 endif()
 
 
-target_include_directories(${PROJECT_NAME} PUBLIC include)
+target_include_directories(${PROJECT_NAME}
+    PUBLIC include
+    PUBLIC src/networking
+)
+
 
 # Set up dependencies, resources, and link Geode.
 setup_geode_mod(${PROJECT_NAME})

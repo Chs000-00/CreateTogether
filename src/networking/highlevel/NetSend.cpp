@@ -1,4 +1,4 @@
-#include "../HighLevelHeader.hpp"
+#include "HighLevelHeader.hpp"
 #include "SharedHighLevelHeaders.hpp"
 
 void addStringToIDList(IDList& uniqueIDList, const char* str) {
@@ -17,6 +17,15 @@ void sendCreateObjects(const char* uniqueID, uint64_t objectID, CCPoint pos, flo
 
 }
 
+void sendDeleteObjects(IDList& uniqueIDList) {
+    auto netManager = NetManager::get();
+    auto deleteObjectsMessage = CTSerialize::CreateDeleteObjects(netManager->m_builder, netManager->m_builder.CreateVector(uniqueIDList));
+    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_DeleteObjects, deleteObjectsMessage.Union());
+	netManager->sendMessage(messageHeaderOffset);
+	netManager->m_builder.Clear();
+}
+
+
 void sendMoveObjects(const char* uniqueID, CCPoint offset) {
     auto netManager = NetManager::get();
     auto offsetPos = CTSerialize::CCPos(offset.x, offset.y);
@@ -31,14 +40,6 @@ void sendRotateObjects(IDList& uniqueIDList, float rotation, CCPoint anchor) {
     auto objectPos = CTSerialize::CCPos(anchor.x, anchor.y);
     auto rotateObjectsOffset = CTSerialize::CreateRotateObject(netManager->m_builder, rotation, &objectPos, netManager->m_builder.CreateVector(uniqueIDList));
     auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_RotateObject, rotateObjectsOffset.Union());
-	netManager->sendMessage(messageHeaderOffset);
-	netManager->m_builder.Clear();
-}
-
-void sendDeleteObjects(IDList& uniqueIDList) {
-    auto netManager = NetManager::get();
-    auto deleteObjectsMessage = CTSerialize::CreateDeleteObjects(netManager->m_builder, netManager->m_builder.CreateVector(uniqueIDList));
-    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_DeleteObjects, deleteObjectsMessage.Union());
 	netManager->sendMessage(messageHeaderOffset);
 	netManager->m_builder.Clear();
 }

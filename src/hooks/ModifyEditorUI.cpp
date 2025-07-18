@@ -2,7 +2,7 @@
 #include <Geode/binding/GameObject.hpp>
 #include <Geode/modify/EditorUI.hpp>
 #include "ModifyEditorLayer.hpp"
-#include "../networking/HighLevelHeader.hpp"
+#include "HighLevelHeader.hpp"
 #include "../networking/NetManager.hpp"
 #include "ModifyGameObject.hpp"
 
