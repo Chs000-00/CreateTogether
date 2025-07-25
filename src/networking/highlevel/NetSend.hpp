@@ -17,4 +17,6 @@ void sendRotateObjects(IDList& uniqueIDList, float rotation, CCPoint anchor);
 
 void sendPasteObjects(IDList& uniqueIDList, const char* copyStr);
 
+void sendModifyObjects(IDList& uniqueIDList, const char* copyStr);
+
 void sendUpdateSong(uint64_t songID);

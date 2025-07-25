@@ -52,6 +52,14 @@ void sendPasteObjects(IDList& uniqueIDList, const char* copyStr) {
 	netManager->m_builder.Clear();
 }
 
+void sendModifyObjects(IDList& uniqueIDList, const char* copyStr) {
+    auto netManager = NetManager::get();
+    auto modifyObjectsMessage = CTSerialize::CreateModifyObjects(netManager->m_builder, netManager->m_builder.CreateVector(uniqueIDList), netManager->m_builder.CreateString(copyStr));
+    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_ModifyObjects, modifyObjectsMessage.Union());
+	netManager->sendMessage(messageHeaderOffset);
+	netManager->m_builder.Clear();
+}
+
 void sendUpdateSong(uint64_t songID) {
     auto netManager = NetManager::get();
     auto updateSongMessage = CTSerialize::CreateUpdateSong(netManager->m_builder, songID);

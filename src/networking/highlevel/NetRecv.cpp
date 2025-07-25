@@ -107,6 +107,34 @@ Result<uint8_t> recvPasteObjects(const CTSerialize::PasteObjects* msg) {
     return Ok(0);
 }
 
+Result<uint8_t> recvModifyObjects(const CTSerialize::ModifyObjects* msg) {
+    auto pasteString = msg->pastedString();
+    auto uniqueIDList = msg->uniqueIDList();
+    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
+
+    // TODO: Figure out args
+    auto objectArr = CCArrayExt<MyGameObject*>(level->createObjectsFromString(pasteString->str(), false, false));
+
+    if (objectArr.size() != uniqueIDList->size()) {
+        log::warn("recvModifyObjects: Mismatched objectArr and editUUIDs size!");
+    }
+
+    for (auto i = 0; i != std::min(objectArr.size(), (size_t)uniqueIDList->size()); ++i) {
+        auto newObj = (objectArr[i]);
+        auto uid = uniqueIDList->Get(i)->c_str();
+
+        if (auto oldObj = static_cast<MyGameObject*>(level->m_fields->m_pUniqueIDOfGameObject->objectForKey(uid))) {
+            level->deleteObject(oldObj);
+            newObj->m_fields->m_veryUniqueID = uid;
+            level->m_fields->m_pUniqueIDOfGameObject->setObject(newObj, uid);
+        }
+        else {
+            return Err("object UID not found");
+        }
+    }
+    return Ok(0);
+}
+
 Result<uint8_t> recvUpdateSong(const CTSerialize::UpdateSong* msg) {
     auto songID = msg->songID();
     auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
