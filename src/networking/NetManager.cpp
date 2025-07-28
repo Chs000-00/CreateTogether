@@ -269,6 +269,11 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
 			break;
 		}
 
+		case CTSerialize::MessageBody_ModifyObjects: {
+			SERIALIZE_AND_RECEIVE(ModifyObjects);
+			break;
+		}
+
 		case CTSerialize::MessageBody_UpdateSong: {
 			SERIALIZE_AND_RECEIVE(UpdateSong);
 			break;

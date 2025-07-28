@@ -32,6 +32,7 @@ class $modify(EditorUI) {
         }
 
         if (this->m_selectedObject) {
+            editor->m_fields->m_pUniqueIDOfGameObject->removeObjectForKey(static_cast<MyGameObject*>(this->m_selectedObject)->m_fields->m_veryUniqueID);
             addStringToIDList(idlist, static_cast<MyGameObject*>(this->m_selectedObject)->m_fields->m_veryUniqueID.c_str());
         }
 
