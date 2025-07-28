@@ -17,6 +17,7 @@ union MessageBody {
   UpdateFont,
   UpdateSong,
   ChangeGroupID,
+  ChangeDefaultColor,
   RequestLevel,
   ChangeArt,
   SpeedChange,
@@ -76,6 +77,22 @@ table ChangeGroupID {
   isAdding:bool;
   uniqueIDList:[string];
 }
+
+ // This might be the wrong function. TODO: Check
+table ChangeDefaultColor {
+  // ccColor3B color
+  fadeTime:float;
+  colorID:int;
+  blending:bool;
+  opacity:float;
+  // ccHSVValue copyHSV
+  colorIDToCopy:int;
+  copyOpacity:bool;
+  // EffectGameObject CallerObject
+  unk1:int;
+  unk2:int;
+}
+
 
 // TODO: ChangeArt
 table ChangeArt {

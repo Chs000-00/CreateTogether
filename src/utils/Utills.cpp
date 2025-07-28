@@ -64,7 +64,7 @@ Result<int> toggleFromLevelSettings(LevelSettingsObject* settings, int option) {
             break;
 
         case 13:
-            return Err("toggleFromLevelSettings: Case 13 is invalid and shouldn't have been sleected");
+            return Err("toggleFromLevelSettings: Case 13 is invalid and shouldn't have been selected");
             break; // Just in case
 
         case 14:
