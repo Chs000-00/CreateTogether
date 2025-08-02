@@ -79,19 +79,15 @@ table ChangeGroupID {
   uniqueIDList:[string];
 }
 
- // This might be the wrong function. TODO: Check
 table ChangeDefaultColor {
-  // ccColor3B color
-  fadeTime:float;
-  colorID:int;
-  blending:bool;
+  groupID:int;
+  currentColor:CCColor3B;
+  hsv:CCHsvValue;
+  // I don't know why this is an int.
+  blending:int;
   opacity:float;
-  // ccHSVValue copyHSV
-  colorIDToCopy:int;
+  copyColorID:int = null;
   copyOpacity:bool;
-  // EffectGameObject CallerObject
-  unk1:int;
-  unk2:int;
 }
 
 

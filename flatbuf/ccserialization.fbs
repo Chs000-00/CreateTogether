@@ -18,3 +18,17 @@ struct ObjectFlip {
   flipX:bool;
   flipY:bool;
 }
+
+struct CCHsvValue {
+  h:float;
+  s:float;
+  v:float;
+  absoluteSaturation:bool;
+  absoluteBrightness:bool;
+}
+
+struct CCColor3B {
+  r:uint8;
+  g:uint8;
+  b:uint8;
+}

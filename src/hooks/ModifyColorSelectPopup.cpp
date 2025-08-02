@@ -15,9 +15,10 @@ class $modify(ColorSelectPopup) {
 
     // Test this out
     void closeColorSelect(CCObject* p0) {
-        if (this->m_gameObject) {
 
-            ColorSelectPopup::closeColorSelect(p0);
+        ColorSelectPopup::closeColorSelect(p0);
+
+        if (this->m_gameObject) {
 
             if (!NetManager::getIsInLobby()) {
                 return;
@@ -57,5 +58,11 @@ class $modify(ColorSelectPopup) {
 
             sendModifyObjects(idlist, objString.c_str());
         }
+
+        else if (this->m_colorAction) {
+            log::info("x {}", this->m_colorAction->m_colorID);
+        }
+        
+
     }
 };
