@@ -16,10 +16,6 @@ using namespace geode::prelude;
 
 // specify parameters for the setup function in the Popup<...> template
 bool LobbyPopup::setup(EPopupType type) {
-    // convenience function provided by Popup
-    // for adding/setting a title to the popup
-
-    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
 
     switch (type) {
         case eLobbyHostPopup: {
@@ -69,7 +65,7 @@ bool LobbyPopup::setup(EPopupType type) {
 
 
         // TODO: Fix this reseting or something idfk
-        publicToggle->toggle(gameManager);
+        publicToggle->toggle(!NetManager::get()->m_options.isPrivate);
 
         checkMarkMenu->addChild(publicText);
         checkMarkMenu->addChild(publicToggle);
@@ -84,27 +80,30 @@ bool LobbyPopup::setup(EPopupType type) {
 
 void LobbyPopup::onPublicToggle(CCMenuItemToggler* sender) {
     auto netManager = NetManager::get();
-    netManager->m_options.isPrivate = sender->m_toggled; 
+    netManager->m_options.isPrivate = !netManager->m_options.isPrivate;
+    // sender->toggle(netManager->m_options.isPrivate);
+
+    log::debug("Setting isPublic to {}.", netManager->m_options.isPrivate);
 
     auto steamCallbacks = static_cast<MyGameManager*>(GameManager::get())->m_fields->m_callbackManager;
 
-    if (netManager->m_isInLobby) {
-        log::debug("Setting isPublic to {}", sender->m_toggled);
+    if (NetManager::getIsInLobby()) {
+        
         // TODO: Check if this code works
 
-        if (netManager->m_options.canFriendsJoin) {
-            if (netManager->m_options.isPrivate) {
-                steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
-            }
-            else {
-                steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
-            }
-        }
-        else {
-            if (!netManager->m_options.isPrivate) {
-                steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePrivate, 16);
-            }    
-        }
+        // if (netManager->m_options.canFriendsJoin) {
+        //     if (netManager->m_options.isPrivate) {
+        //         steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
+        //     }
+        //     else {
+        //         steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
+        //     }
+        // }
+        // else {
+        //     if (!netManager->m_options.isPrivate) {
+        //         steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePrivate, 16);
+        //     }    
+        // }
 
     }
 }
@@ -122,15 +121,18 @@ void LobbyPopup::startHosting(CCObject* sender) {
 
     if (netManager->m_options.canFriendsJoin) {
         if (netManager->m_options.isPrivate) {
-            steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, 16);
+            log::info("Creating public lobby.");
+            steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, MAX_USERS);
         }
         else {
-            steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, 16);
+            log::info("Creating friends only lobby.");
+            steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, MAX_USERS);
         }
     }
     else {
         if (!netManager->m_options.isPrivate) {
-            steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePrivate, 16);
+            log::info("Creating private lobby.");
+            steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePrivate, MAX_USERS);
         }    
     }
 
@@ -156,7 +158,7 @@ bool LobbyPopup::setup(EPopupType type) {
 LobbyPopup* LobbyPopup::create(EPopupType type) {
     auto ret = new LobbyPopup();
 
-    log::info("Creating popup...");
+    log::info("Creating popup");
 
     if (ret->initAnchored(300.f, 200.f, type)) {
         ret->autorelease();

@@ -17,3 +17,5 @@ Result<uint8_t> recvPasteObjects(const CTSerialize::PasteObjects* msg);
 Result<uint8_t> recvModifyObjects(const CTSerialize::ModifyObjects* msg);
 
 Result<uint8_t> recvUpdateSong(const CTSerialize::UpdateSong* msg);
+
+Result<uint8_t> recvChangeDefaultColor(const CTSerialize::ChangeDefaultColor* msg);

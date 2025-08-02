@@ -1082,49 +1082,44 @@ struct ChangeDefaultColor FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     return ChangeDefaultColorTypeTable();
   }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_FADETIME = 4,
-    VT_COLORID = 6,
-    VT_BLENDING = 8,
-    VT_OPACITY = 10,
-    VT_COLORIDTOCOPY = 12,
-    VT_COPYOPACITY = 14,
-    VT_UNK1 = 16,
-    VT_UNK2 = 18
+    VT_GROUPID = 4,
+    VT_CURRENTCOLOR = 6,
+    VT_HSV = 8,
+    VT_BLENDING = 10,
+    VT_OPACITY = 12,
+    VT_COPYCOLORID = 14,
+    VT_COPYOPACITY = 16
   };
-  float fadeTime() const {
-    return GetField<float>(VT_FADETIME, 0.0f);
+  int32_t groupID() const {
+    return GetField<int32_t>(VT_GROUPID, 0);
   }
-  int32_t colorID() const {
-    return GetField<int32_t>(VT_COLORID, 0);
+  const CTSerialize::CCColor3B *currentColor() const {
+    return GetStruct<const CTSerialize::CCColor3B *>(VT_CURRENTCOLOR);
   }
-  bool blending() const {
-    return GetField<uint8_t>(VT_BLENDING, 0) != 0;
+  const CTSerialize::CCHsvValue *hsv() const {
+    return GetStruct<const CTSerialize::CCHsvValue *>(VT_HSV);
+  }
+  int32_t blending() const {
+    return GetField<int32_t>(VT_BLENDING, 0);
   }
   float opacity() const {
     return GetField<float>(VT_OPACITY, 0.0f);
   }
-  int32_t colorIDToCopy() const {
-    return GetField<int32_t>(VT_COLORIDTOCOPY, 0);
+  ::flatbuffers::Optional<int32_t> copyColorID() const {
+    return GetOptional<int32_t, int32_t>(VT_COPYCOLORID);
   }
   bool copyOpacity() const {
     return GetField<uint8_t>(VT_COPYOPACITY, 0) != 0;
   }
-  int32_t unk1() const {
-    return GetField<int32_t>(VT_UNK1, 0);
-  }
-  int32_t unk2() const {
-    return GetField<int32_t>(VT_UNK2, 0);
-  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<float>(verifier, VT_FADETIME, 4) &&
-           VerifyField<int32_t>(verifier, VT_COLORID, 4) &&
-           VerifyField<uint8_t>(verifier, VT_BLENDING, 1) &&
+           VerifyField<int32_t>(verifier, VT_GROUPID, 4) &&
+           VerifyField<CTSerialize::CCColor3B>(verifier, VT_CURRENTCOLOR, 1) &&
+           VerifyField<CTSerialize::CCHsvValue>(verifier, VT_HSV, 4) &&
+           VerifyField<int32_t>(verifier, VT_BLENDING, 4) &&
            VerifyField<float>(verifier, VT_OPACITY, 4) &&
-           VerifyField<int32_t>(verifier, VT_COLORIDTOCOPY, 4) &&
+           VerifyField<int32_t>(verifier, VT_COPYCOLORID, 4) &&
            VerifyField<uint8_t>(verifier, VT_COPYOPACITY, 1) &&
-           VerifyField<int32_t>(verifier, VT_UNK1, 4) &&
-           VerifyField<int32_t>(verifier, VT_UNK2, 4) &&
            verifier.EndTable();
   }
 };
@@ -1133,29 +1128,26 @@ struct ChangeDefaultColorBuilder {
   typedef ChangeDefaultColor Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_fadeTime(float fadeTime) {
-    fbb_.AddElement<float>(ChangeDefaultColor::VT_FADETIME, fadeTime, 0.0f);
+  void add_groupID(int32_t groupID) {
+    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_GROUPID, groupID, 0);
   }
-  void add_colorID(int32_t colorID) {
-    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_COLORID, colorID, 0);
+  void add_currentColor(const CTSerialize::CCColor3B *currentColor) {
+    fbb_.AddStruct(ChangeDefaultColor::VT_CURRENTCOLOR, currentColor);
   }
-  void add_blending(bool blending) {
-    fbb_.AddElement<uint8_t>(ChangeDefaultColor::VT_BLENDING, static_cast<uint8_t>(blending), 0);
+  void add_hsv(const CTSerialize::CCHsvValue *hsv) {
+    fbb_.AddStruct(ChangeDefaultColor::VT_HSV, hsv);
+  }
+  void add_blending(int32_t blending) {
+    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_BLENDING, blending, 0);
   }
   void add_opacity(float opacity) {
     fbb_.AddElement<float>(ChangeDefaultColor::VT_OPACITY, opacity, 0.0f);
   }
-  void add_colorIDToCopy(int32_t colorIDToCopy) {
-    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_COLORIDTOCOPY, colorIDToCopy, 0);
+  void add_copyColorID(int32_t copyColorID) {
+    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_COPYCOLORID, copyColorID);
   }
   void add_copyOpacity(bool copyOpacity) {
     fbb_.AddElement<uint8_t>(ChangeDefaultColor::VT_COPYOPACITY, static_cast<uint8_t>(copyOpacity), 0);
-  }
-  void add_unk1(int32_t unk1) {
-    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_UNK1, unk1, 0);
-  }
-  void add_unk2(int32_t unk2) {
-    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_UNK2, unk2, 0);
   }
   explicit ChangeDefaultColorBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -1170,23 +1162,21 @@ struct ChangeDefaultColorBuilder {
 
 inline ::flatbuffers::Offset<ChangeDefaultColor> CreateChangeDefaultColor(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    float fadeTime = 0.0f,
-    int32_t colorID = 0,
-    bool blending = false,
+    int32_t groupID = 0,
+    const CTSerialize::CCColor3B *currentColor = nullptr,
+    const CTSerialize::CCHsvValue *hsv = nullptr,
+    int32_t blending = 0,
     float opacity = 0.0f,
-    int32_t colorIDToCopy = 0,
-    bool copyOpacity = false,
-    int32_t unk1 = 0,
-    int32_t unk2 = 0) {
+    ::flatbuffers::Optional<int32_t> copyColorID = ::flatbuffers::nullopt,
+    bool copyOpacity = false) {
   ChangeDefaultColorBuilder builder_(_fbb);
-  builder_.add_unk2(unk2);
-  builder_.add_unk1(unk1);
-  builder_.add_colorIDToCopy(colorIDToCopy);
+  if(copyColorID) { builder_.add_copyColorID(*copyColorID); }
   builder_.add_opacity(opacity);
-  builder_.add_colorID(colorID);
-  builder_.add_fadeTime(fadeTime);
-  builder_.add_copyOpacity(copyOpacity);
   builder_.add_blending(blending);
+  builder_.add_hsv(hsv);
+  builder_.add_currentColor(currentColor);
+  builder_.add_groupID(groupID);
+  builder_.add_copyOpacity(copyOpacity);
   return builder_.Finish();
 }
 
@@ -1841,27 +1831,29 @@ inline const ::flatbuffers::TypeTable *ChangeGroupIDTypeTable() {
 
 inline const ::flatbuffers::TypeTable *ChangeDefaultColorTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_INT, 0, -1 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 0 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 1 },
+    { ::flatbuffers::ET_INT, 0, -1 },
     { ::flatbuffers::ET_FLOAT, 0, -1 },
     { ::flatbuffers::ET_INT, 0, -1 },
-    { ::flatbuffers::ET_BOOL, 0, -1 },
-    { ::flatbuffers::ET_FLOAT, 0, -1 },
-    { ::flatbuffers::ET_INT, 0, -1 },
-    { ::flatbuffers::ET_BOOL, 0, -1 },
-    { ::flatbuffers::ET_INT, 0, -1 },
-    { ::flatbuffers::ET_INT, 0, -1 }
+    { ::flatbuffers::ET_BOOL, 0, -1 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::CCColor3BTypeTable,
+    CTSerialize::CCHsvValueTypeTable
   };
   static const char * const names[] = {
-    "fadeTime",
-    "colorID",
+    "groupID",
+    "currentColor",
+    "hsv",
     "blending",
     "opacity",
-    "colorIDToCopy",
-    "copyOpacity",
-    "unk1",
-    "unk2"
+    "copyColorID",
+    "copyOpacity"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 8, type_codes, nullptr, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 7, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }

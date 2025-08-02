@@ -24,3 +24,5 @@ void sendPasteObjects(IDList& uniqueIDList, const char* copyStr);
 void sendModifyObjects(IDList& uniqueIDList, const char* copyStr);
 
 void sendUpdateSong(uint64_t songID);
+
+void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, int blending, float opacity, bool copyOpacity);

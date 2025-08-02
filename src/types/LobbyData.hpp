@@ -22,7 +22,7 @@ struct lobbyData {
 
 
 struct lobbyOptions {
-    bool isPrivate = false;
+    bool isPrivate = true;
     // TODO: Implement
     bool canFriendsJoin = true;
 };

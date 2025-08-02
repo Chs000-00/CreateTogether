@@ -79,3 +79,11 @@ void sendUpdateSong(uint64_t songID) {
 	netManager->sendMessage(messageHeaderOffset);
 	netManager->m_builder.Clear();
 }
+
+// TODO: Finish
+void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, int blending, float opacity, bool copyOpacity) {
+    auto netManager = NetManager::get();
+    auto currentColorOffset = CTSerialize::CCColor3B(currentColor.r, currentColor.g, currentColor.b);
+    auto changeDefaultColor = CTSerialize::CreateChangeDefaultColor(netManager->m_builder, groupID);
+
+}

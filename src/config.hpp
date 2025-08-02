@@ -6,3 +6,5 @@
 #define DEDICATED_PORT 24018
 
 #define MAX_MESSAGES 128
+
+#define MAX_USERS 16

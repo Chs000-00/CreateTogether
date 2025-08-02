@@ -21,11 +21,19 @@ struct CCPosI;
 
 struct ObjectFlip;
 
+struct CCHsvValue;
+
+struct CCColor3B;
+
 inline const ::flatbuffers::TypeTable *CCPosTypeTable();
 
 inline const ::flatbuffers::TypeTable *CCPosITypeTable();
 
 inline const ::flatbuffers::TypeTable *ObjectFlipTypeTable();
+
+inline const ::flatbuffers::TypeTable *CCHsvValueTypeTable();
+
+inline const ::flatbuffers::TypeTable *CCColor3BTypeTable();
 
 FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) CCPos FLATBUFFERS_FINAL_CLASS {
  private:
@@ -107,6 +115,87 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(1) ObjectFlip FLATBUFFERS_FINAL_CLASS {
 };
 FLATBUFFERS_STRUCT_END(ObjectFlip, 2);
 
+FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) CCHsvValue FLATBUFFERS_FINAL_CLASS {
+ private:
+  float h_;
+  float s_;
+  float v_;
+  uint8_t absoluteSaturation_;
+  uint8_t absoluteBrightness_;
+  int16_t padding0__;
+
+ public:
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return CCHsvValueTypeTable();
+  }
+  CCHsvValue()
+      : h_(0),
+        s_(0),
+        v_(0),
+        absoluteSaturation_(0),
+        absoluteBrightness_(0),
+        padding0__(0) {
+    (void)padding0__;
+  }
+  CCHsvValue(float _h, float _s, float _v, bool _absoluteSaturation, bool _absoluteBrightness)
+      : h_(::flatbuffers::EndianScalar(_h)),
+        s_(::flatbuffers::EndianScalar(_s)),
+        v_(::flatbuffers::EndianScalar(_v)),
+        absoluteSaturation_(::flatbuffers::EndianScalar(static_cast<uint8_t>(_absoluteSaturation))),
+        absoluteBrightness_(::flatbuffers::EndianScalar(static_cast<uint8_t>(_absoluteBrightness))),
+        padding0__(0) {
+    (void)padding0__;
+  }
+  float h() const {
+    return ::flatbuffers::EndianScalar(h_);
+  }
+  float s() const {
+    return ::flatbuffers::EndianScalar(s_);
+  }
+  float v() const {
+    return ::flatbuffers::EndianScalar(v_);
+  }
+  bool absoluteSaturation() const {
+    return ::flatbuffers::EndianScalar(absoluteSaturation_) != 0;
+  }
+  bool absoluteBrightness() const {
+    return ::flatbuffers::EndianScalar(absoluteBrightness_) != 0;
+  }
+};
+FLATBUFFERS_STRUCT_END(CCHsvValue, 16);
+
+FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(1) CCColor3B FLATBUFFERS_FINAL_CLASS {
+ private:
+  uint8_t r_;
+  uint8_t g_;
+  uint8_t b_;
+
+ public:
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return CCColor3BTypeTable();
+  }
+  CCColor3B()
+      : r_(0),
+        g_(0),
+        b_(0) {
+  }
+  CCColor3B(uint8_t _r, uint8_t _g, uint8_t _b)
+      : r_(::flatbuffers::EndianScalar(_r)),
+        g_(::flatbuffers::EndianScalar(_g)),
+        b_(::flatbuffers::EndianScalar(_b)) {
+  }
+  uint8_t r() const {
+    return ::flatbuffers::EndianScalar(r_);
+  }
+  uint8_t g() const {
+    return ::flatbuffers::EndianScalar(g_);
+  }
+  uint8_t b() const {
+    return ::flatbuffers::EndianScalar(b_);
+  }
+};
+FLATBUFFERS_STRUCT_END(CCColor3B, 3);
+
 inline const ::flatbuffers::TypeTable *CCPosTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
     { ::flatbuffers::ET_FLOAT, 0, -1 },
@@ -151,6 +240,46 @@ inline const ::flatbuffers::TypeTable *ObjectFlipTypeTable() {
   };
   static const ::flatbuffers::TypeTable tt = {
     ::flatbuffers::ST_STRUCT, 2, type_codes, nullptr, nullptr, values, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *CCHsvValueTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_FLOAT, 0, -1 },
+    { ::flatbuffers::ET_FLOAT, 0, -1 },
+    { ::flatbuffers::ET_FLOAT, 0, -1 },
+    { ::flatbuffers::ET_BOOL, 0, -1 },
+    { ::flatbuffers::ET_BOOL, 0, -1 }
+  };
+  static const int64_t values[] = { 0, 4, 8, 12, 13, 16 };
+  static const char * const names[] = {
+    "h",
+    "s",
+    "v",
+    "absoluteSaturation",
+    "absoluteBrightness"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_STRUCT, 5, type_codes, nullptr, nullptr, values, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *CCColor3BTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_UCHAR, 0, -1 },
+    { ::flatbuffers::ET_UCHAR, 0, -1 },
+    { ::flatbuffers::ET_UCHAR, 0, -1 }
+  };
+  static const int64_t values[] = { 0, 1, 2, 3 };
+  static const char * const names[] = {
+    "r",
+    "g",
+    "b"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_STRUCT, 3, type_codes, nullptr, nullptr, values, names
   };
   return &tt;
 }
