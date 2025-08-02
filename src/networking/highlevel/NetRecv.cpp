@@ -2,6 +2,7 @@
 #include "SharedHighLevelHeaders.hpp"
 #include "../../hooks/ModifyEditorLayer.hpp"
 #include "../../hooks/ModifyGameObject.hpp"
+#include "../../utils/Utills.hpp"
 #include <Geode/binding/EditorUI.hpp>
 
 
@@ -60,6 +61,22 @@ Result<uint8_t> recvMoveObjects(const CTSerialize::MoveObjects* msg) {
         NetManager::get()->m_wasDataSent = false;
     }
     return Ok(0);
+}
+
+Result<uint8_t> recvLevelSettingChange(const CTSerialize::LevelSettingChange* msg) {
+    auto settingID = msg->settingID();
+    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
+
+    if (settingID == 13) {
+
+        if (!msg->spawnGroup()) { 
+            return Err("recvLevelSettingChange: No value for spawngroup"); 
+        }
+
+        level->m_levelSettings->m_spawnGroup = msg->spawnGroup().value();
+    }
+
+    return toggleFromLevelSettings(level->m_levelSettings, settingID);
 }
 
 Result<uint8_t> recvRotateObjects(const CTSerialize::RotateObjects* msg) {

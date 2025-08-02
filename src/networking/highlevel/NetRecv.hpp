@@ -8,6 +8,8 @@ Result<uint8_t> recvDeleteObjects(const CTSerialize::DeleteObjects* msg);
 
 Result<uint8_t> recvMoveObjects(const CTSerialize::MoveObjects* msg);
 
+Result<uint8_t> recvLevelSettingChange(const CTSerialize::LevelSettingChange* msg);
+
 Result<uint8_t> recvRotateObjects(const CTSerialize::RotateObjects* msg);
 
 Result<uint8_t> recvPasteObjects(const CTSerialize::PasteObjects* msg);

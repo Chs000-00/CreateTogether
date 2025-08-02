@@ -45,6 +45,7 @@ table MoveObjects {
 
 table LevelSettingChange {
   settingID:uint16;
+  spawnGroup:int = null;
 }
 
 table RotateObjects {

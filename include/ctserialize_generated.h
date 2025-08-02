@@ -51,6 +51,9 @@ struct UpdateSongBuilder;
 struct ChangeGroupID;
 struct ChangeGroupIDBuilder;
 
+struct ChangeDefaultColor;
+struct ChangeDefaultColorBuilder;
+
 struct ChangeArt;
 struct ChangeArtBuilder;
 
@@ -91,6 +94,8 @@ inline const ::flatbuffers::TypeTable *UpdateSongTypeTable();
 
 inline const ::flatbuffers::TypeTable *ChangeGroupIDTypeTable();
 
+inline const ::flatbuffers::TypeTable *ChangeDefaultColorTypeTable();
+
 inline const ::flatbuffers::TypeTable *ChangeArtTypeTable();
 
 inline const ::flatbuffers::TypeTable *SpeedChangeTypeTable();
@@ -115,17 +120,18 @@ enum MessageBody : uint8_t {
   MessageBody_UpdateFont = 8,
   MessageBody_UpdateSong = 9,
   MessageBody_ChangeGroupID = 10,
-  MessageBody_RequestLevel = 11,
-  MessageBody_ChangeArt = 12,
-  MessageBody_SpeedChange = 13,
-  MessageBody_ReturnLevelString = 14,
-  MessageBody_GameModeChange = 15,
-  MessageBody_AdminAction = 16,
+  MessageBody_ChangeDefaultColor = 11,
+  MessageBody_RequestLevel = 12,
+  MessageBody_ChangeArt = 13,
+  MessageBody_SpeedChange = 14,
+  MessageBody_ReturnLevelString = 15,
+  MessageBody_GameModeChange = 16,
+  MessageBody_AdminAction = 17,
   MessageBody_MIN = MessageBody_NONE,
   MessageBody_MAX = MessageBody_AdminAction
 };
 
-inline const MessageBody (&EnumValuesMessageBody())[17] {
+inline const MessageBody (&EnumValuesMessageBody())[18] {
   static const MessageBody values[] = {
     MessageBody_NONE,
     MessageBody_CreateObjects,
@@ -138,6 +144,7 @@ inline const MessageBody (&EnumValuesMessageBody())[17] {
     MessageBody_UpdateFont,
     MessageBody_UpdateSong,
     MessageBody_ChangeGroupID,
+    MessageBody_ChangeDefaultColor,
     MessageBody_RequestLevel,
     MessageBody_ChangeArt,
     MessageBody_SpeedChange,
@@ -149,7 +156,7 @@ inline const MessageBody (&EnumValuesMessageBody())[17] {
 }
 
 inline const char * const *EnumNamesMessageBody() {
-  static const char * const names[18] = {
+  static const char * const names[19] = {
     "NONE",
     "CreateObjects",
     "DeleteObjects",
@@ -161,6 +168,7 @@ inline const char * const *EnumNamesMessageBody() {
     "UpdateFont",
     "UpdateSong",
     "ChangeGroupID",
+    "ChangeDefaultColor",
     "RequestLevel",
     "ChangeArt",
     "SpeedChange",
@@ -220,6 +228,10 @@ template<> struct MessageBodyTraits<CTSerialize::UpdateSong> {
 
 template<> struct MessageBodyTraits<CTSerialize::ChangeGroupID> {
   static const MessageBody enum_value = MessageBody_ChangeGroupID;
+};
+
+template<> struct MessageBodyTraits<CTSerialize::ChangeDefaultColor> {
+  static const MessageBody enum_value = MessageBody_ChangeDefaultColor;
 };
 
 template<> struct MessageBodyTraits<CTSerialize::RequestLevel> {
@@ -331,6 +343,9 @@ struct MessageHeader FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const CTSerialize::ChangeGroupID *body_as_ChangeGroupID() const {
     return body_type() == CTSerialize::MessageBody_ChangeGroupID ? static_cast<const CTSerialize::ChangeGroupID *>(body()) : nullptr;
   }
+  const CTSerialize::ChangeDefaultColor *body_as_ChangeDefaultColor() const {
+    return body_type() == CTSerialize::MessageBody_ChangeDefaultColor ? static_cast<const CTSerialize::ChangeDefaultColor *>(body()) : nullptr;
+  }
   const CTSerialize::RequestLevel *body_as_RequestLevel() const {
     return body_type() == CTSerialize::MessageBody_RequestLevel ? static_cast<const CTSerialize::RequestLevel *>(body()) : nullptr;
   }
@@ -396,6 +411,10 @@ template<> inline const CTSerialize::UpdateSong *MessageHeader::body_as<CTSerial
 
 template<> inline const CTSerialize::ChangeGroupID *MessageHeader::body_as<CTSerialize::ChangeGroupID>() const {
   return body_as_ChangeGroupID();
+}
+
+template<> inline const CTSerialize::ChangeDefaultColor *MessageHeader::body_as<CTSerialize::ChangeDefaultColor>() const {
+  return body_as_ChangeDefaultColor();
 }
 
 template<> inline const CTSerialize::RequestLevel *MessageHeader::body_as<CTSerialize::RequestLevel>() const {
@@ -625,14 +644,19 @@ struct LevelSettingChange FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     return LevelSettingChangeTypeTable();
   }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_SETTINGID = 4
+    VT_SETTINGID = 4,
+    VT_SPAWNGROUP = 6
   };
   uint16_t settingID() const {
     return GetField<uint16_t>(VT_SETTINGID, 0);
   }
+  ::flatbuffers::Optional<int32_t> spawnGroup() const {
+    return GetOptional<int32_t, int32_t>(VT_SPAWNGROUP);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint16_t>(verifier, VT_SETTINGID, 2) &&
+           VerifyField<int32_t>(verifier, VT_SPAWNGROUP, 4) &&
            verifier.EndTable();
   }
 };
@@ -643,6 +667,9 @@ struct LevelSettingChangeBuilder {
   ::flatbuffers::uoffset_t start_;
   void add_settingID(uint16_t settingID) {
     fbb_.AddElement<uint16_t>(LevelSettingChange::VT_SETTINGID, settingID, 0);
+  }
+  void add_spawnGroup(int32_t spawnGroup) {
+    fbb_.AddElement<int32_t>(LevelSettingChange::VT_SPAWNGROUP, spawnGroup);
   }
   explicit LevelSettingChangeBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -657,8 +684,10 @@ struct LevelSettingChangeBuilder {
 
 inline ::flatbuffers::Offset<LevelSettingChange> CreateLevelSettingChange(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint16_t settingID = 0) {
+    uint16_t settingID = 0,
+    ::flatbuffers::Optional<int32_t> spawnGroup = ::flatbuffers::nullopt) {
   LevelSettingChangeBuilder builder_(_fbb);
+  if(spawnGroup) { builder_.add_spawnGroup(*spawnGroup); }
   builder_.add_settingID(settingID);
   return builder_.Finish();
 }
@@ -1047,6 +1076,120 @@ inline ::flatbuffers::Offset<ChangeGroupID> CreateChangeGroupIDDirect(
       uniqueIDList__);
 }
 
+struct ChangeDefaultColor FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ChangeDefaultColorBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return ChangeDefaultColorTypeTable();
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FADETIME = 4,
+    VT_COLORID = 6,
+    VT_BLENDING = 8,
+    VT_OPACITY = 10,
+    VT_COLORIDTOCOPY = 12,
+    VT_COPYOPACITY = 14,
+    VT_UNK1 = 16,
+    VT_UNK2 = 18
+  };
+  float fadeTime() const {
+    return GetField<float>(VT_FADETIME, 0.0f);
+  }
+  int32_t colorID() const {
+    return GetField<int32_t>(VT_COLORID, 0);
+  }
+  bool blending() const {
+    return GetField<uint8_t>(VT_BLENDING, 0) != 0;
+  }
+  float opacity() const {
+    return GetField<float>(VT_OPACITY, 0.0f);
+  }
+  int32_t colorIDToCopy() const {
+    return GetField<int32_t>(VT_COLORIDTOCOPY, 0);
+  }
+  bool copyOpacity() const {
+    return GetField<uint8_t>(VT_COPYOPACITY, 0) != 0;
+  }
+  int32_t unk1() const {
+    return GetField<int32_t>(VT_UNK1, 0);
+  }
+  int32_t unk2() const {
+    return GetField<int32_t>(VT_UNK2, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<float>(verifier, VT_FADETIME, 4) &&
+           VerifyField<int32_t>(verifier, VT_COLORID, 4) &&
+           VerifyField<uint8_t>(verifier, VT_BLENDING, 1) &&
+           VerifyField<float>(verifier, VT_OPACITY, 4) &&
+           VerifyField<int32_t>(verifier, VT_COLORIDTOCOPY, 4) &&
+           VerifyField<uint8_t>(verifier, VT_COPYOPACITY, 1) &&
+           VerifyField<int32_t>(verifier, VT_UNK1, 4) &&
+           VerifyField<int32_t>(verifier, VT_UNK2, 4) &&
+           verifier.EndTable();
+  }
+};
+
+struct ChangeDefaultColorBuilder {
+  typedef ChangeDefaultColor Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_fadeTime(float fadeTime) {
+    fbb_.AddElement<float>(ChangeDefaultColor::VT_FADETIME, fadeTime, 0.0f);
+  }
+  void add_colorID(int32_t colorID) {
+    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_COLORID, colorID, 0);
+  }
+  void add_blending(bool blending) {
+    fbb_.AddElement<uint8_t>(ChangeDefaultColor::VT_BLENDING, static_cast<uint8_t>(blending), 0);
+  }
+  void add_opacity(float opacity) {
+    fbb_.AddElement<float>(ChangeDefaultColor::VT_OPACITY, opacity, 0.0f);
+  }
+  void add_colorIDToCopy(int32_t colorIDToCopy) {
+    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_COLORIDTOCOPY, colorIDToCopy, 0);
+  }
+  void add_copyOpacity(bool copyOpacity) {
+    fbb_.AddElement<uint8_t>(ChangeDefaultColor::VT_COPYOPACITY, static_cast<uint8_t>(copyOpacity), 0);
+  }
+  void add_unk1(int32_t unk1) {
+    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_UNK1, unk1, 0);
+  }
+  void add_unk2(int32_t unk2) {
+    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_UNK2, unk2, 0);
+  }
+  explicit ChangeDefaultColorBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ChangeDefaultColor> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ChangeDefaultColor>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ChangeDefaultColor> CreateChangeDefaultColor(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    float fadeTime = 0.0f,
+    int32_t colorID = 0,
+    bool blending = false,
+    float opacity = 0.0f,
+    int32_t colorIDToCopy = 0,
+    bool copyOpacity = false,
+    int32_t unk1 = 0,
+    int32_t unk2 = 0) {
+  ChangeDefaultColorBuilder builder_(_fbb);
+  builder_.add_unk2(unk2);
+  builder_.add_unk1(unk1);
+  builder_.add_colorIDToCopy(colorIDToCopy);
+  builder_.add_opacity(opacity);
+  builder_.add_colorID(colorID);
+  builder_.add_fadeTime(fadeTime);
+  builder_.add_copyOpacity(copyOpacity);
+  builder_.add_blending(blending);
+  return builder_.Finish();
+}
+
 struct ChangeArt FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ChangeArtBuilder Builder;
   static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
@@ -1391,6 +1534,10 @@ inline bool VerifyMessageBody(::flatbuffers::Verifier &verifier, const void *obj
       auto ptr = reinterpret_cast<const CTSerialize::ChangeGroupID *>(obj);
       return verifier.VerifyTable(ptr);
     }
+    case MessageBody_ChangeDefaultColor: {
+      auto ptr = reinterpret_cast<const CTSerialize::ChangeDefaultColor *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
     case MessageBody_RequestLevel: {
       auto ptr = reinterpret_cast<const CTSerialize::RequestLevel *>(obj);
       return verifier.VerifyTable(ptr);
@@ -1449,7 +1596,8 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     { ::flatbuffers::ET_SEQUENCE, 0, 12 },
     { ::flatbuffers::ET_SEQUENCE, 0, 13 },
     { ::flatbuffers::ET_SEQUENCE, 0, 14 },
-    { ::flatbuffers::ET_SEQUENCE, 0, 15 }
+    { ::flatbuffers::ET_SEQUENCE, 0, 15 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 16 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
     CTSerialize::CreateObjectsTypeTable,
@@ -1462,6 +1610,7 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     CTSerialize::UpdateFontTypeTable,
     CTSerialize::UpdateSongTypeTable,
     CTSerialize::ChangeGroupIDTypeTable,
+    CTSerialize::ChangeDefaultColorTypeTable,
     CTSerialize::RequestLevelTypeTable,
     CTSerialize::ChangeArtTypeTable,
     CTSerialize::SpeedChangeTypeTable,
@@ -1481,6 +1630,7 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     "UpdateFont",
     "UpdateSong",
     "ChangeGroupID",
+    "ChangeDefaultColor",
     "RequestLevel",
     "ChangeArt",
     "SpeedChange",
@@ -1489,7 +1639,7 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     "AdminAction"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_UNION, 17, type_codes, type_refs, nullptr, nullptr, names
+    ::flatbuffers::ST_UNION, 18, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -1583,13 +1733,15 @@ inline const ::flatbuffers::TypeTable *MoveObjectsTypeTable() {
 
 inline const ::flatbuffers::TypeTable *LevelSettingChangeTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_USHORT, 0, -1 }
+    { ::flatbuffers::ET_USHORT, 0, -1 },
+    { ::flatbuffers::ET_INT, 0, -1 }
   };
   static const char * const names[] = {
-    "settingID"
+    "settingID",
+    "spawnGroup"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 2, type_codes, nullptr, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -1683,6 +1835,33 @@ inline const ::flatbuffers::TypeTable *ChangeGroupIDTypeTable() {
   };
   static const ::flatbuffers::TypeTable tt = {
     ::flatbuffers::ST_TABLE, 3, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *ChangeDefaultColorTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_FLOAT, 0, -1 },
+    { ::flatbuffers::ET_INT, 0, -1 },
+    { ::flatbuffers::ET_BOOL, 0, -1 },
+    { ::flatbuffers::ET_FLOAT, 0, -1 },
+    { ::flatbuffers::ET_INT, 0, -1 },
+    { ::flatbuffers::ET_BOOL, 0, -1 },
+    { ::flatbuffers::ET_INT, 0, -1 },
+    { ::flatbuffers::ET_INT, 0, -1 }
+  };
+  static const char * const names[] = {
+    "fadeTime",
+    "colorID",
+    "blending",
+    "opacity",
+    "colorIDToCopy",
+    "copyOpacity",
+    "unk1",
+    "unk2"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 8, type_codes, nullptr, nullptr, nullptr, names
   };
   return &tt;
 }

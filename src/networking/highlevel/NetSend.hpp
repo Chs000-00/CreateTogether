@@ -13,6 +13,10 @@ void sendDeleteObjects(IDList& uniqueIDList);
 
 void sendMoveObjects(const char* uniqueID, CCPoint offset);
 
+void sendLevelSettingChange(uint16 settingID);
+
+void sendSpawnGroupChange(int spawngroup);
+
 void sendRotateObjects(IDList& uniqueIDList, float rotation, CCPoint anchor);
 
 void sendPasteObjects(IDList& uniqueIDList, const char* copyStr);

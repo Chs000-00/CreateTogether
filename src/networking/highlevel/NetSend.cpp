@@ -25,7 +25,6 @@ void sendDeleteObjects(IDList& uniqueIDList) {
 	netManager->m_builder.Clear();
 }
 
-
 void sendMoveObjects(const char* uniqueID, CCPoint offset) {
     auto netManager = NetManager::get();
     auto offsetPos = CTSerialize::CCPos(offset.x, offset.y);
@@ -33,6 +32,19 @@ void sendMoveObjects(const char* uniqueID, CCPoint offset) {
     auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_MoveObjects, moveObjectsOffset.Union());
 	netManager->sendMessage(messageHeaderOffset);
 	netManager->m_builder.Clear();
+}
+
+void sendLevelSettingChange(uint16 settingID) {
+    auto netManager = NetManager::get();
+	auto levelSettingChangeOffset = CTSerialize::CreateLevelSettingChange(netManager->m_builder, settingID);
+    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_LevelSettingChange, levelSettingChangeOffset.Union());
+}
+
+// TODO: Remove hardcoded value
+void sendSpawnGroupChange(int spawngroup) {
+    auto netManager = NetManager::get();
+	auto levelSettingChangeOffset = CTSerialize::CreateLevelSettingChange(netManager->m_builder, 13, spawngroup);
+    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_LevelSettingChange, levelSettingChangeOffset.Union());
 }
 
 void sendRotateObjects(IDList& uniqueIDList, float rotation, CCPoint anchor) {

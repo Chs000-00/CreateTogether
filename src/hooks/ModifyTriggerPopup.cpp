@@ -11,7 +11,7 @@ class $modify(MySetupTriggerPopup, SetupTriggerPopup) {
     void onClose(cocos2d::CCObject* sender) {
         SetupTriggerPopup::onClose(sender);
 
-        log::info("closedPopup");
+        // log::info("closedPopup");
 
 
         if (!NetManager::getIsInLobby()) {
@@ -46,7 +46,7 @@ class $modify(MySetupTriggerPopup, SetupTriggerPopup) {
 
         IDList idlist;
 
-        for (auto obj : CCArrayExt<MyGameObject*>(editorUI->m_selectedObjects)) {
+        for (auto obj : CCArrayExt<MyGameObject*>(editObjs)) {
             addStringToIDList(idlist, obj->m_fields->m_veryUniqueID.c_str());
         }
 

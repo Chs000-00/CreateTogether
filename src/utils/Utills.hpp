@@ -12,4 +12,4 @@ using namespace geode::prelude;
 bool isValidEnumRange(int n, int min, int max);
 
 // Toggle stuff in levelSettings based off of an int
-Result<int> toggleFromLevelSettings(LevelSettingsObject* settings, int option);
+Result<uint8_t> toggleFromLevelSettings(LevelSettingsObject* settings, int option);

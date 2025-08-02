@@ -259,6 +259,11 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
 			break;
 		}
 
+		case CTSerialize::MessageBody_LevelSettingChange: {
+			SERIALIZE_AND_RECEIVE(LevelSettingChange);
+			break;
+		}
+
 		case CTSerialize::MessageBody_RotateObjects: {
 			SERIALIZE_AND_RECEIVE(RotateObjects);
 			break;
