@@ -15,7 +15,7 @@ using namespace geode::prelude;
 
 ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData> lobbyList) {
     auto scrollLayer = ScrollLayer::create({ 356, 220 });
-  
+      
   	scrollLayer->m_contentLayer->setLayout(
     	ColumnLayout::create()
       		->setGap(0)

@@ -4,6 +4,7 @@
 #include <Geode/ui/General.hpp>
 #include <Geode/ui/LoadingSpinner.hpp>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
+#include <Geode/binding/TableView.hpp>
 
 // #ifdef STEAMWORKS
     #include <isteammatchmaking.h>
@@ -11,7 +12,6 @@
 
 #include "LobbiesLayer.hpp"
 #include "../hooks/ModifyGameManager.hpp"
-#include "../ui/LevelListBorders.hpp"
 #include "../config.hpp"
 
 using namespace geode::prelude;
@@ -54,17 +54,15 @@ bool LobbiesLayer::init() {
     );
 
 
-    auto listBorders = GDLevelListBorders::create();
-    listBorders->setContentSize({356, 270}); // TODO: list->getContentSize()
-    listBorders->setZOrder(5);
-    listBorders->setVisible(false);
+    auto listBorders = TableViewCell::create();
+    listBorders->setContentSize({356, 270});
     listBorders->setID("list-borders");
 
     this->m_menu = CCMenu::create();
 
     m_menu->retain();
     
-    m_menu->addChildAtPosition(listBorders, Anchor::Center);
+    m_menu->addChildAtPosition(listBorders, Anchor::BottomRight);
     m_menu->addChildAtPosition(backBtn, Anchor::TopLeft, {25, -25});
     m_menu->addChildAtPosition(spinner, Anchor::Center);
     m_menu->addChildAtPosition(refreshBtn, Anchor::BottomRight, {-25, 25});

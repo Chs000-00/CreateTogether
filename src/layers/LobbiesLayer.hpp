@@ -10,7 +10,6 @@
 //#endif
 
 #include "../types/LobbyData.hpp"
-#include "../ui/LevelListBorders.hpp"
 
 
 using namespace geode::prelude;
