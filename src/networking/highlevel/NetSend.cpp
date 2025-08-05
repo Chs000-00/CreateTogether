@@ -44,7 +44,7 @@ void sendLevelSettingChange(uint16 settingID) {
     netManager->m_builder.Clear();
 }
 
-// TODO: Remove hardcoded value
+// TODO: Remove hardcoded value / use enums
 void sendSpawnGroupChange(int spawngroup) {
     auto netManager = NetManager::get();
     auto levelSettingChangeOffset = CTSerialize::CreateLevelSettingChange(netManager->m_builder, 13, spawngroup);
@@ -78,6 +78,13 @@ void sendModifyObjects(IDList& uniqueIDList, const char* copyStr) {
     netManager->m_builder.Clear();
 }
 
+// TODO: Finish
+void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, int blending, float opacity, bool copyOpacity) {
+    auto netManager = NetManager::get();
+    auto currentColorOffset = CTSerialize::CCColor3B(currentColor.r, currentColor.g, currentColor.b);
+    auto changeDefaultColor = CTSerialize::CreateChangeDefaultColor(netManager->m_builder, groupID);
+}
+
 void sendUpdateSong(uint64_t songID) {
     auto netManager = NetManager::get();
     auto updateSongMessage = CTSerialize::CreateUpdateSong(netManager->m_builder, songID);
@@ -86,10 +93,10 @@ void sendUpdateSong(uint64_t songID) {
     netManager->m_builder.Clear();
 }
 
-// TODO: Finish
-void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, int blending, float opacity, bool copyOpacity) {
+void sendGameModeChange(uint8 gameMode) {
     auto netManager = NetManager::get();
-    auto currentColorOffset = CTSerialize::CCColor3B(currentColor.r, currentColor.g, currentColor.b);
-    auto changeDefaultColor = CTSerialize::CreateChangeDefaultColor(netManager->m_builder, groupID);
-
+    auto gameModeMessage = CTSerialize::CreateGameModeChange(netManager->m_builder, gameMode);
+    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_GameModeChange, gameModeMessage.Union());
+    netManager->sendMessage(messageHeaderOffset);
+    netManager->m_builder.Clear();
 }

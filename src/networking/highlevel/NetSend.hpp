@@ -23,6 +23,8 @@ void sendPasteObjects(IDList& uniqueIDList, const char* copyStr);
 
 void sendModifyObjects(IDList& uniqueIDList, const char* copyStr);
 
+void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, int blending, float opacity, bool copyOpacity);
+
 void sendUpdateSong(uint64_t songID);
 
-void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, int blending, float opacity, bool copyOpacity);
+void sendGameModeChange(uint8 gameMode);

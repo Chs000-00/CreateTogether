@@ -14,17 +14,17 @@ union MessageBody {
   RotateObjects,
   PasteObjects,
   ModifyObjects,
-  UpdateFont,
-  UpdateSong,
   ChangeGroupID,
   ChangeDefaultColor,
   RequestLevel,
+  ReturnLevelString,
+  UpdateFont,
+  UpdateSong,
   ChangeArt,
   SpeedChange,
-  ReturnLevelString,
   GameModeChange,
   AdminAction,
-  TryConnectToGlobed
+  GlobedHandshake
 }
 
 table MessageHeader {
@@ -66,14 +66,6 @@ table ModifyObjects {
   pastedString:string;
 }
 
-table UpdateFont {
-  fontID:uint16;
-}
-
-table UpdateSong {
-  songID:uint64;
-}
-
 table ChangeGroupID {
   groupID:uint32; // TODO: uhh uhh I forgot my uint32max this might not be hyperoptimal
   isAdding:bool;
@@ -91,6 +83,24 @@ table ChangeDefaultColor {
   copyOpacity:bool;
 }
 
+table RequestLevel { 
+
+}
+
+table ReturnLevelString {
+  uniqueIDList:[string];
+  levelString:string;
+}
+
+
+table UpdateFont {
+  fontID:uint16;
+}
+
+table UpdateSong {
+  songID:uint64;
+}
+
 
 // TODO: ChangeArt
 table ChangeArt {
@@ -104,15 +114,6 @@ table SpeedChange {
 
 table GameModeChange {
   gameMode:uint8; // I guess... this dosen't use enums?
-}
-
-table RequestLevel { 
-
-}
-
-table ReturnLevelString {
-  uniqueIDList:[string];
-  levelString:string;
 }
 
 enum AdminActions : byte { Invalid = 0, SteamUserIDBan, DisableInteraction, Kick }

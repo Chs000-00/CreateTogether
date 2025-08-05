@@ -39,10 +39,10 @@ Result<uint8_t> recvCreateObjects(const CTSerialize::CreateObjects* msg) {
     MyGameObject* betterPlacedGameObject = static_cast<MyGameObject*>(placedGameObject);
     betterPlacedGameObject->m_fields->m_veryUniqueID = minObj->uniqueID()->str();
     level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, minObj->uniqueID()->str());
-
     return Ok(0);
 }
 
+// TODO: Test what happens if user has an object open which was deleted!!
 Result<uint8_t> recvDeleteObjects(const CTSerialize::DeleteObjects* msg) {
     auto idlist = msg->uniqueIDList();
 
@@ -130,6 +130,7 @@ Result<uint8_t> recvPasteObjects(const CTSerialize::PasteObjects* msg) {
     return Ok(0);
 }
 
+// TODO: Test what happens if user has an object open which was deleted!!
 Result<uint8_t> recvModifyObjects(const CTSerialize::ModifyObjects* msg) {
     auto pasteString = msg->pastedString();
     auto uniqueIDList = msg->uniqueIDList();
@@ -164,4 +165,11 @@ Result<uint8_t> recvUpdateSong(const CTSerialize::UpdateSong* msg) {
     level->m_level->m_songID = songID;
     level->levelSettingsUpdated();
     return Ok(0);
+}
+
+// TODO: Check issues that may occur when using invalid ranges
+Result<uint8_t> recvGameModeChange(const CTSerialize::GameModeChange* msg) {
+    auto gameMode = msg->gameMode();
+    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
+    level->m_levelSettings->m_startMode = gameMode;
 }
