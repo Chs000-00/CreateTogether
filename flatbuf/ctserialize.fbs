@@ -23,7 +23,8 @@ union MessageBody {
   SpeedChange,
   ReturnLevelString,
   GameModeChange,
-  AdminAction
+  AdminAction,
+  TryConnectToGlobed
 }
 
 table MessageHeader {
@@ -121,6 +122,11 @@ table AdminAction {
   userId:uint64; // This might not be unsigned. TODO: Check
   timeoutEpoch:uint64;
   reason:string;
+}
+
+// TODO: Finish
+table TryConnectToGlobed {
+  accountID:int;
 }
 
 root_type MessageHeader;

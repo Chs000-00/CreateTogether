@@ -13,5 +13,5 @@
 	},
 	"dependencies": {
   		"geode.node-ids": "v1.10.0"
- }
+	}
 }

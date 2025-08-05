@@ -83,7 +83,7 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
         return createdGameObject;
     }
 
-    sendCreateObjects(uid.c_str(), p0, p1, selected->getRotation(), selected->m_isHighDetail, selected->m_hasNoGlow, selected->m_isDontEnter, selected->m_isFlipX, selected->m_isFlipY);
+    sendCreateObjects(uid.c_str(), p0, p1, selected->getRotation(), selected->m_isHighDetail, selected->m_hasNoGlow, selected->m_isDontEnter, selected->m_isFlipX, selected->m_isFlipY, selected->getScaleX(), selected->getScaleY());
      
     return createdGameObject;
 }

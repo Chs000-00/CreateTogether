@@ -10,83 +10,83 @@ using namespace geode::prelude;
 class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 
     struct Fields {
-		LobbyPopup* m_lobbyPopup = nullptr;
-	};
+        LobbyPopup* m_lobbyPopup = nullptr;
+    };
 
-	bool init(LevelEditorLayer* p0) {
+    bool init(LevelEditorLayer* p0) {
 
-		if (!EditorPauseLayer::init(p0)) {
-			return false;
-		}
+        if (!EditorPauseLayer::init(p0)) {
+            return false;
+        }
 
-		auto hostPopupButton = CCMenuItemSpriteExtra::create(
-			CircleButtonSprite::createWithSpriteFrameName("GJ_hammerIcon_001.png", (1.0F), geode::CircleBaseColor::Cyan, geode::CircleBaseSize::Small),	
-			this,
-			menu_selector(MyEditorPauseLayer::onHostPopupButton)
-		);
-
-
-		auto menu = this->getChildByID("guidelines-menu");
-		menu->addChild(hostPopupButton);
-		hostPopupButton->setID("host-button"_spr);
-		menu->updateLayout();
-
-		return true;
-	}
-
-	void onHostPopupButton(CCObject* sender) {
-		// TODO: add if condition over cast
-		auto netManager = NetManager::get();
-
-		if (!NetManager::getIsInLobby()) {
-			// TODO: Shorten this
-			m_fields->m_lobbyPopup = LobbyPopup::create(eLobbyHostPopup);
-			
-		} 
-		else if (netManager->m_isHost) {
-			m_fields->m_lobbyPopup = LobbyPopup::create(eLobbyHostingPopup);
-		} 
-		else {
-			m_fields->m_lobbyPopup = LobbyPopup::create(eLobbyJoinedUserPopup);
-		}
+        auto hostPopupButton = CCMenuItemSpriteExtra::create(
+            CircleButtonSprite::createWithSpriteFrameName("GJ_hammerIcon_001.png", (1.0F), geode::CircleBaseColor::Cyan, geode::CircleBaseSize::Small),	
+            this,
+            menu_selector(MyEditorPauseLayer::onHostPopupButton)
+        );
 
 
-		// Make sure we really did in fact create a popup
-		if (m_fields->m_lobbyPopup) {
-			m_fields->m_lobbyPopup->show();
-		}
+        auto menu = this->getChildByID("guidelines-menu");
+        menu->addChild(hostPopupButton);
+        hostPopupButton->setID("host-button"_spr);
+        menu->updateLayout();
 
-	}
+        return true;
+    }
 
-	// TODO: There might be an issue with exiting the lobby before you get to confirm exiting on the popup.
+    void onHostPopupButton(CCObject* sender) {
+        // TODO: add if condition over cast
+        auto netManager = NetManager::get();
 
-	void onExitEditor(CCObject* sender) {
-		log::info("SAVEANDEXIT");
-		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-		static_cast<MyLevelEditorLayer*>(this->m_editorLayer)->m_fields->m_pUniqueIDOfGameObject->release();
-		NetManager::get()->leaveLobby();
-		EditorPauseLayer::onExitEditor(sender); // And exit editor (whoops)
-	}
+        if (!NetManager::getIsInLobby()) {
+            // TODO: Shorten this
+            m_fields->m_lobbyPopup = LobbyPopup::create(eLobbyHostPopup);
+            
+        } 
+        else if (netManager->m_isHost) {
+            m_fields->m_lobbyPopup = LobbyPopup::create(eLobbyHostingPopup);
+        } 
+        else {
+            m_fields->m_lobbyPopup = LobbyPopup::create(eLobbyJoinedUserPopup);
+        }
 
-	void onExitNoSave(CCObject* sender) {
-		log::info("NOSAVEEXIT");
-		auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-		static_cast<MyLevelEditorLayer*>(this->m_editorLayer)->m_fields->m_pUniqueIDOfGameObject->release();
-		NetManager::get()->leaveLobby();
-		EditorPauseLayer::onExitNoSave(sender);
-	}
 
-	void onSaveAndPlay(CCObject* sender) {
-		auto netManager = NetManager::get();
-		// gameManager->leaveLobby(); // Leave Lobby
+        // Make sure we really did in fact create a popup
+        if (m_fields->m_lobbyPopup) {
+            m_fields->m_lobbyPopup->show();
+        }
 
-		if (!NetManager::getIsInLobby()) {
-			EditorPauseLayer::onSaveAndPlay(sender); // And exit editor (whoops)
-		}
-		else {
-			// TODO: Playlayer stuff
-		}
-	}
+    }
+
+    // TODO: There might be an issue with exiting the lobby before you get to confirm exiting on the popup.
+
+    void onExitEditor(CCObject* sender) {
+        log::info("SAVEANDEXIT");
+        auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+        static_cast<MyLevelEditorLayer*>(this->m_editorLayer)->m_fields->m_pUniqueIDOfGameObject->release();
+        NetManager::get()->leaveLobby();
+        EditorPauseLayer::onExitEditor(sender); // And exit editor (whoops)
+    }
+
+    void onExitNoSave(CCObject* sender) {
+        log::info("NOSAVEEXIT");
+        auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+        static_cast<MyLevelEditorLayer*>(this->m_editorLayer)->m_fields->m_pUniqueIDOfGameObject->release();
+        NetManager::get()->leaveLobby();
+        EditorPauseLayer::onExitNoSave(sender);
+    }
+
+    void onSaveAndPlay(CCObject* sender) {
+        auto netManager = NetManager::get();
+        // gameManager->leaveLobby(); // Leave Lobby
+
+        if (!NetManager::getIsInLobby()) {
+            EditorPauseLayer::onSaveAndPlay(sender); // And exit editor (whoops)
+        }
+        else {
+            // TODO: Playlayer stuff
+        }
+    }
 
 };
 

@@ -147,8 +147,8 @@ struct GDGameObjectMin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const CTSerialize::ObjectFlip *flip() const {
     return GetStruct<const CTSerialize::ObjectFlip *>(VT_FLIP);
   }
-  float scale() const {
-    return GetField<float>(VT_SCALE, 0.0f);
+  const CTSerialize::NodeScale *scale() const {
+    return GetStruct<const CTSerialize::NodeScale *>(VT_SCALE);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -161,7 +161,7 @@ struct GDGameObjectMin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            VerifyField<uint8_t>(verifier, VT_NOGLOW, 1) &&
            VerifyField<uint8_t>(verifier, VT_NOENTER, 1) &&
            VerifyField<CTSerialize::ObjectFlip>(verifier, VT_FLIP, 1) &&
-           VerifyField<float>(verifier, VT_SCALE, 4) &&
+           VerifyField<CTSerialize::NodeScale>(verifier, VT_SCALE, 4) &&
            verifier.EndTable();
   }
 };
@@ -194,8 +194,8 @@ struct GDGameObjectMinBuilder {
   void add_flip(const CTSerialize::ObjectFlip *flip) {
     fbb_.AddStruct(GDGameObjectMin::VT_FLIP, flip);
   }
-  void add_scale(float scale) {
-    fbb_.AddElement<float>(GDGameObjectMin::VT_SCALE, scale, 0.0f);
+  void add_scale(const CTSerialize::NodeScale *scale) {
+    fbb_.AddStruct(GDGameObjectMin::VT_SCALE, scale);
   }
   explicit GDGameObjectMinBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -218,7 +218,7 @@ inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMin(
     bool noGlow = false,
     bool noEnter = false,
     const CTSerialize::ObjectFlip *flip = nullptr,
-    float scale = 0.0f) {
+    const CTSerialize::NodeScale *scale = nullptr) {
   GDGameObjectMinBuilder builder_(_fbb);
   builder_.add_objID(objID);
   builder_.add_scale(scale);
@@ -242,7 +242,7 @@ inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMinDirect(
     bool noGlow = false,
     bool noEnter = false,
     const CTSerialize::ObjectFlip *flip = nullptr,
-    float scale = 0.0f) {
+    const CTSerialize::NodeScale *scale = nullptr) {
   auto uniqueID__ = uniqueID ? _fbb.CreateString(uniqueID) : 0;
   return CTSerialize::CreateGDGameObjectMin(
       _fbb,
@@ -319,11 +319,12 @@ inline const ::flatbuffers::TypeTable *GDGameObjectMinTypeTable() {
     { ::flatbuffers::ET_BOOL, 0, -1 },
     { ::flatbuffers::ET_BOOL, 0, -1 },
     { ::flatbuffers::ET_SEQUENCE, 0, 1 },
-    { ::flatbuffers::ET_FLOAT, 0, -1 }
+    { ::flatbuffers::ET_SEQUENCE, 0, 2 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
     CTSerialize::CCPosITypeTable,
-    CTSerialize::ObjectFlipTypeTable
+    CTSerialize::ObjectFlipTypeTable,
+    CTSerialize::NodeScaleTypeTable
   };
   static const char * const names[] = {
     "uniqueID",

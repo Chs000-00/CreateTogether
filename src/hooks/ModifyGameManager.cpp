@@ -8,7 +8,7 @@
 using namespace geode::prelude;
 
 void MyGameManager::update(float p0) {
-	NetManager::get()->update();
+    NetManager::get()->update();
 
-	GameManager::update(p0);
+    GameManager::update(p0);
 }

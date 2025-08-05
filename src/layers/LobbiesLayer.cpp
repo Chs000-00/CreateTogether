@@ -1,7 +1,6 @@
 #ifdef STEAMWORKS
 
 #include <Geode/Geode.hpp>
-#include <Geode/ui/General.hpp>
 #include <Geode/ui/LoadingSpinner.hpp>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
 #include <Geode/binding/TableView.hpp>
@@ -11,6 +10,7 @@
 // s#endif
 
 #include "LobbiesLayer.hpp"
+#include "../ui/LevelListBorder.hpp"
 #include "../hooks/ModifyGameManager.hpp"
 #include "../config.hpp"
 
@@ -53,16 +53,16 @@ bool LobbiesLayer::init() {
         menu_selector(LobbiesLayer::refreshLobbyList)
     );
 
-
-    auto listBorders = TableViewCell::create();
-    listBorders->setContentSize({356, 270});
-    listBorders->setID("list-borders");
+    auto listBorders = LevelListBorders::create();
+    listBorders->setPadding(20.0f);
+    listBorders->setContentSize({356, 270}); // TODO: list->getContentSize()
+    
 
     this->m_menu = CCMenu::create();
 
     m_menu->retain();
     
-    m_menu->addChildAtPosition(listBorders, Anchor::BottomRight);
+    m_menu->addChildAtPosition(listBorders, Anchor::Center);
     m_menu->addChildAtPosition(backBtn, Anchor::TopLeft, {25, -25});
     m_menu->addChildAtPosition(spinner, Anchor::Center);
     m_menu->addChildAtPosition(refreshBtn, Anchor::BottomRight, {-25, 25});

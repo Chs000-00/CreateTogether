@@ -22,10 +22,10 @@ class SteamManager {
         #ifdef STEAMWORKS
 
         CCallResult< SteamManager, LobbyCreated_t > m_isInLobbyCallResult;
-		CCallResult< SteamManager, LobbyEnter_t > m_enterLobbyCallResult;
+        CCallResult< SteamManager, LobbyEnter_t > m_enterLobbyCallResult;
 
         void onLobbyCreated(LobbyCreated_t* pCallback, bool bIOFailure);
-	    void onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure);
+        void onLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure);
 
         #else
 

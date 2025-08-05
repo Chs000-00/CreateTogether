@@ -29,7 +29,7 @@ class NetManager {
         void update();
 
         // Called to enter the level editor
-	    void enterLevelEditor();
+        void enterLevelEditor();
         
         // Joins a steam lobby with a specified ID
         #ifdef STEAMWORKS
@@ -63,9 +63,9 @@ class NetManager {
         // Are you in an editing lobby
         bool m_isInLobby = false;
 
-		// m_options can be deconstructed for default values. Idk why I made this this way
+        // m_options can be deconstructed for default values. Idk why I made this this way
         // Lobby options, such is if the server is private or not.
-		struct lobbyOptions m_options;
+        struct lobbyOptions m_options;
 
         // A list of players in the lobby. sendMessage() sends the data to all of these users, and fetchMemberList() updates it.
         std::vector<SteamNetworkingIdentity> m_playersInLobby;

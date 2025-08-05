@@ -1,6 +1,5 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/SetupPulsePopup.hpp>
-#include "ModifyGameManager.hpp"
 #include "ModifyGameObject.hpp"
 #include "HighLevelHeader.hpp"
 

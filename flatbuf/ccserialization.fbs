@@ -32,3 +32,9 @@ struct CCColor3B {
   g:uint8;
   b:uint8;
 }
+
+
+struct NodeScale {
+  x:float;
+  y:float;
+}

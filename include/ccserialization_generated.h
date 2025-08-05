@@ -25,6 +25,8 @@ struct CCHsvValue;
 
 struct CCColor3B;
 
+struct NodeScale;
+
 inline const ::flatbuffers::TypeTable *CCPosTypeTable();
 
 inline const ::flatbuffers::TypeTable *CCPosITypeTable();
@@ -34,6 +36,8 @@ inline const ::flatbuffers::TypeTable *ObjectFlipTypeTable();
 inline const ::flatbuffers::TypeTable *CCHsvValueTypeTable();
 
 inline const ::flatbuffers::TypeTable *CCColor3BTypeTable();
+
+inline const ::flatbuffers::TypeTable *NodeScaleTypeTable();
 
 FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) CCPos FLATBUFFERS_FINAL_CLASS {
  private:
@@ -196,6 +200,32 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(1) CCColor3B FLATBUFFERS_FINAL_CLASS {
 };
 FLATBUFFERS_STRUCT_END(CCColor3B, 3);
 
+FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) NodeScale FLATBUFFERS_FINAL_CLASS {
+ private:
+  float x_;
+  float y_;
+
+ public:
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return NodeScaleTypeTable();
+  }
+  NodeScale()
+      : x_(0),
+        y_(0) {
+  }
+  NodeScale(float _x, float _y)
+      : x_(::flatbuffers::EndianScalar(_x)),
+        y_(::flatbuffers::EndianScalar(_y)) {
+  }
+  float x() const {
+    return ::flatbuffers::EndianScalar(x_);
+  }
+  float y() const {
+    return ::flatbuffers::EndianScalar(y_);
+  }
+};
+FLATBUFFERS_STRUCT_END(NodeScale, 8);
+
 inline const ::flatbuffers::TypeTable *CCPosTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
     { ::flatbuffers::ET_FLOAT, 0, -1 },
@@ -280,6 +310,22 @@ inline const ::flatbuffers::TypeTable *CCColor3BTypeTable() {
   };
   static const ::flatbuffers::TypeTable tt = {
     ::flatbuffers::ST_STRUCT, 3, type_codes, nullptr, nullptr, values, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *NodeScaleTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_FLOAT, 0, -1 },
+    { ::flatbuffers::ET_FLOAT, 0, -1 }
+  };
+  static const int64_t values[] = { 0, 4, 8 };
+  static const char * const names[] = {
+    "x",
+    "y"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_STRUCT, 2, type_codes, nullptr, nullptr, values, names
   };
   return &tt;
 }

@@ -30,6 +30,12 @@ Result<uint8_t> recvCreateObjects(const CTSerialize::CreateObjects* msg) {
         placedGameObject->setFlipY(flip->flipY());
     }
 
+    if (auto scale = minObj->scale()) {
+        placedGameObject->setScaleX(scale->x());
+        placedGameObject->setScaleY(scale->y());
+
+    }
+
     MyGameObject* betterPlacedGameObject = static_cast<MyGameObject*>(placedGameObject);
     betterPlacedGameObject->m_fields->m_veryUniqueID = minObj->uniqueID()->str();
     level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, minObj->uniqueID()->str());

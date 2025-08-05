@@ -10,11 +10,11 @@ using namespace geode::prelude;
 
 
 class $modify(MyGameManager, GameManager) {
-	
+    
     struct Fields {
-		NetManager* m_netManager = new NetManager;
-		SteamManager* m_callbackManager = new SteamManager;
+        NetManager* m_netManager = new NetManager;
+        SteamManager* m_callbackManager = new SteamManager;
     };
 
-	void update(float p0);
+    void update(float p0);
 };

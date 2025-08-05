@@ -16,12 +16,12 @@ using namespace geode::prelude;
 ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData> lobbyList) {
     auto scrollLayer = ScrollLayer::create({ 356, 220 });
       
-  	scrollLayer->m_contentLayer->setLayout(
-    	ColumnLayout::create()
-      		->setGap(0)
-      		->setAxisReverse(true)
-      		->setAxisAlignment(AxisAlignment::End)
-      		->setAutoGrowAxis(scrollLayer->getContentHeight())
+    scrollLayer->m_contentLayer->setLayout(
+      ColumnLayout::create()
+          ->setGap(0)
+          ->setAxisReverse(true)
+          ->setAxisAlignment(AxisAlignment::End)
+          ->setAutoGrowAxis(scrollLayer->getContentHeight())
     );
     
 
@@ -55,9 +55,9 @@ ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData> lobbyList) {
 
         // Add Buttons and whatnot here using addChildAtPosition
         // IMPORTANT: Always add your list nodes as children to the 
-      	// *content layer* - never the list directly!
+        // *content layer* - never the list directly!
         // We don't need to handle positioning here as the content layer is 
-      	// managed by the ColumnLayout
+        // managed by the ColumnLayout
 
         if (lobby->isVersionMismatched) {
           auto mismatchedVersionLabel = CCLabelBMFont::create("Mismatched version detected!", "bigFont.fnt");
@@ -87,18 +87,18 @@ ScrollLayer* LobbiesLayer::createLobbyList(std::vector<lobbyData> lobbyList) {
         joinBtn->setTag(std::distance(lobbyList.begin(), lobby));
         menu->addChildAtPosition(joinBtn, Anchor::Right, {-40, 0});
 
-      	
-      	scrollLayer->m_contentLayer->addChild(node);
+        
+        scrollLayer->m_contentLayer->addChild(node);
         node->setZOrder(9);
         node->addChildAtPosition(menu, Anchor::Center);
       
         alternateColorBG = !alternateColorBG;
     }
   
-  	scrollLayer->m_contentLayer->updateLayout();
+    scrollLayer->m_contentLayer->updateLayout();
     scrollLayer->setTouchEnabled(true);
 
-  	return scrollLayer;
+    return scrollLayer;
 }
 
 #endif
