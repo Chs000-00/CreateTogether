@@ -78,11 +78,14 @@ void sendModifyObjects(IDList& uniqueIDList, const char* copyStr) {
     netManager->m_builder.Clear();
 }
 
-// TODO: Finish
-void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, int blending, float opacity, bool copyOpacity) {
+void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, int blending, float opacity, bool copyOpacity, int copyColorID) {
     auto netManager = NetManager::get();
     auto currentColorOffset = CTSerialize::CCColor3B(currentColor.r, currentColor.g, currentColor.b);
-    auto changeDefaultColor = CTSerialize::CreateChangeDefaultColor(netManager->m_builder, groupID);
+    auto hsvOffset = CTSerialize::CCHsvValue(hsv.h, hsv.s, hsv.v, hsv.absoluteSaturation, hsv.absoluteBrightness);
+    auto changeDefaultColor = CTSerialize::CreateChangeDefaultColor(netManager->m_builder, groupID, &currentColorOffset, &hsvOffset, blending, opacity);
+    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_ChangeDefaultColor, changeDefaultColor.Union());
+    netManager->sendMessage(messageHeaderOffset);
+    netManager->m_builder.Clear();
 }
 
 void sendUpdateSong(uint64_t songID) {

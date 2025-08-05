@@ -42,17 +42,23 @@ struct PasteObjectsBuilder;
 struct ModifyObjects;
 struct ModifyObjectsBuilder;
 
-struct UpdateFont;
-struct UpdateFontBuilder;
-
-struct UpdateSong;
-struct UpdateSongBuilder;
-
 struct ChangeGroupID;
 struct ChangeGroupIDBuilder;
 
 struct ChangeDefaultColor;
 struct ChangeDefaultColorBuilder;
+
+struct RequestLevel;
+struct RequestLevelBuilder;
+
+struct ReturnLevelString;
+struct ReturnLevelStringBuilder;
+
+struct UpdateFont;
+struct UpdateFontBuilder;
+
+struct UpdateSong;
+struct UpdateSongBuilder;
 
 struct ChangeArt;
 struct ChangeArtBuilder;
@@ -63,14 +69,11 @@ struct SpeedChangeBuilder;
 struct GameModeChange;
 struct GameModeChangeBuilder;
 
-struct RequestLevel;
-struct RequestLevelBuilder;
-
-struct ReturnLevelString;
-struct ReturnLevelStringBuilder;
-
 struct AdminAction;
 struct AdminActionBuilder;
+
+struct GlobedHandshake;
+struct GlobedHandshakeBuilder;
 
 inline const ::flatbuffers::TypeTable *MessageHeaderTypeTable();
 
@@ -88,13 +91,17 @@ inline const ::flatbuffers::TypeTable *PasteObjectsTypeTable();
 
 inline const ::flatbuffers::TypeTable *ModifyObjectsTypeTable();
 
-inline const ::flatbuffers::TypeTable *UpdateFontTypeTable();
-
-inline const ::flatbuffers::TypeTable *UpdateSongTypeTable();
-
 inline const ::flatbuffers::TypeTable *ChangeGroupIDTypeTable();
 
 inline const ::flatbuffers::TypeTable *ChangeDefaultColorTypeTable();
+
+inline const ::flatbuffers::TypeTable *RequestLevelTypeTable();
+
+inline const ::flatbuffers::TypeTable *ReturnLevelStringTypeTable();
+
+inline const ::flatbuffers::TypeTable *UpdateFontTypeTable();
+
+inline const ::flatbuffers::TypeTable *UpdateSongTypeTable();
 
 inline const ::flatbuffers::TypeTable *ChangeArtTypeTable();
 
@@ -102,11 +109,9 @@ inline const ::flatbuffers::TypeTable *SpeedChangeTypeTable();
 
 inline const ::flatbuffers::TypeTable *GameModeChangeTypeTable();
 
-inline const ::flatbuffers::TypeTable *RequestLevelTypeTable();
-
-inline const ::flatbuffers::TypeTable *ReturnLevelStringTypeTable();
-
 inline const ::flatbuffers::TypeTable *AdminActionTypeTable();
+
+inline const ::flatbuffers::TypeTable *GlobedHandshakeTypeTable();
 
 enum MessageBody : uint8_t {
   MessageBody_NONE = 0,
@@ -117,21 +122,22 @@ enum MessageBody : uint8_t {
   MessageBody_RotateObjects = 5,
   MessageBody_PasteObjects = 6,
   MessageBody_ModifyObjects = 7,
-  MessageBody_UpdateFont = 8,
-  MessageBody_UpdateSong = 9,
-  MessageBody_ChangeGroupID = 10,
-  MessageBody_ChangeDefaultColor = 11,
-  MessageBody_RequestLevel = 12,
-  MessageBody_ChangeArt = 13,
-  MessageBody_SpeedChange = 14,
-  MessageBody_ReturnLevelString = 15,
+  MessageBody_ChangeGroupID = 8,
+  MessageBody_ChangeDefaultColor = 9,
+  MessageBody_RequestLevel = 10,
+  MessageBody_ReturnLevelString = 11,
+  MessageBody_UpdateFont = 12,
+  MessageBody_UpdateSong = 13,
+  MessageBody_ChangeArt = 14,
+  MessageBody_SpeedChange = 15,
   MessageBody_GameModeChange = 16,
   MessageBody_AdminAction = 17,
+  MessageBody_GlobedHandshake = 18,
   MessageBody_MIN = MessageBody_NONE,
-  MessageBody_MAX = MessageBody_AdminAction
+  MessageBody_MAX = MessageBody_GlobedHandshake
 };
 
-inline const MessageBody (&EnumValuesMessageBody())[18] {
+inline const MessageBody (&EnumValuesMessageBody())[19] {
   static const MessageBody values[] = {
     MessageBody_NONE,
     MessageBody_CreateObjects,
@@ -141,22 +147,23 @@ inline const MessageBody (&EnumValuesMessageBody())[18] {
     MessageBody_RotateObjects,
     MessageBody_PasteObjects,
     MessageBody_ModifyObjects,
-    MessageBody_UpdateFont,
-    MessageBody_UpdateSong,
     MessageBody_ChangeGroupID,
     MessageBody_ChangeDefaultColor,
     MessageBody_RequestLevel,
+    MessageBody_ReturnLevelString,
+    MessageBody_UpdateFont,
+    MessageBody_UpdateSong,
     MessageBody_ChangeArt,
     MessageBody_SpeedChange,
-    MessageBody_ReturnLevelString,
     MessageBody_GameModeChange,
-    MessageBody_AdminAction
+    MessageBody_AdminAction,
+    MessageBody_GlobedHandshake
   };
   return values;
 }
 
 inline const char * const *EnumNamesMessageBody() {
-  static const char * const names[19] = {
+  static const char * const names[20] = {
     "NONE",
     "CreateObjects",
     "DeleteObjects",
@@ -165,23 +172,24 @@ inline const char * const *EnumNamesMessageBody() {
     "RotateObjects",
     "PasteObjects",
     "ModifyObjects",
-    "UpdateFont",
-    "UpdateSong",
     "ChangeGroupID",
     "ChangeDefaultColor",
     "RequestLevel",
+    "ReturnLevelString",
+    "UpdateFont",
+    "UpdateSong",
     "ChangeArt",
     "SpeedChange",
-    "ReturnLevelString",
     "GameModeChange",
     "AdminAction",
+    "GlobedHandshake",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameMessageBody(MessageBody e) {
-  if (::flatbuffers::IsOutRange(e, MessageBody_NONE, MessageBody_AdminAction)) return "";
+  if (::flatbuffers::IsOutRange(e, MessageBody_NONE, MessageBody_GlobedHandshake)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesMessageBody()[index];
 }
@@ -218,14 +226,6 @@ template<> struct MessageBodyTraits<CTSerialize::ModifyObjects> {
   static const MessageBody enum_value = MessageBody_ModifyObjects;
 };
 
-template<> struct MessageBodyTraits<CTSerialize::UpdateFont> {
-  static const MessageBody enum_value = MessageBody_UpdateFont;
-};
-
-template<> struct MessageBodyTraits<CTSerialize::UpdateSong> {
-  static const MessageBody enum_value = MessageBody_UpdateSong;
-};
-
 template<> struct MessageBodyTraits<CTSerialize::ChangeGroupID> {
   static const MessageBody enum_value = MessageBody_ChangeGroupID;
 };
@@ -238,6 +238,18 @@ template<> struct MessageBodyTraits<CTSerialize::RequestLevel> {
   static const MessageBody enum_value = MessageBody_RequestLevel;
 };
 
+template<> struct MessageBodyTraits<CTSerialize::ReturnLevelString> {
+  static const MessageBody enum_value = MessageBody_ReturnLevelString;
+};
+
+template<> struct MessageBodyTraits<CTSerialize::UpdateFont> {
+  static const MessageBody enum_value = MessageBody_UpdateFont;
+};
+
+template<> struct MessageBodyTraits<CTSerialize::UpdateSong> {
+  static const MessageBody enum_value = MessageBody_UpdateSong;
+};
+
 template<> struct MessageBodyTraits<CTSerialize::ChangeArt> {
   static const MessageBody enum_value = MessageBody_ChangeArt;
 };
@@ -246,16 +258,16 @@ template<> struct MessageBodyTraits<CTSerialize::SpeedChange> {
   static const MessageBody enum_value = MessageBody_SpeedChange;
 };
 
-template<> struct MessageBodyTraits<CTSerialize::ReturnLevelString> {
-  static const MessageBody enum_value = MessageBody_ReturnLevelString;
-};
-
 template<> struct MessageBodyTraits<CTSerialize::GameModeChange> {
   static const MessageBody enum_value = MessageBody_GameModeChange;
 };
 
 template<> struct MessageBodyTraits<CTSerialize::AdminAction> {
   static const MessageBody enum_value = MessageBody_AdminAction;
+};
+
+template<> struct MessageBodyTraits<CTSerialize::GlobedHandshake> {
+  static const MessageBody enum_value = MessageBody_GlobedHandshake;
 };
 
 bool VerifyMessageBody(::flatbuffers::Verifier &verifier, const void *obj, MessageBody type);
@@ -334,12 +346,6 @@ struct MessageHeader FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const CTSerialize::ModifyObjects *body_as_ModifyObjects() const {
     return body_type() == CTSerialize::MessageBody_ModifyObjects ? static_cast<const CTSerialize::ModifyObjects *>(body()) : nullptr;
   }
-  const CTSerialize::UpdateFont *body_as_UpdateFont() const {
-    return body_type() == CTSerialize::MessageBody_UpdateFont ? static_cast<const CTSerialize::UpdateFont *>(body()) : nullptr;
-  }
-  const CTSerialize::UpdateSong *body_as_UpdateSong() const {
-    return body_type() == CTSerialize::MessageBody_UpdateSong ? static_cast<const CTSerialize::UpdateSong *>(body()) : nullptr;
-  }
   const CTSerialize::ChangeGroupID *body_as_ChangeGroupID() const {
     return body_type() == CTSerialize::MessageBody_ChangeGroupID ? static_cast<const CTSerialize::ChangeGroupID *>(body()) : nullptr;
   }
@@ -349,20 +355,29 @@ struct MessageHeader FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const CTSerialize::RequestLevel *body_as_RequestLevel() const {
     return body_type() == CTSerialize::MessageBody_RequestLevel ? static_cast<const CTSerialize::RequestLevel *>(body()) : nullptr;
   }
+  const CTSerialize::ReturnLevelString *body_as_ReturnLevelString() const {
+    return body_type() == CTSerialize::MessageBody_ReturnLevelString ? static_cast<const CTSerialize::ReturnLevelString *>(body()) : nullptr;
+  }
+  const CTSerialize::UpdateFont *body_as_UpdateFont() const {
+    return body_type() == CTSerialize::MessageBody_UpdateFont ? static_cast<const CTSerialize::UpdateFont *>(body()) : nullptr;
+  }
+  const CTSerialize::UpdateSong *body_as_UpdateSong() const {
+    return body_type() == CTSerialize::MessageBody_UpdateSong ? static_cast<const CTSerialize::UpdateSong *>(body()) : nullptr;
+  }
   const CTSerialize::ChangeArt *body_as_ChangeArt() const {
     return body_type() == CTSerialize::MessageBody_ChangeArt ? static_cast<const CTSerialize::ChangeArt *>(body()) : nullptr;
   }
   const CTSerialize::SpeedChange *body_as_SpeedChange() const {
     return body_type() == CTSerialize::MessageBody_SpeedChange ? static_cast<const CTSerialize::SpeedChange *>(body()) : nullptr;
   }
-  const CTSerialize::ReturnLevelString *body_as_ReturnLevelString() const {
-    return body_type() == CTSerialize::MessageBody_ReturnLevelString ? static_cast<const CTSerialize::ReturnLevelString *>(body()) : nullptr;
-  }
   const CTSerialize::GameModeChange *body_as_GameModeChange() const {
     return body_type() == CTSerialize::MessageBody_GameModeChange ? static_cast<const CTSerialize::GameModeChange *>(body()) : nullptr;
   }
   const CTSerialize::AdminAction *body_as_AdminAction() const {
     return body_type() == CTSerialize::MessageBody_AdminAction ? static_cast<const CTSerialize::AdminAction *>(body()) : nullptr;
+  }
+  const CTSerialize::GlobedHandshake *body_as_GlobedHandshake() const {
+    return body_type() == CTSerialize::MessageBody_GlobedHandshake ? static_cast<const CTSerialize::GlobedHandshake *>(body()) : nullptr;
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -401,14 +416,6 @@ template<> inline const CTSerialize::ModifyObjects *MessageHeader::body_as<CTSer
   return body_as_ModifyObjects();
 }
 
-template<> inline const CTSerialize::UpdateFont *MessageHeader::body_as<CTSerialize::UpdateFont>() const {
-  return body_as_UpdateFont();
-}
-
-template<> inline const CTSerialize::UpdateSong *MessageHeader::body_as<CTSerialize::UpdateSong>() const {
-  return body_as_UpdateSong();
-}
-
 template<> inline const CTSerialize::ChangeGroupID *MessageHeader::body_as<CTSerialize::ChangeGroupID>() const {
   return body_as_ChangeGroupID();
 }
@@ -421,6 +428,18 @@ template<> inline const CTSerialize::RequestLevel *MessageHeader::body_as<CTSeri
   return body_as_RequestLevel();
 }
 
+template<> inline const CTSerialize::ReturnLevelString *MessageHeader::body_as<CTSerialize::ReturnLevelString>() const {
+  return body_as_ReturnLevelString();
+}
+
+template<> inline const CTSerialize::UpdateFont *MessageHeader::body_as<CTSerialize::UpdateFont>() const {
+  return body_as_UpdateFont();
+}
+
+template<> inline const CTSerialize::UpdateSong *MessageHeader::body_as<CTSerialize::UpdateSong>() const {
+  return body_as_UpdateSong();
+}
+
 template<> inline const CTSerialize::ChangeArt *MessageHeader::body_as<CTSerialize::ChangeArt>() const {
   return body_as_ChangeArt();
 }
@@ -429,16 +448,16 @@ template<> inline const CTSerialize::SpeedChange *MessageHeader::body_as<CTSeria
   return body_as_SpeedChange();
 }
 
-template<> inline const CTSerialize::ReturnLevelString *MessageHeader::body_as<CTSerialize::ReturnLevelString>() const {
-  return body_as_ReturnLevelString();
-}
-
 template<> inline const CTSerialize::GameModeChange *MessageHeader::body_as<CTSerialize::GameModeChange>() const {
   return body_as_GameModeChange();
 }
 
 template<> inline const CTSerialize::AdminAction *MessageHeader::body_as<CTSerialize::AdminAction>() const {
   return body_as_AdminAction();
+}
+
+template<> inline const CTSerialize::GlobedHandshake *MessageHeader::body_as<CTSerialize::GlobedHandshake>() const {
+  return body_as_GlobedHandshake();
 }
 
 struct MessageHeaderBuilder {
@@ -909,94 +928,6 @@ inline ::flatbuffers::Offset<ModifyObjects> CreateModifyObjectsDirect(
       pastedString__);
 }
 
-struct UpdateFont FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef UpdateFontBuilder Builder;
-  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
-    return UpdateFontTypeTable();
-  }
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_FONTID = 4
-  };
-  uint16_t fontID() const {
-    return GetField<uint16_t>(VT_FONTID, 0);
-  }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyField<uint16_t>(verifier, VT_FONTID, 2) &&
-           verifier.EndTable();
-  }
-};
-
-struct UpdateFontBuilder {
-  typedef UpdateFont Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_fontID(uint16_t fontID) {
-    fbb_.AddElement<uint16_t>(UpdateFont::VT_FONTID, fontID, 0);
-  }
-  explicit UpdateFontBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<UpdateFont> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<UpdateFont>(end);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<UpdateFont> CreateUpdateFont(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint16_t fontID = 0) {
-  UpdateFontBuilder builder_(_fbb);
-  builder_.add_fontID(fontID);
-  return builder_.Finish();
-}
-
-struct UpdateSong FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef UpdateSongBuilder Builder;
-  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
-    return UpdateSongTypeTable();
-  }
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_SONGID = 4
-  };
-  uint64_t songID() const {
-    return GetField<uint64_t>(VT_SONGID, 0);
-  }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyField<uint64_t>(verifier, VT_SONGID, 8) &&
-           verifier.EndTable();
-  }
-};
-
-struct UpdateSongBuilder {
-  typedef UpdateSong Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_songID(uint64_t songID) {
-    fbb_.AddElement<uint64_t>(UpdateSong::VT_SONGID, songID, 0);
-  }
-  explicit UpdateSongBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<UpdateSong> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<UpdateSong>(end);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<UpdateSong> CreateUpdateSong(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t songID = 0) {
-  UpdateSongBuilder builder_(_fbb);
-  builder_.add_songID(songID);
-  return builder_.Finish();
-}
-
 struct ChangeGroupID FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ChangeGroupIDBuilder Builder;
   static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
@@ -1087,8 +1018,8 @@ struct ChangeDefaultColor FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     VT_HSV = 8,
     VT_BLENDING = 10,
     VT_OPACITY = 12,
-    VT_COPYCOLORID = 14,
-    VT_COPYOPACITY = 16
+    VT_COPYOPACITY = 14,
+    VT_COPYCOLORID = 16
   };
   int32_t groupID() const {
     return GetField<int32_t>(VT_GROUPID, 0);
@@ -1105,11 +1036,11 @@ struct ChangeDefaultColor FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
   float opacity() const {
     return GetField<float>(VT_OPACITY, 0.0f);
   }
-  ::flatbuffers::Optional<int32_t> copyColorID() const {
-    return GetOptional<int32_t, int32_t>(VT_COPYCOLORID);
-  }
   bool copyOpacity() const {
     return GetField<uint8_t>(VT_COPYOPACITY, 0) != 0;
+  }
+  ::flatbuffers::Optional<int32_t> copyColorID() const {
+    return GetOptional<int32_t, int32_t>(VT_COPYCOLORID);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -1118,8 +1049,8 @@ struct ChangeDefaultColor FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
            VerifyField<CTSerialize::CCHsvValue>(verifier, VT_HSV, 4) &&
            VerifyField<int32_t>(verifier, VT_BLENDING, 4) &&
            VerifyField<float>(verifier, VT_OPACITY, 4) &&
-           VerifyField<int32_t>(verifier, VT_COPYCOLORID, 4) &&
            VerifyField<uint8_t>(verifier, VT_COPYOPACITY, 1) &&
+           VerifyField<int32_t>(verifier, VT_COPYCOLORID, 4) &&
            verifier.EndTable();
   }
 };
@@ -1143,11 +1074,11 @@ struct ChangeDefaultColorBuilder {
   void add_opacity(float opacity) {
     fbb_.AddElement<float>(ChangeDefaultColor::VT_OPACITY, opacity, 0.0f);
   }
-  void add_copyColorID(int32_t copyColorID) {
-    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_COPYCOLORID, copyColorID);
-  }
   void add_copyOpacity(bool copyOpacity) {
     fbb_.AddElement<uint8_t>(ChangeDefaultColor::VT_COPYOPACITY, static_cast<uint8_t>(copyOpacity), 0);
+  }
+  void add_copyColorID(int32_t copyColorID) {
+    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_COPYCOLORID, copyColorID);
   }
   explicit ChangeDefaultColorBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -1167,8 +1098,8 @@ inline ::flatbuffers::Offset<ChangeDefaultColor> CreateChangeDefaultColor(
     const CTSerialize::CCHsvValue *hsv = nullptr,
     int32_t blending = 0,
     float opacity = 0.0f,
-    ::flatbuffers::Optional<int32_t> copyColorID = ::flatbuffers::nullopt,
-    bool copyOpacity = false) {
+    bool copyOpacity = false,
+    ::flatbuffers::Optional<int32_t> copyColorID = ::flatbuffers::nullopt) {
   ChangeDefaultColorBuilder builder_(_fbb);
   if(copyColorID) { builder_.add_copyColorID(*copyColorID); }
   builder_.add_opacity(opacity);
@@ -1177,6 +1108,195 @@ inline ::flatbuffers::Offset<ChangeDefaultColor> CreateChangeDefaultColor(
   builder_.add_currentColor(currentColor);
   builder_.add_groupID(groupID);
   builder_.add_copyOpacity(copyOpacity);
+  return builder_.Finish();
+}
+
+struct RequestLevel FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef RequestLevelBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return RequestLevelTypeTable();
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           verifier.EndTable();
+  }
+};
+
+struct RequestLevelBuilder {
+  typedef RequestLevel Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  explicit RequestLevelBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<RequestLevel> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<RequestLevel>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<RequestLevel> CreateRequestLevel(
+    ::flatbuffers::FlatBufferBuilder &_fbb) {
+  RequestLevelBuilder builder_(_fbb);
+  return builder_.Finish();
+}
+
+struct ReturnLevelString FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef ReturnLevelStringBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return ReturnLevelStringTypeTable();
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_UNIQUEIDLIST = 4,
+    VT_LEVELSTRING = 6
+  };
+  const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_UNIQUEIDLIST);
+  }
+  const ::flatbuffers::String *levelString() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_LEVELSTRING);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_UNIQUEIDLIST) &&
+           verifier.VerifyVector(uniqueIDList()) &&
+           verifier.VerifyVectorOfStrings(uniqueIDList()) &&
+           VerifyOffset(verifier, VT_LEVELSTRING) &&
+           verifier.VerifyString(levelString()) &&
+           verifier.EndTable();
+  }
+};
+
+struct ReturnLevelStringBuilder {
+  typedef ReturnLevelString Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList) {
+    fbb_.AddOffset(ReturnLevelString::VT_UNIQUEIDLIST, uniqueIDList);
+  }
+  void add_levelString(::flatbuffers::Offset<::flatbuffers::String> levelString) {
+    fbb_.AddOffset(ReturnLevelString::VT_LEVELSTRING, levelString);
+  }
+  explicit ReturnLevelStringBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<ReturnLevelString> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<ReturnLevelString>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<ReturnLevelString> CreateReturnLevelString(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> levelString = 0) {
+  ReturnLevelStringBuilder builder_(_fbb);
+  builder_.add_levelString(levelString);
+  builder_.add_uniqueIDList(uniqueIDList);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<ReturnLevelString> CreateReturnLevelStringDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList = nullptr,
+    const char *levelString = nullptr) {
+  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*uniqueIDList) : 0;
+  auto levelString__ = levelString ? _fbb.CreateString(levelString) : 0;
+  return CTSerialize::CreateReturnLevelString(
+      _fbb,
+      uniqueIDList__,
+      levelString__);
+}
+
+struct UpdateFont FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef UpdateFontBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return UpdateFontTypeTable();
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FONTID = 4
+  };
+  uint16_t fontID() const {
+    return GetField<uint16_t>(VT_FONTID, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint16_t>(verifier, VT_FONTID, 2) &&
+           verifier.EndTable();
+  }
+};
+
+struct UpdateFontBuilder {
+  typedef UpdateFont Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_fontID(uint16_t fontID) {
+    fbb_.AddElement<uint16_t>(UpdateFont::VT_FONTID, fontID, 0);
+  }
+  explicit UpdateFontBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<UpdateFont> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<UpdateFont>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<UpdateFont> CreateUpdateFont(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint16_t fontID = 0) {
+  UpdateFontBuilder builder_(_fbb);
+  builder_.add_fontID(fontID);
+  return builder_.Finish();
+}
+
+struct UpdateSong FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef UpdateSongBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return UpdateSongTypeTable();
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_SONGID = 4
+  };
+  uint64_t songID() const {
+    return GetField<uint64_t>(VT_SONGID, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint64_t>(verifier, VT_SONGID, 8) &&
+           verifier.EndTable();
+  }
+};
+
+struct UpdateSongBuilder {
+  typedef UpdateSong Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_songID(uint64_t songID) {
+    fbb_.AddElement<uint64_t>(UpdateSong::VT_SONGID, songID, 0);
+  }
+  explicit UpdateSongBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<UpdateSong> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<UpdateSong>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<UpdateSong> CreateUpdateSong(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint64_t songID = 0) {
+  UpdateSongBuilder builder_(_fbb);
+  builder_.add_songID(songID);
   return builder_.Finish();
 }
 
@@ -1288,107 +1408,6 @@ inline ::flatbuffers::Offset<GameModeChange> CreateGameModeChange(
   return builder_.Finish();
 }
 
-struct RequestLevel FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef RequestLevelBuilder Builder;
-  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
-    return RequestLevelTypeTable();
-  }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
-    return VerifyTableStart(verifier) &&
-           verifier.EndTable();
-  }
-};
-
-struct RequestLevelBuilder {
-  typedef RequestLevel Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  explicit RequestLevelBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<RequestLevel> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<RequestLevel>(end);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<RequestLevel> CreateRequestLevel(
-    ::flatbuffers::FlatBufferBuilder &_fbb) {
-  RequestLevelBuilder builder_(_fbb);
-  return builder_.Finish();
-}
-
-struct ReturnLevelString FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef ReturnLevelStringBuilder Builder;
-  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
-    return ReturnLevelStringTypeTable();
-  }
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_UNIQUEIDLIST = 4,
-    VT_LEVELSTRING = 6
-  };
-  const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_UNIQUEIDLIST);
-  }
-  const ::flatbuffers::String *levelString() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_LEVELSTRING);
-  }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyOffset(verifier, VT_UNIQUEIDLIST) &&
-           verifier.VerifyVector(uniqueIDList()) &&
-           verifier.VerifyVectorOfStrings(uniqueIDList()) &&
-           VerifyOffset(verifier, VT_LEVELSTRING) &&
-           verifier.VerifyString(levelString()) &&
-           verifier.EndTable();
-  }
-};
-
-struct ReturnLevelStringBuilder {
-  typedef ReturnLevelString Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList) {
-    fbb_.AddOffset(ReturnLevelString::VT_UNIQUEIDLIST, uniqueIDList);
-  }
-  void add_levelString(::flatbuffers::Offset<::flatbuffers::String> levelString) {
-    fbb_.AddOffset(ReturnLevelString::VT_LEVELSTRING, levelString);
-  }
-  explicit ReturnLevelStringBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<ReturnLevelString> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ReturnLevelString>(end);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<ReturnLevelString> CreateReturnLevelString(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> levelString = 0) {
-  ReturnLevelStringBuilder builder_(_fbb);
-  builder_.add_levelString(levelString);
-  builder_.add_uniqueIDList(uniqueIDList);
-  return builder_.Finish();
-}
-
-inline ::flatbuffers::Offset<ReturnLevelString> CreateReturnLevelStringDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList = nullptr,
-    const char *levelString = nullptr) {
-  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*uniqueIDList) : 0;
-  auto levelString__ = levelString ? _fbb.CreateString(levelString) : 0;
-  return CTSerialize::CreateReturnLevelString(
-      _fbb,
-      uniqueIDList__,
-      levelString__);
-}
-
 struct AdminAction FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef AdminActionBuilder Builder;
   static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
@@ -1479,6 +1498,50 @@ inline ::flatbuffers::Offset<AdminAction> CreateAdminActionDirect(
       reason__);
 }
 
+struct GlobedHandshake FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef GlobedHandshakeBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return GlobedHandshakeTypeTable();
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_ACCOUNTID = 4
+  };
+  int32_t accountID() const {
+    return GetField<int32_t>(VT_ACCOUNTID, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<int32_t>(verifier, VT_ACCOUNTID, 4) &&
+           verifier.EndTable();
+  }
+};
+
+struct GlobedHandshakeBuilder {
+  typedef GlobedHandshake Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_accountID(int32_t accountID) {
+    fbb_.AddElement<int32_t>(GlobedHandshake::VT_ACCOUNTID, accountID, 0);
+  }
+  explicit GlobedHandshakeBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<GlobedHandshake> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<GlobedHandshake>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<GlobedHandshake> CreateGlobedHandshake(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    int32_t accountID = 0) {
+  GlobedHandshakeBuilder builder_(_fbb);
+  builder_.add_accountID(accountID);
+  return builder_.Finish();
+}
+
 inline bool VerifyMessageBody(::flatbuffers::Verifier &verifier, const void *obj, MessageBody type) {
   switch (type) {
     case MessageBody_NONE: {
@@ -1512,14 +1575,6 @@ inline bool VerifyMessageBody(::flatbuffers::Verifier &verifier, const void *obj
       auto ptr = reinterpret_cast<const CTSerialize::ModifyObjects *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case MessageBody_UpdateFont: {
-      auto ptr = reinterpret_cast<const CTSerialize::UpdateFont *>(obj);
-      return verifier.VerifyTable(ptr);
-    }
-    case MessageBody_UpdateSong: {
-      auto ptr = reinterpret_cast<const CTSerialize::UpdateSong *>(obj);
-      return verifier.VerifyTable(ptr);
-    }
     case MessageBody_ChangeGroupID: {
       auto ptr = reinterpret_cast<const CTSerialize::ChangeGroupID *>(obj);
       return verifier.VerifyTable(ptr);
@@ -1532,6 +1587,18 @@ inline bool VerifyMessageBody(::flatbuffers::Verifier &verifier, const void *obj
       auto ptr = reinterpret_cast<const CTSerialize::RequestLevel *>(obj);
       return verifier.VerifyTable(ptr);
     }
+    case MessageBody_ReturnLevelString: {
+      auto ptr = reinterpret_cast<const CTSerialize::ReturnLevelString *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case MessageBody_UpdateFont: {
+      auto ptr = reinterpret_cast<const CTSerialize::UpdateFont *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case MessageBody_UpdateSong: {
+      auto ptr = reinterpret_cast<const CTSerialize::UpdateSong *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
     case MessageBody_ChangeArt: {
       auto ptr = reinterpret_cast<const CTSerialize::ChangeArt *>(obj);
       return verifier.VerifyTable(ptr);
@@ -1540,16 +1607,16 @@ inline bool VerifyMessageBody(::flatbuffers::Verifier &verifier, const void *obj
       auto ptr = reinterpret_cast<const CTSerialize::SpeedChange *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case MessageBody_ReturnLevelString: {
-      auto ptr = reinterpret_cast<const CTSerialize::ReturnLevelString *>(obj);
-      return verifier.VerifyTable(ptr);
-    }
     case MessageBody_GameModeChange: {
       auto ptr = reinterpret_cast<const CTSerialize::GameModeChange *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case MessageBody_AdminAction: {
       auto ptr = reinterpret_cast<const CTSerialize::AdminAction *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case MessageBody_GlobedHandshake: {
+      auto ptr = reinterpret_cast<const CTSerialize::GlobedHandshake *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;
@@ -1587,7 +1654,8 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     { ::flatbuffers::ET_SEQUENCE, 0, 13 },
     { ::flatbuffers::ET_SEQUENCE, 0, 14 },
     { ::flatbuffers::ET_SEQUENCE, 0, 15 },
-    { ::flatbuffers::ET_SEQUENCE, 0, 16 }
+    { ::flatbuffers::ET_SEQUENCE, 0, 16 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 17 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
     CTSerialize::CreateObjectsTypeTable,
@@ -1597,16 +1665,17 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     CTSerialize::RotateObjectsTypeTable,
     CTSerialize::PasteObjectsTypeTable,
     CTSerialize::ModifyObjectsTypeTable,
-    CTSerialize::UpdateFontTypeTable,
-    CTSerialize::UpdateSongTypeTable,
     CTSerialize::ChangeGroupIDTypeTable,
     CTSerialize::ChangeDefaultColorTypeTable,
     CTSerialize::RequestLevelTypeTable,
+    CTSerialize::ReturnLevelStringTypeTable,
+    CTSerialize::UpdateFontTypeTable,
+    CTSerialize::UpdateSongTypeTable,
     CTSerialize::ChangeArtTypeTable,
     CTSerialize::SpeedChangeTypeTable,
-    CTSerialize::ReturnLevelStringTypeTable,
     CTSerialize::GameModeChangeTypeTable,
-    CTSerialize::AdminActionTypeTable
+    CTSerialize::AdminActionTypeTable,
+    CTSerialize::GlobedHandshakeTypeTable
   };
   static const char * const names[] = {
     "NONE",
@@ -1617,19 +1686,20 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     "RotateObjects",
     "PasteObjects",
     "ModifyObjects",
-    "UpdateFont",
-    "UpdateSong",
     "ChangeGroupID",
     "ChangeDefaultColor",
     "RequestLevel",
+    "ReturnLevelString",
+    "UpdateFont",
+    "UpdateSong",
     "ChangeArt",
     "SpeedChange",
-    "ReturnLevelString",
     "GameModeChange",
-    "AdminAction"
+    "AdminAction",
+    "GlobedHandshake"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_UNION, 18, type_codes, type_refs, nullptr, nullptr, names
+    ::flatbuffers::ST_UNION, 19, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -1786,32 +1856,6 @@ inline const ::flatbuffers::TypeTable *ModifyObjectsTypeTable() {
   return &tt;
 }
 
-inline const ::flatbuffers::TypeTable *UpdateFontTypeTable() {
-  static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_USHORT, 0, -1 }
-  };
-  static const char * const names[] = {
-    "fontID"
-  };
-  static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
-  };
-  return &tt;
-}
-
-inline const ::flatbuffers::TypeTable *UpdateSongTypeTable() {
-  static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_ULONG, 0, -1 }
-  };
-  static const char * const names[] = {
-    "songID"
-  };
-  static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
-  };
-  return &tt;
-}
-
 inline const ::flatbuffers::TypeTable *ChangeGroupIDTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
     { ::flatbuffers::ET_UINT, 0, -1 },
@@ -1836,8 +1880,8 @@ inline const ::flatbuffers::TypeTable *ChangeDefaultColorTypeTable() {
     { ::flatbuffers::ET_SEQUENCE, 0, 1 },
     { ::flatbuffers::ET_INT, 0, -1 },
     { ::flatbuffers::ET_FLOAT, 0, -1 },
-    { ::flatbuffers::ET_INT, 0, -1 },
-    { ::flatbuffers::ET_BOOL, 0, -1 }
+    { ::flatbuffers::ET_BOOL, 0, -1 },
+    { ::flatbuffers::ET_INT, 0, -1 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
     CTSerialize::CCColor3BTypeTable,
@@ -1849,11 +1893,59 @@ inline const ::flatbuffers::TypeTable *ChangeDefaultColorTypeTable() {
     "hsv",
     "blending",
     "opacity",
-    "copyColorID",
-    "copyOpacity"
+    "copyOpacity",
+    "copyColorID"
   };
   static const ::flatbuffers::TypeTable tt = {
     ::flatbuffers::ST_TABLE, 7, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *RequestLevelTypeTable() {
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 0, nullptr, nullptr, nullptr, nullptr, nullptr
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *ReturnLevelStringTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_STRING, 1, -1 },
+    { ::flatbuffers::ET_STRING, 0, -1 }
+  };
+  static const char * const names[] = {
+    "uniqueIDList",
+    "levelString"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 2, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *UpdateFontTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_USHORT, 0, -1 }
+  };
+  static const char * const names[] = {
+    "fontID"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *UpdateSongTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_ULONG, 0, -1 }
+  };
+  static const char * const names[] = {
+    "songID"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -1885,28 +1977,6 @@ inline const ::flatbuffers::TypeTable *GameModeChangeTypeTable() {
   return &tt;
 }
 
-inline const ::flatbuffers::TypeTable *RequestLevelTypeTable() {
-  static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 0, nullptr, nullptr, nullptr, nullptr, nullptr
-  };
-  return &tt;
-}
-
-inline const ::flatbuffers::TypeTable *ReturnLevelStringTypeTable() {
-  static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_STRING, 1, -1 },
-    { ::flatbuffers::ET_STRING, 0, -1 }
-  };
-  static const char * const names[] = {
-    "uniqueIDList",
-    "levelString"
-  };
-  static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 2, type_codes, nullptr, nullptr, nullptr, names
-  };
-  return &tt;
-}
-
 inline const ::flatbuffers::TypeTable *AdminActionTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
     { ::flatbuffers::ET_CHAR, 0, 0 },
@@ -1925,6 +1995,19 @@ inline const ::flatbuffers::TypeTable *AdminActionTypeTable() {
   };
   static const ::flatbuffers::TypeTable tt = {
     ::flatbuffers::ST_TABLE, 4, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *GlobedHandshakeTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_INT, 0, -1 }
+  };
+  static const char * const names[] = {
+    "accountID"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
   };
   return &tt;
 }

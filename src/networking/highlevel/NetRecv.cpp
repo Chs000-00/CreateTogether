@@ -159,6 +159,18 @@ Result<uint8_t> recvModifyObjects(const CTSerialize::ModifyObjects* msg) {
     return Ok(0);
 }
 
+Result<uint8_t> recvChangeDefaultColor(const CTSerialize::ChangeDefaultColor* msg) {
+    
+    if (auto color = msg->currentColor()) {
+        auto newColor = ccColor3B(color->r(), color->g(), color->b());
+    }
+    else {
+        return Err("recvChangeDefaultColor: no color found");
+    }
+
+    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
+}
+
 Result<uint8_t> recvUpdateSong(const CTSerialize::UpdateSong* msg) {
     auto songID = msg->songID();
     auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
@@ -172,4 +184,6 @@ Result<uint8_t> recvGameModeChange(const CTSerialize::GameModeChange* msg) {
     auto gameMode = msg->gameMode();
     auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
     level->m_levelSettings->m_startMode = gameMode;
+    level->levelSettingsUpdated();
+    return Ok(0);
 }

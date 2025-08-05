@@ -23,7 +23,8 @@ void sendPasteObjects(IDList& uniqueIDList, const char* copyStr);
 
 void sendModifyObjects(IDList& uniqueIDList, const char* copyStr);
 
-void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, int blending, float opacity, bool copyOpacity);
+// TODO: we might still be able to send copyColorID, but I need to research this more
+void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, int blending, float opacity, bool copyOpacity, int copyColorID);
 
 void sendUpdateSong(uint64_t songID);
 

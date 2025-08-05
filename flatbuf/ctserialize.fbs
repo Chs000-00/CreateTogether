@@ -79,8 +79,8 @@ table ChangeDefaultColor {
   // I don't know why this is an int.
   blending:int;
   opacity:float;
-  copyColorID:int = null;
   copyOpacity:bool;
+  copyColorID:int = null;
 }
 
 table RequestLevel { 
@@ -126,7 +126,7 @@ table AdminAction {
 }
 
 // TODO: Finish
-table TryConnectToGlobed {
+table GlobedHandshake {
   accountID:int;
 }
 

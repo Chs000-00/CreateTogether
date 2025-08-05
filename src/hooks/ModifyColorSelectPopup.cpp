@@ -60,9 +60,8 @@ class $modify(ColorSelectPopup) {
         }
 
         else if (this->m_colorAction) {
-            log::info("x {}", this->m_colorAction->m_colorID);
+            // TODO: Legacy HSV
+            sendChangeDefaultColor(m_colorAction->m_colorID, m_colorAction->m_color, m_colorAction->m_copyHSV, m_colorAction->m_blending, m_colorAction->m_currentOpacity, m_colorAction->m_copyOpacity, m_colorAction->m_copyID);
         }
-        
-
     }
 };
