@@ -49,6 +49,8 @@ void sendSpawnGroupChange(int spawngroup) {
     auto netManager = NetManager::get();
     auto levelSettingChangeOffset = CTSerialize::CreateLevelSettingChange(netManager->m_builder, 13, spawngroup);
     auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_LevelSettingChange, levelSettingChangeOffset.Union());
+    netManager->sendMessage(messageHeaderOffset);
+    netManager->m_builder.Clear();
 }
 
 void sendRotateObjects(IDList& uniqueIDList, float rotation, CCPoint anchor) {

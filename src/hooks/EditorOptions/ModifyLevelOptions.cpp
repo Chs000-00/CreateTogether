@@ -9,7 +9,13 @@ class $modify(LevelOptionsLayer) {
         
         LevelOptionsLayer::didToggle(p0);
 
+        log::info("Toggle");
+
         if (!NetManager::getIsInLobby()) {
+            return;
+        }
+
+        if (p0 == 13) {
             return;
         }
 
