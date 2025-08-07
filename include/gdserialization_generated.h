@@ -62,20 +62,18 @@ inline const char *EnumNameSpeed(Speed e) {
 }
 
 enum UndoCommand : int8_t {
-  UndoCommand_Invalid = 0,
   UndoCommand_Delete = 1,
   UndoCommand_New = 2,
   UndoCommand_Paste = 3,
   UndoCommand_DeleteMulti = 4,
   UndoCommand_Transform = 5,
   UndoCommand_Select = 6,
-  UndoCommand_MIN = UndoCommand_Invalid,
+  UndoCommand_MIN = UndoCommand_Delete,
   UndoCommand_MAX = UndoCommand_Select
 };
 
-inline const UndoCommand (&EnumValuesUndoCommand())[7] {
+inline const UndoCommand (&EnumValuesUndoCommand())[6] {
   static const UndoCommand values[] = {
-    UndoCommand_Invalid,
     UndoCommand_Delete,
     UndoCommand_New,
     UndoCommand_Paste,
@@ -87,8 +85,7 @@ inline const UndoCommand (&EnumValuesUndoCommand())[7] {
 }
 
 inline const char * const *EnumNamesUndoCommand() {
-  static const char * const names[8] = {
-    "Invalid",
+  static const char * const names[7] = {
     "Delete",
     "New",
     "Paste",
@@ -101,9 +98,278 @@ inline const char * const *EnumNamesUndoCommand() {
 }
 
 inline const char *EnumNameUndoCommand(UndoCommand e) {
-  if (::flatbuffers::IsOutRange(e, UndoCommand_Invalid, UndoCommand_Select)) return "";
-  const size_t index = static_cast<size_t>(e);
+  if (::flatbuffers::IsOutRange(e, UndoCommand_Delete, UndoCommand_Select)) return "";
+  const size_t index = static_cast<size_t>(e) - static_cast<size_t>(UndoCommand_Delete);
   return EnumNamesUndoCommand()[index];
+}
+
+enum ArtType : int8_t {
+  ArtType_Background = 0,
+  ArtType_Ground = 1,
+  ArtType_Middleground = 2,
+  ArtType_MIN = ArtType_Background,
+  ArtType_MAX = ArtType_Middleground
+};
+
+inline const ArtType (&EnumValuesArtType())[3] {
+  static const ArtType values[] = {
+    ArtType_Background,
+    ArtType_Ground,
+    ArtType_Middleground
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesArtType() {
+  static const char * const names[4] = {
+    "Background",
+    "Ground",
+    "Middleground",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameArtType(ArtType e) {
+  if (::flatbuffers::IsOutRange(e, ArtType_Background, ArtType_Middleground)) return "";
+  const size_t index = static_cast<size_t>(e);
+  return EnumNamesArtType()[index];
+}
+
+enum SongSelectType : int8_t {
+  SongSelectType_Default = 0,
+  SongSelectType_Custom = 1,
+  SongSelectType_MIN = SongSelectType_Default,
+  SongSelectType_MAX = SongSelectType_Custom
+};
+
+inline const SongSelectType (&EnumValuesSongSelectType())[2] {
+  static const SongSelectType values[] = {
+    SongSelectType_Default,
+    SongSelectType_Custom
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesSongSelectType() {
+  static const char * const names[3] = {
+    "Default",
+    "Custom",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameSongSelectType(SongSelectType e) {
+  if (::flatbuffers::IsOutRange(e, SongSelectType_Default, SongSelectType_Custom)) return "";
+  const size_t index = static_cast<size_t>(e);
+  return EnumNamesSongSelectType()[index];
+}
+
+enum EditCommand : int8_t {
+  EditCommand_SmallLeft = 1,
+  EditCommand_SmallRight = 2,
+  EditCommand_SmallUp = 3,
+  EditCommand_SmallDown = 4,
+  EditCommand_Left = 5,
+  EditCommand_Right = 6,
+  EditCommand_Up = 7,
+  EditCommand_Down = 8,
+  EditCommand_BigLeft = 9,
+  EditCommand_BigRight = 10,
+  EditCommand_BigUp = 11,
+  EditCommand_BigDown = 12,
+  EditCommand_TinyLeft = 13,
+  EditCommand_TinyRight = 14,
+  EditCommand_TinyUp = 15,
+  EditCommand_TinyDown = 16,
+  EditCommand_HalfLeft = 17,
+  EditCommand_HalfRight = 18,
+  EditCommand_HalfUp = 19,
+  EditCommand_HalfDown = 20,
+  EditCommand_FlipX = 21,
+  EditCommand_FlipY = 22,
+  EditCommand_RotateCW = 23,
+  EditCommand_RotateCCW = 24,
+  EditCommand_RotateCW45 = 25,
+  EditCommand_RotateCCW45 = 26,
+  EditCommand_RotateFree = 27,
+  EditCommand_RotateSnap = 28,
+  EditCommand_Scale = 29,
+  EditCommand_ScaleXY = 30,
+  EditCommand_Skew = 31,
+  EditCommand_MIN = EditCommand_SmallLeft,
+  EditCommand_MAX = EditCommand_Skew
+};
+
+inline const EditCommand (&EnumValuesEditCommand())[31] {
+  static const EditCommand values[] = {
+    EditCommand_SmallLeft,
+    EditCommand_SmallRight,
+    EditCommand_SmallUp,
+    EditCommand_SmallDown,
+    EditCommand_Left,
+    EditCommand_Right,
+    EditCommand_Up,
+    EditCommand_Down,
+    EditCommand_BigLeft,
+    EditCommand_BigRight,
+    EditCommand_BigUp,
+    EditCommand_BigDown,
+    EditCommand_TinyLeft,
+    EditCommand_TinyRight,
+    EditCommand_TinyUp,
+    EditCommand_TinyDown,
+    EditCommand_HalfLeft,
+    EditCommand_HalfRight,
+    EditCommand_HalfUp,
+    EditCommand_HalfDown,
+    EditCommand_FlipX,
+    EditCommand_FlipY,
+    EditCommand_RotateCW,
+    EditCommand_RotateCCW,
+    EditCommand_RotateCW45,
+    EditCommand_RotateCCW45,
+    EditCommand_RotateFree,
+    EditCommand_RotateSnap,
+    EditCommand_Scale,
+    EditCommand_ScaleXY,
+    EditCommand_Skew
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesEditCommand() {
+  static const char * const names[32] = {
+    "SmallLeft",
+    "SmallRight",
+    "SmallUp",
+    "SmallDown",
+    "Left",
+    "Right",
+    "Up",
+    "Down",
+    "BigLeft",
+    "BigRight",
+    "BigUp",
+    "BigDown",
+    "TinyLeft",
+    "TinyRight",
+    "TinyUp",
+    "TinyDown",
+    "HalfLeft",
+    "HalfRight",
+    "HalfUp",
+    "HalfDown",
+    "FlipX",
+    "FlipY",
+    "RotateCW",
+    "RotateCCW",
+    "RotateCW45",
+    "RotateCCW45",
+    "RotateFree",
+    "RotateSnap",
+    "Scale",
+    "ScaleXY",
+    "Skew",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameEditCommand(EditCommand e) {
+  if (::flatbuffers::IsOutRange(e, EditCommand_SmallLeft, EditCommand_Skew)) return "";
+  const size_t index = static_cast<size_t>(e) - static_cast<size_t>(EditCommand_SmallLeft);
+  return EnumNamesEditCommand()[index];
+}
+
+enum SettingOptionType : int8_t {
+  SettingOptionType_StartMini = 0,
+  SettingOptionType_StartDual = 1,
+  SettingOptionType_TwoPlayerMode = 2,
+  SettingOptionType_MirrorMode = 4,
+  SettingOptionType_IsFlipped = 5,
+  SettingOptionType_RotateGameplay = 6,
+  SettingOptionType_ReverseGameplay = 7,
+  SettingOptionType_AllowMultiRotation = 8,
+  SettingOptionType_EnablePlayerSqueeze = 9,
+  SettingOptionType_FixGravityBug = 10,
+  SettingOptionType_FixNegativeScale = 11,
+  SettingOptionType_FixRobotJump = 12,
+  SettingOptionType_SpawnGroup = 13,
+  SettingOptionType_DynamicLevelheight = 14,
+  SettingOptionType_SortGroups = 15,
+  SettingOptionType_FixRadiusCollision = 16,
+  SettingOptionType_Enable22Changes = 17,
+  SettingOptionType_AllowStaticRotate = 18,
+  SettingOptionType_ReverseSync = 19,
+  SettingOptionType_NoTimePenalty = 20,
+  SettingOptionType_propkA45 = 22,
+  SettingOptionType_MIN = SettingOptionType_StartMini,
+  SettingOptionType_MAX = SettingOptionType_propkA45
+};
+
+inline const SettingOptionType (&EnumValuesSettingOptionType())[21] {
+  static const SettingOptionType values[] = {
+    SettingOptionType_StartMini,
+    SettingOptionType_StartDual,
+    SettingOptionType_TwoPlayerMode,
+    SettingOptionType_MirrorMode,
+    SettingOptionType_IsFlipped,
+    SettingOptionType_RotateGameplay,
+    SettingOptionType_ReverseGameplay,
+    SettingOptionType_AllowMultiRotation,
+    SettingOptionType_EnablePlayerSqueeze,
+    SettingOptionType_FixGravityBug,
+    SettingOptionType_FixNegativeScale,
+    SettingOptionType_FixRobotJump,
+    SettingOptionType_SpawnGroup,
+    SettingOptionType_DynamicLevelheight,
+    SettingOptionType_SortGroups,
+    SettingOptionType_FixRadiusCollision,
+    SettingOptionType_Enable22Changes,
+    SettingOptionType_AllowStaticRotate,
+    SettingOptionType_ReverseSync,
+    SettingOptionType_NoTimePenalty,
+    SettingOptionType_propkA45
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesSettingOptionType() {
+  static const char * const names[24] = {
+    "StartMini",
+    "StartDual",
+    "TwoPlayerMode",
+    "",
+    "MirrorMode",
+    "IsFlipped",
+    "RotateGameplay",
+    "ReverseGameplay",
+    "AllowMultiRotation",
+    "EnablePlayerSqueeze",
+    "FixGravityBug",
+    "FixNegativeScale",
+    "FixRobotJump",
+    "SpawnGroup",
+    "DynamicLevelheight",
+    "SortGroups",
+    "FixRadiusCollision",
+    "Enable22Changes",
+    "AllowStaticRotate",
+    "ReverseSync",
+    "NoTimePenalty",
+    "",
+    "propkA45",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameSettingOptionType(SettingOptionType e) {
+  if (::flatbuffers::IsOutRange(e, SettingOptionType_StartMini, SettingOptionType_propkA45)) return "";
+  const size_t index = static_cast<size_t>(e);
+  return EnumNamesSettingOptionType()[index];
 }
 
 /// The data a GD Game Object has when placed in the editor
@@ -288,14 +554,13 @@ inline const ::flatbuffers::TypeTable *UndoCommandTypeTable() {
     { ::flatbuffers::ET_CHAR, 0, 0 },
     { ::flatbuffers::ET_CHAR, 0, 0 },
     { ::flatbuffers::ET_CHAR, 0, 0 },
-    { ::flatbuffers::ET_CHAR, 0, 0 },
     { ::flatbuffers::ET_CHAR, 0, 0 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
     CTSerialize::UndoCommandTypeTable
   };
+  static const int64_t values[] = { 1, 2, 3, 4, 5, 6 };
   static const char * const names[] = {
-    "Invalid",
     "Delete",
     "New",
     "Paste",
@@ -304,7 +569,179 @@ inline const ::flatbuffers::TypeTable *UndoCommandTypeTable() {
     "Select"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_ENUM, 7, type_codes, type_refs, nullptr, nullptr, names
+    ::flatbuffers::ST_ENUM, 6, type_codes, type_refs, nullptr, values, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *ArtTypeTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::ArtTypeTypeTable
+  };
+  static const char * const names[] = {
+    "Background",
+    "Ground",
+    "Middleground"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_ENUM, 3, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *SongSelectTypeTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::SongSelectTypeTypeTable
+  };
+  static const char * const names[] = {
+    "Default",
+    "Custom"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_ENUM, 2, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *EditCommandTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::EditCommandTypeTable
+  };
+  static const int64_t values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
+  static const char * const names[] = {
+    "SmallLeft",
+    "SmallRight",
+    "SmallUp",
+    "SmallDown",
+    "Left",
+    "Right",
+    "Up",
+    "Down",
+    "BigLeft",
+    "BigRight",
+    "BigUp",
+    "BigDown",
+    "TinyLeft",
+    "TinyRight",
+    "TinyUp",
+    "TinyDown",
+    "HalfLeft",
+    "HalfRight",
+    "HalfUp",
+    "HalfDown",
+    "FlipX",
+    "FlipY",
+    "RotateCW",
+    "RotateCCW",
+    "RotateCW45",
+    "RotateCCW45",
+    "RotateFree",
+    "RotateSnap",
+    "Scale",
+    "ScaleXY",
+    "Skew"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_ENUM, 31, type_codes, type_refs, nullptr, values, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *SettingOptionTypeTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::SettingOptionTypeTypeTable
+  };
+  static const int64_t values[] = { 0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22 };
+  static const char * const names[] = {
+    "StartMini",
+    "StartDual",
+    "TwoPlayerMode",
+    "MirrorMode",
+    "IsFlipped",
+    "RotateGameplay",
+    "ReverseGameplay",
+    "AllowMultiRotation",
+    "EnablePlayerSqueeze",
+    "FixGravityBug",
+    "FixNegativeScale",
+    "FixRobotJump",
+    "SpawnGroup",
+    "DynamicLevelheight",
+    "SortGroups",
+    "FixRadiusCollision",
+    "Enable22Changes",
+    "AllowStaticRotate",
+    "ReverseSync",
+    "NoTimePenalty",
+    "propkA45"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_ENUM, 21, type_codes, type_refs, nullptr, values, names
   };
   return &tt;
 }

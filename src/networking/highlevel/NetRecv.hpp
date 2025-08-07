@@ -20,5 +20,9 @@ Result<uint8_t> recvChangeDefaultColor(const CTSerialize::ChangeDefaultColor* ms
 
 Result<uint8_t> recvUpdateSong(const CTSerialize::UpdateSong* msg);
 
+Result<uint8_t> recvChangeArt(const CTSerialize::ChangeArt* msg);
+
+Result<uint8_t> recvSpeedChange(const CTSerialize::SpeedChange* msg);
+
 Result<uint8_t> recvGameModeChange(const CTSerialize::GameModeChange* msg);
 

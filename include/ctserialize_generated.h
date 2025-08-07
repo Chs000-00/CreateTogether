@@ -1305,8 +1305,25 @@ struct ChangeArt FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
     return ChangeArtTypeTable();
   }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_ARTTYPE = 4,
+    VT_ARTID = 6,
+    VT_LINE = 8
+  };
+  CTSerialize::ArtType artType() const {
+    return static_cast<CTSerialize::ArtType>(GetField<int8_t>(VT_ARTTYPE, 0));
+  }
+  int32_t artID() const {
+    return GetField<int32_t>(VT_ARTID, 0);
+  }
+  int32_t line() const {
+    return GetField<int32_t>(VT_LINE, 0);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<int8_t>(verifier, VT_ARTTYPE, 1) &&
+           VerifyField<int32_t>(verifier, VT_ARTID, 4) &&
+           VerifyField<int32_t>(verifier, VT_LINE, 4) &&
            verifier.EndTable();
   }
 };
@@ -1315,6 +1332,15 @@ struct ChangeArtBuilder {
   typedef ChangeArt Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
+  void add_artType(CTSerialize::ArtType artType) {
+    fbb_.AddElement<int8_t>(ChangeArt::VT_ARTTYPE, static_cast<int8_t>(artType), 0);
+  }
+  void add_artID(int32_t artID) {
+    fbb_.AddElement<int32_t>(ChangeArt::VT_ARTID, artID, 0);
+  }
+  void add_line(int32_t line) {
+    fbb_.AddElement<int32_t>(ChangeArt::VT_LINE, line, 0);
+  }
   explicit ChangeArtBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -1327,8 +1353,14 @@ struct ChangeArtBuilder {
 };
 
 inline ::flatbuffers::Offset<ChangeArt> CreateChangeArt(
-    ::flatbuffers::FlatBufferBuilder &_fbb) {
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    CTSerialize::ArtType artType = CTSerialize::ArtType_Background,
+    int32_t artID = 0,
+    int32_t line = 0) {
   ChangeArtBuilder builder_(_fbb);
+  builder_.add_line(line);
+  builder_.add_artID(artID);
+  builder_.add_artType(artType);
   return builder_.Finish();
 }
 
@@ -1337,8 +1369,15 @@ struct SpeedChange FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
     return SpeedChangeTypeTable();
   }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_SPEED = 4
+  };
+  CTSerialize::Speed speed() const {
+    return static_cast<CTSerialize::Speed>(GetField<int8_t>(VT_SPEED, 0));
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<int8_t>(verifier, VT_SPEED, 1) &&
            verifier.EndTable();
   }
 };
@@ -1347,6 +1386,9 @@ struct SpeedChangeBuilder {
   typedef SpeedChange Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
+  void add_speed(CTSerialize::Speed speed) {
+    fbb_.AddElement<int8_t>(SpeedChange::VT_SPEED, static_cast<int8_t>(speed), 0);
+  }
   explicit SpeedChangeBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -1359,8 +1401,10 @@ struct SpeedChangeBuilder {
 };
 
 inline ::flatbuffers::Offset<SpeedChange> CreateSpeedChange(
-    ::flatbuffers::FlatBufferBuilder &_fbb) {
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    CTSerialize::Speed speed = CTSerialize::Speed_Normal) {
   SpeedChangeBuilder builder_(_fbb);
+  builder_.add_speed(speed);
   return builder_.Finish();
 }
 
@@ -1951,15 +1995,37 @@ inline const ::flatbuffers::TypeTable *UpdateSongTypeTable() {
 }
 
 inline const ::flatbuffers::TypeTable *ChangeArtTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_INT, 0, -1 },
+    { ::flatbuffers::ET_INT, 0, -1 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::ArtTypeTypeTable
+  };
+  static const char * const names[] = {
+    "artType",
+    "artID",
+    "line"
+  };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 0, nullptr, nullptr, nullptr, nullptr, nullptr
+    ::flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
 
 inline const ::flatbuffers::TypeTable *SpeedChangeTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_CHAR, 0, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::SpeedTypeTable
+  };
+  static const char * const names[] = {
+    "speed"
+  };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 0, nullptr, nullptr, nullptr, nullptr, nullptr
+    ::flatbuffers::ST_TABLE, 1, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }

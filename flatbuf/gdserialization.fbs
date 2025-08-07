@@ -26,11 +26,90 @@ enum Speed : byte {
 }
 
 enum UndoCommand : byte {
-    Invalid = 0, // NOTE, YOU CANNOT CAST Invalid to UndoCommand.!
+    // Invalid = 0, // NOTE, YOU CANNOT CAST Invalid to UndoCommand.!
     Delete = 1,
     New = 2,
     Paste = 3,
     DeleteMulti = 4,
     Transform = 5,
     Select = 6,
+}
+
+enum ArtType : byte {
+    Background = 0,
+    Ground = 1,
+    Middleground = 2,
+}
+
+enum SongSelectType : byte {
+    Default = 0,
+    Custom = 1
+}
+
+
+enum EditCommand : byte {
+    SmallLeft = 1,
+    SmallRight = 2,
+    SmallUp = 3,
+    SmallDown = 4,
+
+    Left = 5,
+    Right = 6,
+    Up = 7,
+    Down = 8,
+
+    BigLeft = 9,
+    BigRight = 10,
+    BigUp = 11,
+    BigDown = 12,
+
+    TinyLeft = 13,
+    TinyRight = 14,
+    TinyUp = 15,
+    TinyDown = 16,
+
+    HalfLeft = 17,
+    HalfRight = 18,
+    HalfUp = 19,
+    HalfDown = 20,
+
+    FlipX = 21,
+    FlipY = 22,
+    RotateCW = 23,
+    RotateCCW = 24,
+    RotateCW45 = 25,
+    RotateCCW45 = 26,
+    RotateFree = 27,
+    RotateSnap = 28,
+
+    Scale = 29,
+    ScaleXY = 30,
+    Skew = 31
+}
+
+enum SettingOptionType : byte {
+    StartMini = 0,
+    StartDual = 1,
+    TwoPlayerMode = 2,
+    
+    // Case 3 is skipped for some reason
+
+    MirrorMode = 4,
+    IsFlipped  = 5,
+    RotateGameplay = 6,
+    ReverseGameplay = 7,
+    AllowMultiRotation = 8,
+    EnablePlayerSqueeze = 9,
+    FixGravityBug = 10,
+    FixNegativeScale = 11,
+    FixRobotJump = 12,
+    SpawnGroup = 13,
+    DynamicLevelheight = 14,
+    SortGroups = 15,
+    FixRadiusCollision = 16,
+    Enable22Changes = 17,
+    AllowStaticRotate = 18,
+    ReverseSync = 19,
+    NoTimePenalty = 20,
+    propkA45 = 22 // TODO: Give this a proper name
 }

@@ -84,7 +84,11 @@ table ChangeDefaultColor {
 }
 
 table RequestLevel { 
-
+  // cursorColor1:CCColor3B;
+  // cursorColor2:CCColor3B;
+  // cursorID:int;
+  // cursorHasGlow:bool;
+  // cursorGlowColor:CCColor3B;
 }
 
 table ReturnLevelString {
@@ -101,15 +105,16 @@ table UpdateSong {
   songID:uint64;
 }
 
-
 // TODO: ChangeArt
 table ChangeArt {
-
+  artType:ArtType;
+  artID:int;
+  line:int;
 }
 
 // TODO: SpeedChange
 table SpeedChange {
-
+  speed:Speed;
 }
 
 table GameModeChange {

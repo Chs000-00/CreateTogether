@@ -284,6 +284,11 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
             break;
         }
 
+        case CTSerialize::MessageBody_ChangeArt: {
+            SERIALIZE_AND_RECEIVE(ChangeArt);
+            break;
+        }
+
         case CTSerialize::MessageBody_GameModeChange: {
             SERIALIZE_AND_RECEIVE(GameModeChange);
             break;

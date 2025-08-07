@@ -33,7 +33,6 @@ Result<uint8_t> recvCreateObjects(const CTSerialize::CreateObjects* msg) {
     if (auto scale = minObj->scale()) {
         placedGameObject->setScaleX(scale->x());
         placedGameObject->setScaleY(scale->y());
-
     }
 
     MyGameObject* betterPlacedGameObject = static_cast<MyGameObject*>(placedGameObject);
@@ -169,6 +168,7 @@ Result<uint8_t> recvChangeDefaultColor(const CTSerialize::ChangeDefaultColor* ms
     }
 
     auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
+    return Ok(0);
 }
 
 Result<uint8_t> recvUpdateSong(const CTSerialize::UpdateSong* msg) {
@@ -177,6 +177,34 @@ Result<uint8_t> recvUpdateSong(const CTSerialize::UpdateSong* msg) {
     level->m_level->m_songID = songID;
     level->levelSettingsUpdated();
     return Ok(0);
+}
+
+// TODO: Check possible range errors
+// TODO: Middleground synchronization
+Result<uint8_t> recvChangeArt(const CTSerialize::ChangeArt* msg) {
+    auto artType = msg->artType();
+    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
+
+    switch (artType) {
+        case CTSerialize::ArtType_Ground:
+            level->createGroundLayer(msg->artID(), msg->line());
+            break;
+
+        case CTSerialize::ArtType_Background:
+            level->createBackground(msg->artID());
+            break;
+        
+        default:
+            return Err("recvChangeArt: missing artType case");
+            break;
+    }
+
+
+    return Ok(0);
+}
+
+Result<uint8_t> recvSpeedChange(const CTSerialize::SpeedChange* msg) {
+    
 }
 
 // TODO: Check issues that may occur when using invalid ranges

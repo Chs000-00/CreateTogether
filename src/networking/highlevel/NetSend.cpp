@@ -96,6 +96,14 @@ void sendUpdateSong(uint64_t songID) {
     netManager->m_builder.Clear();
 }
 
+void sendChangeArt(SelectArtType artType, int artID, int line) {
+
+}
+
+void sendSpeedChange(Speed speed) {
+    
+}
+
 void sendGameModeChange(uint8 gameMode) {
     auto netManager = NetManager::get();
     auto gameModeMessage = CTSerialize::CreateGameModeChange(netManager->m_builder, gameMode);

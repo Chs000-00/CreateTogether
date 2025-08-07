@@ -28,4 +28,9 @@ void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv,
 
 void sendUpdateSong(uint64_t songID);
 
+// Line can be anything if arttype is not line
+void sendChangeArt(SelectArtType artType, int artID, int line);
+
+void sendSpeedChange(Speed speed);
+
 void sendGameModeChange(uint8 gameMode);
