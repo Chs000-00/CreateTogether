@@ -61,17 +61,26 @@ class $modify(EditorUI) {
         
         auto objectArr = CCArrayExt<MyGameObject*>(ret);
         auto editorLayer = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
-
+        
+        if (NetManager::getWasDataSent()) {
+            return ret;
+        }
+        
         for (auto obj : objectArr) {
-            auto uid = editorLayer->m_fields->m_userID + "!" + std::to_string(editorLayer->m_fields->m_blocksPlaced);
+            // Crash here, TODO: Fix
+            log::info("{}!", editorLayer->m_fields->m_userID);
+            log::info("{}?", editorLayer->m_fields->m_blocksPlaced);
+            auto uid = std::to_string(editorLayer->m_fields->m_userID) + "!" + std::to_string(editorLayer->m_fields->m_blocksPlaced);
             obj->m_fields->m_veryUniqueID = uid;
             editorLayer->m_fields->m_blocksPlaced += 1;
             editorLayer->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID);
         }
-        
-        if (NetManager::getWasDataSent() || !NetManager::getIsInLobby()) {
+
+
+        if (!NetManager::getIsInLobby()) {
             return ret;
         }
+        
 
         IDList idlist;
 

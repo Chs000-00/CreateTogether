@@ -204,7 +204,7 @@ Result<uint8_t> recvChangeArt(const CTSerialize::ChangeArt* msg) {
 }
 
 Result<uint8_t> recvSpeedChange(const CTSerialize::SpeedChange* msg) {
-    
+    return Err("Die");
 }
 
 // TODO: Check issues that may occur when using invalid ranges
