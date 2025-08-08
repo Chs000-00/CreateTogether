@@ -18,11 +18,11 @@ class $modify(ColorSelectPopup) {
 
         ColorSelectPopup::closeColorSelect(p0);
 
-        if (this->m_gameObject) {
+        if (!NetManager::getIsInLobby()) {
+            return;
+        }
 
-            if (!NetManager::getIsInLobby()) {
-                return;
-            }
+        if (this->m_gameObject) {
 
             // TODO: This might break if multiple gameObjects are selected
             // auto ret = getJsonFromGameObject(this->m_gameObject);

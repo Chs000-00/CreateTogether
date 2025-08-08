@@ -14,7 +14,6 @@ using namespace geode::prelude;
 // Note this->m_selectedObject might not have the only selected object, if there is only one selected
 
 class $modify(EditorUI) {
-
     void onDeleteSelected(CCObject* sender) {
 
         if (NetManager::getWasDataSent() || !NetManager::getIsInLobby()) {

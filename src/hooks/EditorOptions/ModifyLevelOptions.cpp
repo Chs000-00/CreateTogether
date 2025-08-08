@@ -6,7 +6,6 @@ using namespace geode::prelude;
 
 class $modify(LevelOptionsLayer) {
     void didToggle(int p0) {
-        
         LevelOptionsLayer::didToggle(p0);
 
         log::info("Toggle");
@@ -23,7 +22,6 @@ class $modify(LevelOptionsLayer) {
     }
 
     void valueDidChange(int p0, float p1) {
-
         LevelOptionsLayer::valueDidChange(p0, p1);
 
         if (!NetManager::getIsInLobby()) {
@@ -33,6 +31,5 @@ class $modify(LevelOptionsLayer) {
         if (p0 == 13) {
             sendSpawnGroupChange(p1);
         }
-
     }
 };

@@ -290,6 +290,11 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
             break;
         }
 
+        case CTSerialize::MessageBody_SpeedChange: {
+            SERIALIZE_AND_RECEIVE(SpeedChange);
+            break;
+        }
+
         case CTSerialize::MessageBody_GameModeChange: {
             SERIALIZE_AND_RECEIVE(GameModeChange);
             break;

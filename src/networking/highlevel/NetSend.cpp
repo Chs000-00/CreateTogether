@@ -88,6 +88,11 @@ void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv,
     netManager->m_builder.Clear();
 }
 
+// TODO: Finish
+void sendRequestLevel() {
+    auto netManager = NetManager::get();
+}
+
 void sendUpdateSong(uint64_t songID) {
     auto netManager = NetManager::get();
     auto updateSongMessage = CTSerialize::CreateUpdateSong(netManager->m_builder, songID);
@@ -97,11 +102,19 @@ void sendUpdateSong(uint64_t songID) {
 }
 
 void sendChangeArt(SelectArtType artType, int artID, int line) {
-
+    auto netManager = NetManager::get();
+    auto changeArtMessage = CTSerialize::CreateChangeArt(netManager->m_builder, static_cast<CTSerialize::ArtType>(artType), artID, line);
+    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_ChangeArt, changeArtMessage.Union());
+    netManager->sendMessage(messageHeaderOffset);
+    netManager->m_builder.Clear();
 }
 
-void sendSpeedChange(Speed speed) {
-    
+void sendSpeedChange(int speed) {
+    auto netManager = NetManager::get();
+    auto speedChangeMessage = CTSerialize::CreateSpeedChange(netManager->m_builder,  static_cast<CTSerialize::Speed>(speed));
+    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_SpeedChange, speedChangeMessage.Union());
+    netManager->sendMessage(messageHeaderOffset);
+    netManager->m_builder.Clear();
 }
 
 void sendGameModeChange(uint8 gameMode) {

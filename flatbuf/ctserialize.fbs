@@ -7,132 +7,128 @@ namespace CTSerialize;
 // TODO: Uhh Rename these files to something better I guess idk im too lazy to do that
 
 union MessageBody {
-  CreateObjects,
-  DeleteObjects,
-  MoveObjects,
-  LevelSettingChange,
-  RotateObjects,
-  PasteObjects,
-  ModifyObjects,
-  ChangeGroupID,
-  ChangeDefaultColor,
-  RequestLevel,
-  ReturnLevelString,
-  UpdateFont,
-  UpdateSong,
-  ChangeArt,
-  SpeedChange,
-  GameModeChange,
-  AdminAction,
-  GlobedHandshake
+    CreateObjects,
+    DeleteObjects,
+    MoveObjects,
+    LevelSettingChange,
+    RotateObjects,
+    PasteObjects,
+    ModifyObjects,
+    ChangeGroupID,
+    ChangeDefaultColor,
+    RequestLevel,
+    ReturnLevelString,
+    UpdateFont,
+    UpdateSong,
+    ChangeArt,
+    SpeedChange,
+    GameModeChange,
+    AdminAction,
+    GlobedHandshake
 }
 
 table MessageHeader {
-  body:MessageBody; 
+    body:MessageBody; 
 }
 
 table CreateObjects {
-  obj:GDGameObjectMin;
+    obj:GDGameObjectMin;
 }
 
 table DeleteObjects {
-  uniqueIDList:[string];
+    uniqueIDList:[string];
 }
 
 table MoveObjects {
-  uniqueID:string;
-  positionOffset:CCPos;
+    uniqueID:string;
+    positionOffset:CCPos;
 }
 
 table LevelSettingChange {
-  settingID:uint16;
-  spawnGroup:int = null;
+    settingID:uint16;
+    spawnGroup:int = null;
 }
 
 table RotateObjects {
-  rotation:float;
-  // I... Think this is the anchor point... No clue...
-  anchor:CCPos;
-  uniqueIDList:[string];
+    rotation:float;
+    // I... Think this is the anchor point... No clue...
+    anchor:CCPos;
+    uniqueIDList:[string];
 }
 
 table PasteObjects {
-  uniqueIDList:[string];
-  pastedString:string;
+    uniqueIDList:[string];
+    pastedString:string;
 }
 
 table ModifyObjects {
-  uniqueIDList:[string];
-  pastedString:string;
+    uniqueIDList:[string];
+    pastedString:string;
 }
 
 table ChangeGroupID {
-  groupID:uint32; // TODO: uhh uhh I forgot my uint32max this might not be hyperoptimal
-  isAdding:bool;
-  uniqueIDList:[string];
+    groupID:uint32; // TODO: uhh uhh I forgot my uint32max this might not be hyperoptimal
+    isAdding:bool;
+    uniqueIDList:[string];
 }
 
 table ChangeDefaultColor {
-  groupID:int;
-  currentColor:CCColor3B;
-  hsv:CCHsvValue;
-  // I don't know why this is an int.
-  blending:int;
-  opacity:float;
-  copyOpacity:bool;
-  copyColorID:int = null;
+    groupID:int;
+    currentColor:CCColor3B;
+    hsv:CCHsvValue;
+    // I don't know why this is an int.
+    blending:int;
+    opacity:float;
+    copyOpacity:bool;
+    copyColorID:int = null;
 }
 
 table RequestLevel { 
-  // cursorColor1:CCColor3B;
-  // cursorColor2:CCColor3B;
-  // cursorID:int;
-  // cursorHasGlow:bool;
-  // cursorGlowColor:CCColor3B;
+    playerWave:GDWaveObject;
 }
 
 table ReturnLevelString {
-  uniqueIDList:[string];
-  levelString:string;
+    uniqueIDList:[string];
+    levelString:string;
 }
 
 
 table UpdateFont {
-  fontID:uint16;
+    fontID:uint16;
 }
 
 table UpdateSong {
-  songID:uint64;
+    songID:uint64;
 }
 
 // TODO: ChangeArt
 table ChangeArt {
-  artType:ArtType;
-  artID:int;
-  line:int;
+    artType:ArtType;
+    artID:int;
+    line:int;
 }
 
 // TODO: SpeedChange
 table SpeedChange {
-  speed:Speed;
+    speed:Speed;
 }
 
 table GameModeChange {
-  gameMode:uint8; // I guess... this dosen't use enums?
+    gameMode:uint8; // I guess... this dosen't use enums?
 }
 
 enum AdminActions : byte { Invalid = 0, SteamUserIDBan, DisableInteraction, Kick }
 
 table AdminAction {
-  action:AdminActions;
-  userId:uint64; // This might not be unsigned. TODO: Check
-  timeoutEpoch:uint64;
-  reason:string;
+    action:AdminActions;
+    userId:uint64; // This might not be unsigned. TODO: Check
+    timeoutEpoch:uint64;
+    reason:string;
 }
 
 // TODO: Finish
 table GlobedHandshake {
-  accountID:int;
+    accountID:int;
 }
 
 root_type MessageHeader;

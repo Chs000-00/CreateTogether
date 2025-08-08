@@ -3,38 +3,38 @@ namespace CTSerialize;
 // Naming conflicts should be removed with namespace... I hope.
 // Should serialize cocos2d's CCPoint
 struct CCPos {
-  x:float;
-  y:float;
+    x:float;
+    y:float;
 }
 
 /// A version of sCCPos using int instead of float
 struct CCPosI {
-  x:int;
-  y:int;
+    x:int;
+    y:int;
 }
 
 /// Flip state
 struct ObjectFlip {
-  flipX:bool;
-  flipY:bool;
+    flipX:bool;
+    flipY:bool;
 }
 
 struct CCHsvValue {
-  h:float;
-  s:float;
-  v:float;
-  absoluteSaturation:bool;
-  absoluteBrightness:bool;
+    h:float;
+    s:float;
+    v:float;
+    absoluteSaturation:bool;
+    absoluteBrightness:bool;
 }
 
 struct CCColor3B {
-  r:uint8;
-  g:uint8;
-  b:uint8;
+    r:uint8;
+    g:uint8;
+    b:uint8;
 }
 
 
 struct NodeScale {
-  x:float;
-  y:float;
+    x:float;
+    y:float;
 }

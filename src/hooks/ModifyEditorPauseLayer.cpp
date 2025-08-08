@@ -62,7 +62,7 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
 
     void onExitEditor(CCObject* sender) {
         log::info("SAVEANDEXIT");
-        auto gameManager = static_cast<MyGameManager*>(GameManager::get());
+        // auto gameManager = static_cast<MyGameManager*>(GameManager::get());
         static_cast<MyLevelEditorLayer*>(this->m_editorLayer)->m_fields->m_pUniqueIDOfGameObject->release();
         NetManager::get()->leaveLobby();
         EditorPauseLayer::onExitEditor(sender); // And exit editor (whoops)
@@ -86,6 +86,12 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
         else {
             // TODO: Playlayer stuff
         }
+    }
+
+    void onBuildHelper(CCObject* sender) {
+        auto level = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
+        level->m_effectManager->m_colorActionDict->writeToFile((dirs::getGameDir() / "test").string().c_str());
+        // EditorPauseLayer::onBuildHelper(sender);
     }
 
 };

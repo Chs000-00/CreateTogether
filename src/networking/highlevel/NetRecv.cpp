@@ -204,7 +204,16 @@ Result<uint8_t> recvChangeArt(const CTSerialize::ChangeArt* msg) {
 }
 
 Result<uint8_t> recvSpeedChange(const CTSerialize::SpeedChange* msg) {
-    return Err("Die");
+    auto speed = msg->speed();
+    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
+
+    if (!isValidEnumRange(speed, CTSerialize::Speed_MIN, CTSerialize::Speed_MAX)) {
+        return Err("recvSpeedChange: invalid speed");
+    }
+
+    level->m_levelSettings->m_startSpeed = static_cast<Speed>(speed);
+
+    return Ok(0);
 }
 
 // TODO: Check issues that may occur when using invalid ranges

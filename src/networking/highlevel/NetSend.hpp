@@ -26,11 +26,13 @@ void sendModifyObjects(IDList& uniqueIDList, const char* copyStr);
 // TODO: we might still be able to send copyColorID, but I need to research this more
 void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, int blending, float opacity, bool copyOpacity, int copyColorID);
 
+void sendRequestLevel();
+
 void sendUpdateSong(uint64_t songID);
 
 // Line can be anything if arttype is not line
 void sendChangeArt(SelectArtType artType, int artID, int line);
 
-void sendSpeedChange(Speed speed);
+void sendSpeedChange(int speed);
 
 void sendGameModeChange(uint8 gameMode);

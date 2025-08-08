@@ -6,7 +6,6 @@ using namespace geode::prelude;
 
 class $modify(SongSelectNode) {
     void songIDChanged(int p0) {
-
         SongSelectNode::songIDChanged(p0);
 
         if (!NetManager::getIsInLobby()) {
@@ -17,7 +16,6 @@ class $modify(SongSelectNode) {
     }
     
     void audioNext(CCObject* sender) {
-
         SongSelectNode::audioNext(sender);
 
         if (!NetManager::getIsInLobby()) {
@@ -25,11 +23,9 @@ class $modify(SongSelectNode) {
         }
 
         sendUpdateSong(m_selectedSongID);
-
     }
 
     void audioPrevious(CCObject* sender) {
-
         SongSelectNode::audioPrevious(sender);
 
         if (!NetManager::getIsInLobby()) {
@@ -42,7 +38,6 @@ class $modify(SongSelectNode) {
 
 
     void onSongMode(int mode) {
-
         SongSelectNode::onSongMode(mode);
 
         if (!NetManager::getIsInLobby()) {

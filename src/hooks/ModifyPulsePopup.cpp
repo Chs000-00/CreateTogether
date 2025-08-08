@@ -52,6 +52,6 @@ class $modify(SetupPulsePopup) {
 
             sendModifyObjects(idlist, objString.c_str());
         }
-
+        
     }
 };

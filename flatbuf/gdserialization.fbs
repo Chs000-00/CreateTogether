@@ -17,6 +17,14 @@ table GDGameObjectMin {
     scale:NodeScale;
 }
 
+table GDWaveObject {
+    cursorColor1:CCColor3B;
+    cursorColor2:CCColor3B;
+    cursorID:int;
+    cursorHasGlow:bool;
+    cursorGlowColor:CCColor3B;
+}
+
 enum Speed : byte {
     Normal = 0,
     Slow = 1,

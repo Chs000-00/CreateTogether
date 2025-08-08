@@ -14,7 +14,7 @@ class $modify(SelectSettingLayer) {
 
         // TODO: Test to see if this works with other SelectSettingTypes
         if (this->m_type == SelectSettingType::StartingSpeed) {
-            // Change Level Speed
+            sendSpeedChange(this->getSelectedValue());
         }
         else {
             sendGameModeChange(this->getSelectedValue());
