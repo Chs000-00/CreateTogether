@@ -161,6 +161,7 @@ void NetManager::fetchMemberList() {
         SteamNetworkingIdentity member;
 
         log::debug("FetchMemberList Called; Fetching {} users:", lobbyMemberCount);
+        this->m_playersInLobby.clear();
 
         for (int i = 0; i < lobbyMemberCount; i++) {
             CSteamID steamIDLobbyMember = SteamMatchmaking()->GetLobbyMemberByIndex(this->m_lobbyId, i);

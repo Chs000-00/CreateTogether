@@ -68,8 +68,6 @@ class $modify(EditorUI) {
         
         for (auto obj : objectArr) {
             // Crash here, TODO: Fix
-            log::info("{}!", editorLayer->m_fields->m_userID);
-            log::info("{}?", editorLayer->m_fields->m_blocksPlaced);
             auto uid = std::to_string(editorLayer->m_fields->m_userID) + "!" + std::to_string(editorLayer->m_fields->m_blocksPlaced);
             obj->m_fields->m_veryUniqueID = uid;
             editorLayer->m_fields->m_blocksPlaced += 1;
