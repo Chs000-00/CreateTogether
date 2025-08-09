@@ -73,11 +73,10 @@ table ChangeGroupID {
 }
 
 table ChangeDefaultColor {
-    groupID:int;
+    colorID:int;
     currentColor:CCColor3B;
     hsv:CCHsvValue;
-    // I don't know why this is an int.
-    blending:int;
+    blending:bool;
     opacity:float;
     copyOpacity:bool;
     copyColorID:int = null;

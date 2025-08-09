@@ -160,14 +160,31 @@ Result<uint8_t> recvModifyObjects(const CTSerialize::ModifyObjects* msg) {
 
 Result<uint8_t> recvChangeDefaultColor(const CTSerialize::ChangeDefaultColor* msg) {
     
+    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
+
     if (auto color = msg->currentColor()) {
         auto newColor = ccColor3B(color->r(), color->g(), color->b());
+
+        // getColorAction automatically checks the ranges for the ID's
+        auto colorAction = level->m_levelSettings->m_effectManager->getColorAction(msg->colorID());
+
+        colorAction->m_fromColor = newColor;
+        colorAction->m_blending = msg->blending();
+        colorAction->m_toOpacity = msg->opacity();
+
+        // colorID:int;
+        // currentColor:CCColor3B;
+        // hsv:CCHsvValue;
+        // blending:bool;
+        // opacity:float;
+        // copyOpacity:bool;
+        // copyColorID:int = null;
+
     }
     else {
         return Err("recvChangeDefaultColor: no color found");
     }
 
-    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
     return Ok(0);
 }
 

@@ -24,7 +24,7 @@ void sendPasteObjects(IDList& uniqueIDList, const char* copyStr);
 void sendModifyObjects(IDList& uniqueIDList, const char* copyStr);
 
 // TODO: we might still be able to send copyColorID, but I need to research this more
-void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, int blending, float opacity, bool copyOpacity, int copyColorID);
+void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, bool blending, float opacity, bool copyOpacity, int copyColorID);
 
 void sendRequestLevel();
 

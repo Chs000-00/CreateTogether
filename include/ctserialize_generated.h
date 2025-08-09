@@ -1013,7 +1013,7 @@ struct ChangeDefaultColor FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     return ChangeDefaultColorTypeTable();
   }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_GROUPID = 4,
+    VT_COLORID = 4,
     VT_CURRENTCOLOR = 6,
     VT_HSV = 8,
     VT_BLENDING = 10,
@@ -1021,8 +1021,8 @@ struct ChangeDefaultColor FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     VT_COPYOPACITY = 14,
     VT_COPYCOLORID = 16
   };
-  int32_t groupID() const {
-    return GetField<int32_t>(VT_GROUPID, 0);
+  int32_t colorID() const {
+    return GetField<int32_t>(VT_COLORID, 0);
   }
   const CTSerialize::CCColor3B *currentColor() const {
     return GetStruct<const CTSerialize::CCColor3B *>(VT_CURRENTCOLOR);
@@ -1030,8 +1030,8 @@ struct ChangeDefaultColor FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
   const CTSerialize::CCHsvValue *hsv() const {
     return GetStruct<const CTSerialize::CCHsvValue *>(VT_HSV);
   }
-  int32_t blending() const {
-    return GetField<int32_t>(VT_BLENDING, 0);
+  bool blending() const {
+    return GetField<uint8_t>(VT_BLENDING, 0) != 0;
   }
   float opacity() const {
     return GetField<float>(VT_OPACITY, 0.0f);
@@ -1044,10 +1044,10 @@ struct ChangeDefaultColor FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<int32_t>(verifier, VT_GROUPID, 4) &&
+           VerifyField<int32_t>(verifier, VT_COLORID, 4) &&
            VerifyField<CTSerialize::CCColor3B>(verifier, VT_CURRENTCOLOR, 1) &&
            VerifyField<CTSerialize::CCHsvValue>(verifier, VT_HSV, 4) &&
-           VerifyField<int32_t>(verifier, VT_BLENDING, 4) &&
+           VerifyField<uint8_t>(verifier, VT_BLENDING, 1) &&
            VerifyField<float>(verifier, VT_OPACITY, 4) &&
            VerifyField<uint8_t>(verifier, VT_COPYOPACITY, 1) &&
            VerifyField<int32_t>(verifier, VT_COPYCOLORID, 4) &&
@@ -1059,8 +1059,8 @@ struct ChangeDefaultColorBuilder {
   typedef ChangeDefaultColor Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_groupID(int32_t groupID) {
-    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_GROUPID, groupID, 0);
+  void add_colorID(int32_t colorID) {
+    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_COLORID, colorID, 0);
   }
   void add_currentColor(const CTSerialize::CCColor3B *currentColor) {
     fbb_.AddStruct(ChangeDefaultColor::VT_CURRENTCOLOR, currentColor);
@@ -1068,8 +1068,8 @@ struct ChangeDefaultColorBuilder {
   void add_hsv(const CTSerialize::CCHsvValue *hsv) {
     fbb_.AddStruct(ChangeDefaultColor::VT_HSV, hsv);
   }
-  void add_blending(int32_t blending) {
-    fbb_.AddElement<int32_t>(ChangeDefaultColor::VT_BLENDING, blending, 0);
+  void add_blending(bool blending) {
+    fbb_.AddElement<uint8_t>(ChangeDefaultColor::VT_BLENDING, static_cast<uint8_t>(blending), 0);
   }
   void add_opacity(float opacity) {
     fbb_.AddElement<float>(ChangeDefaultColor::VT_OPACITY, opacity, 0.0f);
@@ -1093,21 +1093,21 @@ struct ChangeDefaultColorBuilder {
 
 inline ::flatbuffers::Offset<ChangeDefaultColor> CreateChangeDefaultColor(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    int32_t groupID = 0,
+    int32_t colorID = 0,
     const CTSerialize::CCColor3B *currentColor = nullptr,
     const CTSerialize::CCHsvValue *hsv = nullptr,
-    int32_t blending = 0,
+    bool blending = false,
     float opacity = 0.0f,
     bool copyOpacity = false,
     ::flatbuffers::Optional<int32_t> copyColorID = ::flatbuffers::nullopt) {
   ChangeDefaultColorBuilder builder_(_fbb);
   if(copyColorID) { builder_.add_copyColorID(*copyColorID); }
   builder_.add_opacity(opacity);
-  builder_.add_blending(blending);
   builder_.add_hsv(hsv);
   builder_.add_currentColor(currentColor);
-  builder_.add_groupID(groupID);
+  builder_.add_colorID(colorID);
   builder_.add_copyOpacity(copyOpacity);
+  builder_.add_blending(blending);
   return builder_.Finish();
 }
 
@@ -1116,8 +1116,16 @@ struct RequestLevel FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
     return RequestLevelTypeTable();
   }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_PLAYERWAVE = 4
+  };
+  const CTSerialize::GDWaveObject *playerWave() const {
+    return GetPointer<const CTSerialize::GDWaveObject *>(VT_PLAYERWAVE);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_PLAYERWAVE) &&
+           verifier.VerifyTable(playerWave()) &&
            verifier.EndTable();
   }
 };
@@ -1126,6 +1134,9 @@ struct RequestLevelBuilder {
   typedef RequestLevel Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
+  void add_playerWave(::flatbuffers::Offset<CTSerialize::GDWaveObject> playerWave) {
+    fbb_.AddOffset(RequestLevel::VT_PLAYERWAVE, playerWave);
+  }
   explicit RequestLevelBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -1138,8 +1149,10 @@ struct RequestLevelBuilder {
 };
 
 inline ::flatbuffers::Offset<RequestLevel> CreateRequestLevel(
-    ::flatbuffers::FlatBufferBuilder &_fbb) {
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<CTSerialize::GDWaveObject> playerWave = 0) {
   RequestLevelBuilder builder_(_fbb);
+  builder_.add_playerWave(playerWave);
   return builder_.Finish();
 }
 
@@ -1922,7 +1935,7 @@ inline const ::flatbuffers::TypeTable *ChangeDefaultColorTypeTable() {
     { ::flatbuffers::ET_INT, 0, -1 },
     { ::flatbuffers::ET_SEQUENCE, 0, 0 },
     { ::flatbuffers::ET_SEQUENCE, 0, 1 },
-    { ::flatbuffers::ET_INT, 0, -1 },
+    { ::flatbuffers::ET_BOOL, 0, -1 },
     { ::flatbuffers::ET_FLOAT, 0, -1 },
     { ::flatbuffers::ET_BOOL, 0, -1 },
     { ::flatbuffers::ET_INT, 0, -1 }
@@ -1932,7 +1945,7 @@ inline const ::flatbuffers::TypeTable *ChangeDefaultColorTypeTable() {
     CTSerialize::CCHsvValueTypeTable
   };
   static const char * const names[] = {
-    "groupID",
+    "colorID",
     "currentColor",
     "hsv",
     "blending",
@@ -1947,8 +1960,17 @@ inline const ::flatbuffers::TypeTable *ChangeDefaultColorTypeTable() {
 }
 
 inline const ::flatbuffers::TypeTable *RequestLevelTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_SEQUENCE, 0, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::GDWaveObjectTypeTable
+  };
+  static const char * const names[] = {
+    "playerWave"
+  };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 0, nullptr, nullptr, nullptr, nullptr, nullptr
+    ::flatbuffers::ST_TABLE, 1, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }

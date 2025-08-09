@@ -34,7 +34,7 @@ enum Speed : byte {
 }
 
 enum UndoCommand : byte {
-    // Invalid = 0, // NOTE, YOU CANNOT CAST Invalid to UndoCommand.!
+    // Invalid = 0, // NOTE, YOU CANNOT CAST Invalid to UndoCommand! Also TODO: FIX!
     Delete = 1,
     New = 2,
     Paste = 3,

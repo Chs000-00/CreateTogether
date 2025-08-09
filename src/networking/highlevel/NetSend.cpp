@@ -78,7 +78,7 @@ void sendModifyObjects(IDList& uniqueIDList, const char* copyStr) {
     netManager->m_builder.Clear();
 }
 
-void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, int blending, float opacity, bool copyOpacity, int copyColorID) {
+void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv, bool blending, float opacity, bool copyOpacity, int copyColorID) {
     auto netManager = NetManager::get();
     auto currentColorOffset = CTSerialize::CCColor3B(currentColor.r, currentColor.g, currentColor.b);
     auto hsvOffset = CTSerialize::CCHsvValue(hsv.h, hsv.s, hsv.v, hsv.absoluteSaturation, hsv.absoluteBrightness);

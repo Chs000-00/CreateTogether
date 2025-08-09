@@ -60,8 +60,8 @@ class $modify(ColorSelectPopup) {
         }
 
         else if (this->m_colorAction) {
-            // TODO: Legacy HSV
-            sendChangeDefaultColor(m_colorAction->m_colorID, m_colorAction->m_color, m_colorAction->m_copyHSV, m_colorAction->m_blending, m_colorAction->m_currentOpacity, m_colorAction->m_copyOpacity, m_colorAction->m_copyID);
+            // TODO: Legacy HSV. Also the color might be wrong???
+            sendChangeDefaultColor(m_colorAction->m_colorID, m_colorAction->m_fromColor, m_colorAction->m_copyHSV, m_colorAction->m_blending, m_colorAction->m_currentOpacity, m_colorAction->m_copyOpacity, m_colorAction->m_copyID);
         }
     }
 };

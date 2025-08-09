@@ -1,0 +1,17 @@
+include "ccserialization.fbs";
+
+namespace CTSerialize.cursor; 
+
+enum StatusType : byte {
+    None = 0,
+    EditingTrigger,
+    EditingLevelSettings,
+    LevelEditorPaused
+}
+// For SteamNetworkingMessages, this will be sent on channel 2
+table CursorUpdate {
+    position:CCPos;
+    status:StatusType;
+}
+
+root_type CursorUpdate;

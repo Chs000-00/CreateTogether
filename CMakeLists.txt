@@ -9,10 +9,10 @@ endif()
 
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-set(NO_STEAMWORKS OFF)
+set(NO_STEAMWORKS ON)
 
 # This is different from NO_STEAMWORKS.
-set(COMPILE_DEBUG_SERVER OFF)
+set(COMPILE_DEBUG_SERVER ON)
 
 if (COMPILE_DEBUG_SERVER)
     message(status "Compiling debug server")

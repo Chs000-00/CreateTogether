@@ -87,12 +87,5 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
             // TODO: Playlayer stuff
         }
     }
-
-    void onBuildHelper(CCObject* sender) {
-        auto level = static_cast<MyLevelEditorLayer*>(this->m_editorLayer);
-        level->m_effectManager->m_colorActionDict->writeToFile((dirs::getGameDir() / "test").string().c_str());
-        // EditorPauseLayer::onBuildHelper(sender);
-    }
-
 };
 
