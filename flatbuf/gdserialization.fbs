@@ -18,11 +18,11 @@ table GDGameObjectMin {
 }
 
 table GDWaveObject {
-    cursorColor1:CCColor3B;
-    cursorColor2:CCColor3B;
+    cursorColor1:int;
+    cursorColor2:int;
     cursorID:int;
     cursorHasGlow:bool;
-    cursorGlowColor:CCColor3B;
+    cursorGlowColor:int;
 }
 
 enum Speed : byte {

@@ -5,7 +5,7 @@
 	},
 	"id": "chs000.createtogether",
 	"name": "Create Together",
-	"version": "v0.5.1",
+	"version": "v0.6.1",
 	"developer": "chs000",
 	"description": "Multiplayer level editing with steamworks",
 	"links": {
@@ -13,5 +13,13 @@
 	},
 	"dependencies": {
   		"geode.node-ids": "v1.10.0"
+	},
+	"settings": {
+		"only-default-wave": {
+			"type": "bool",
+			"name": "Only show default cursors",
+			"description": "Only show the default cursors when creating together",
+			"default": false
+		}
 	}
 }

@@ -35,7 +35,7 @@ if (COMPILE_DEBUG_SERVER)
 
 endif()
 
-project(CreateTogether VERSION 0.5.1)
+project(CreateTogether VERSION 0.6.1)
 
 file(GLOB SOURCES
     src/hooks/*.cpp

@@ -91,6 +91,10 @@ class NetManager {
         // This is set to true temporarily inside a recv function.
         bool m_wasDataSent = false;
 
+        // Ignore recieved messages. This should be true to avoid calling message functions while playtesting or
+        // Before the level was loaded.
+        bool m_ignoreMessages = false;
+
     private:
         // Sends all the currently queued data. Oh and also deletes the data afterward.
         // void sendQueuedData();

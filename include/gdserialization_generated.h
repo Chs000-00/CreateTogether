@@ -540,11 +540,11 @@ struct GDWaveObject FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_CURSORHASGLOW = 10,
     VT_CURSORGLOWCOLOR = 12
   };
-  const CTSerialize::CCColor3B *cursorColor1() const {
-    return GetStruct<const CTSerialize::CCColor3B *>(VT_CURSORCOLOR1);
+  int32_t cursorColor1() const {
+    return GetField<int32_t>(VT_CURSORCOLOR1, 0);
   }
-  const CTSerialize::CCColor3B *cursorColor2() const {
-    return GetStruct<const CTSerialize::CCColor3B *>(VT_CURSORCOLOR2);
+  int32_t cursorColor2() const {
+    return GetField<int32_t>(VT_CURSORCOLOR2, 0);
   }
   int32_t cursorID() const {
     return GetField<int32_t>(VT_CURSORID, 0);
@@ -552,16 +552,16 @@ struct GDWaveObject FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   bool cursorHasGlow() const {
     return GetField<uint8_t>(VT_CURSORHASGLOW, 0) != 0;
   }
-  const CTSerialize::CCColor3B *cursorGlowColor() const {
-    return GetStruct<const CTSerialize::CCColor3B *>(VT_CURSORGLOWCOLOR);
+  int32_t cursorGlowColor() const {
+    return GetField<int32_t>(VT_CURSORGLOWCOLOR, 0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<CTSerialize::CCColor3B>(verifier, VT_CURSORCOLOR1, 1) &&
-           VerifyField<CTSerialize::CCColor3B>(verifier, VT_CURSORCOLOR2, 1) &&
+           VerifyField<int32_t>(verifier, VT_CURSORCOLOR1, 4) &&
+           VerifyField<int32_t>(verifier, VT_CURSORCOLOR2, 4) &&
            VerifyField<int32_t>(verifier, VT_CURSORID, 4) &&
            VerifyField<uint8_t>(verifier, VT_CURSORHASGLOW, 1) &&
-           VerifyField<CTSerialize::CCColor3B>(verifier, VT_CURSORGLOWCOLOR, 1) &&
+           VerifyField<int32_t>(verifier, VT_CURSORGLOWCOLOR, 4) &&
            verifier.EndTable();
   }
 };
@@ -570,11 +570,11 @@ struct GDWaveObjectBuilder {
   typedef GDWaveObject Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_cursorColor1(const CTSerialize::CCColor3B *cursorColor1) {
-    fbb_.AddStruct(GDWaveObject::VT_CURSORCOLOR1, cursorColor1);
+  void add_cursorColor1(int32_t cursorColor1) {
+    fbb_.AddElement<int32_t>(GDWaveObject::VT_CURSORCOLOR1, cursorColor1, 0);
   }
-  void add_cursorColor2(const CTSerialize::CCColor3B *cursorColor2) {
-    fbb_.AddStruct(GDWaveObject::VT_CURSORCOLOR2, cursorColor2);
+  void add_cursorColor2(int32_t cursorColor2) {
+    fbb_.AddElement<int32_t>(GDWaveObject::VT_CURSORCOLOR2, cursorColor2, 0);
   }
   void add_cursorID(int32_t cursorID) {
     fbb_.AddElement<int32_t>(GDWaveObject::VT_CURSORID, cursorID, 0);
@@ -582,8 +582,8 @@ struct GDWaveObjectBuilder {
   void add_cursorHasGlow(bool cursorHasGlow) {
     fbb_.AddElement<uint8_t>(GDWaveObject::VT_CURSORHASGLOW, static_cast<uint8_t>(cursorHasGlow), 0);
   }
-  void add_cursorGlowColor(const CTSerialize::CCColor3B *cursorGlowColor) {
-    fbb_.AddStruct(GDWaveObject::VT_CURSORGLOWCOLOR, cursorGlowColor);
+  void add_cursorGlowColor(int32_t cursorGlowColor) {
+    fbb_.AddElement<int32_t>(GDWaveObject::VT_CURSORGLOWCOLOR, cursorGlowColor, 0);
   }
   explicit GDWaveObjectBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -598,11 +598,11 @@ struct GDWaveObjectBuilder {
 
 inline ::flatbuffers::Offset<GDWaveObject> CreateGDWaveObject(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    const CTSerialize::CCColor3B *cursorColor1 = nullptr,
-    const CTSerialize::CCColor3B *cursorColor2 = nullptr,
+    int32_t cursorColor1 = 0,
+    int32_t cursorColor2 = 0,
     int32_t cursorID = 0,
     bool cursorHasGlow = false,
-    const CTSerialize::CCColor3B *cursorGlowColor = nullptr) {
+    int32_t cursorGlowColor = 0) {
   GDWaveObjectBuilder builder_(_fbb);
   builder_.add_cursorGlowColor(cursorGlowColor);
   builder_.add_cursorID(cursorID);
@@ -871,14 +871,11 @@ inline const ::flatbuffers::TypeTable *GDGameObjectMinTypeTable() {
 
 inline const ::flatbuffers::TypeTable *GDWaveObjectTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_SEQUENCE, 0, 0 },
-    { ::flatbuffers::ET_SEQUENCE, 0, 0 },
+    { ::flatbuffers::ET_INT, 0, -1 },
+    { ::flatbuffers::ET_INT, 0, -1 },
     { ::flatbuffers::ET_INT, 0, -1 },
     { ::flatbuffers::ET_BOOL, 0, -1 },
-    { ::flatbuffers::ET_SEQUENCE, 0, 0 }
-  };
-  static const ::flatbuffers::TypeFunction type_refs[] = {
-    CTSerialize::CCColor3BTypeTable
+    { ::flatbuffers::ET_INT, 0, -1 }
   };
   static const char * const names[] = {
     "cursorColor1",
@@ -888,7 +885,7 @@ inline const ::flatbuffers::TypeTable *GDWaveObjectTypeTable() {
     "cursorGlowColor"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 5, type_codes, type_refs, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 5, type_codes, nullptr, nullptr, nullptr, names
   };
   return &tt;
 }
