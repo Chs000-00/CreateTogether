@@ -226,7 +226,7 @@ void NetManager::receiveData() {
             return;
         }
         
-        auto out = this->parseData(messageHeader);
+        auto out = this->parseData(messageHeader, msg->m_identityPeer);
 
         auto s = flatbuffers::FlatBufferToString(data, CTSerialize::MessageHeaderTypeTable());
         log::debug("RecvMessage:{}", s);
@@ -242,7 +242,7 @@ void NetManager::receiveData() {
     }
 }
 
-Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
+Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg, SteamNetworkingIdentity msgSource) {
     auto dmsg = msg->body();
     switch (msg->body_type()) {
         case CTSerialize::MessageBody_CreateObjects: {
@@ -291,7 +291,7 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
         }
 
         case CTSerialize::MessageBody_ReturnLevelString: {
-            SERIALIZE_AND_RECEIVE(ReturnLevelString);
+            SERIALIZE_AND_RECEIVE(ReturnLevelString, msgSource);
             break;
         }
 

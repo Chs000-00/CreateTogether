@@ -3,6 +3,7 @@
 #include "../../hooks/ModifyEditorLayer.hpp"
 #include "../../hooks/ModifyGameObject.hpp"
 #include "../../utils/Utills.hpp"
+#include "../../types/Cursor.hpp"
 #include <Geode/binding/EditorUI.hpp>
 
 
@@ -192,21 +193,44 @@ Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg) {
     auto netManager = NetManager::get();
 
     if (netManager->m_isHost) {
-        // Say it back
+        sendReturnLevelString();
     }
     
     if (auto wave = msg->playerWave()) {
 
+        netManager->m_playerCursors.push_back(CreateTogetherCursor::create(CreateTogetherCursor::CursorData(
+            wave->cursorColor1(),
+            wave->cursorColor2(),
+            wave->cursorID(),
+            wave->cursorHasGlow(),
+            wave->cursorGlowColor()
+        )));
+    
     } 
     else {
-        return Err("recvRequestLevel: message has no wave object. Using default");
+        netManager->m_playerCursors.push_back(CreateTogetherCursor::create(2, 3));
+        return Err("recvRequestLevel: message has no wave object. Using default wave.");
     }
     return Ok(0);
 }
 
-Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg) {
+Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg, SteamNetworkingIdentity msgSource) {
     auto netManager = NetManager::get();
-    return Err("Not finished");
+
+    if (!netManager->m_isRequestingLevelString) {
+        return Err("recvReturnLevelString: Not requesting a level string.");
+    }
+
+    #ifndef STEAMWORKS
+
+    if (netManager->m_hostID != msgSource.GetSteamID()) {
+        return Err("eActionReturnLevelString: Non-Host level string");
+    }
+
+    #endif
+
+
+    return Ok(0);
 }
 
 Result<uint8_t> recvUpdateSong(const CTSerialize::UpdateSong* msg) {

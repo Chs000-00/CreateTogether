@@ -1,5 +1,7 @@
 #include "HighLevelHeader.hpp"
 #include "SharedHighLevelHeaders.hpp"
+#include "../../hooks/ModifyEditorLayer.hpp"
+#include "../../hooks/ModifyGameObject.hpp"
 
 void addStringToIDList(IDList& uniqueIDList, const char* str) {
     auto netManager = NetManager::get();
@@ -99,7 +101,24 @@ void sendRequestLevel() {
 }
 
 void sendReturnLevelString() {
-    
+    auto netManager = NetManager::get();
+    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
+
+    if (!level) {
+        log::warn("sendReturnLevelString: LevelEditorLayer::get() returned nullptr");
+        return;
+    }
+
+    IDList idlist;
+
+    for (auto obj : CCArrayExt<MyGameObject*>(level->m_objects)) {
+        addStringToIDList(idlist, obj->m_fields->m_veryUniqueID.c_str());
+    }
+
+    auto returnLevelStringOffset = CTSerialize::CreateReturnLevelString(netManager->m_builder, netManager->m_builder.CreateVector(idlist), netManager->m_builder.CreateString(level->getLevelString()));
+    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_ReturnLevelString, returnLevelStringOffset.Union());
+    netManager->sendMessage(messageHeaderOffset);
+    netManager->m_builder.Clear();
 }
 
 void sendUpdateSong(uint64_t songID) {

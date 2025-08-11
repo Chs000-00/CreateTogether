@@ -96,7 +96,7 @@ class NetManager {
         // Before the level was loaded.
         bool m_ignoreMessages = false;
 
-        std::vector<CreateTogetherCursor> m_playerCursors;
+        std::vector<CreateTogetherCursor*> m_playerCursors;
 
     private:
         // Sends all the currently queued data. Oh and also deletes the data afterward.
@@ -105,7 +105,7 @@ class NetManager {
         // Receive data and then parse it
         void receiveData();
         // Parse data. Called in receiveData.
-        Result<uint8_t> parseData(const CTSerialize::MessageHeader* msg);
+        Result<uint8_t> parseData(const CTSerialize::MessageHeader* msg, SteamNetworkingIdentity msgSource);
 
         // Steamnetworking has no way to kick/ban users. I think? Instead just remove the dudes access to m_playersInLobby and any
         // Further attempts to join (this member is specificaly for fetchMemberList())
