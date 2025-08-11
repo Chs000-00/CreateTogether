@@ -188,6 +188,27 @@ Result<uint8_t> recvChangeDefaultColor(const CTSerialize::ChangeDefaultColor* ms
     return Ok(0);
 }
 
+Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg) {
+    auto netManager = NetManager::get();
+
+    if (netManager->m_isHost) {
+        // Say it back
+    }
+    
+    if (auto wave = msg->playerWave()) {
+
+    } 
+    else {
+        return Err("recvRequestLevel: message has no wave object. Using default");
+    }
+    return Ok(0);
+}
+
+Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg) {
+    auto netManager = NetManager::get();
+    return Err("Not finished");
+}
+
 Result<uint8_t> recvUpdateSong(const CTSerialize::UpdateSong* msg) {
     auto songID = msg->songID();
     auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());

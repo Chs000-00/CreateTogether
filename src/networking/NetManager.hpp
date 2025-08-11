@@ -13,6 +13,7 @@
 #include <ctserialize_generated.h>
 
 #include "../types/LobbyData.hpp"
+#include "../types/Cursor.hpp"
 #include "../ui/WaitingForHostPopup.hpp"
 
 class NetManager {
@@ -54,7 +55,7 @@ class NetManager {
         // Steam LobbyID
         uint64 m_lobbyId;
         
-        // Is currently hosting? This shouldn't be relied upon, use the steamworks function instead in some cases.
+        // Is this the host? This shouldn't be relied upon, use the steamworks function instead in some cases.
         bool m_isHost = false;
 
         // Who is the host? Used to check if messages come from the host.
@@ -94,6 +95,8 @@ class NetManager {
         // Ignore recieved messages. This should be true to avoid calling message functions while playtesting or
         // Before the level was loaded.
         bool m_ignoreMessages = false;
+
+        std::vector<CreateTogetherCursor> m_playerCursors;
 
     private:
         // Sends all the currently queued data. Oh and also deletes the data afterward.

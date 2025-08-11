@@ -28,6 +28,8 @@ void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv,
 
 void sendRequestLevel();
 
+void sendReturnLevelString();
+
 void sendUpdateSong(uint64_t songID);
 
 // Line can be anything if arttype is not line

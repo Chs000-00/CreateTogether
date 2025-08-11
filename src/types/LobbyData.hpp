@@ -2,6 +2,7 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/ui/ScrollLayer.hpp>
+#include <Geode/binding/SimplePlayer.hpp>
 
 #ifdef STEAMWORKS
     #include <isteammatchmaking.h>
@@ -26,3 +27,4 @@ struct lobbyOptions {
     // TODO: Implement
     bool canFriendsJoin = true;
 };
+

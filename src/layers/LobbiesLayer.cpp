@@ -80,8 +80,9 @@ void LobbiesLayer::refreshLobbyList(CCObject* sender) {
 
     this->m_menu->getChildByID("loading-spinner")->setVisible(true);
 
-	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
     // SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterFar);
+    AddRequestLobbyListStringFilter("lobby_type", MOD_LOBBY_ID, k_ELobbyComparisonEqual);
+	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
     this->m_lobbyMatchListCallResult.Set(hSteamAPICall, this, &LobbiesLayer::onLobbyMatchList);
 
 }

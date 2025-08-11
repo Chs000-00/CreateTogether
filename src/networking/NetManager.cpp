@@ -2,7 +2,7 @@
 #include "NetManager.hpp"
 #include "./highlevel/NetRecv.hpp"
 #include "../utils/Utills.hpp"
-    #include <flatbuffers/minireflect.h>
+#include <flatbuffers/minireflect.h>
 
 
 // TODO: Try compiling ValveSoftware/GameNetworkingSockets:partner to possibly fix this ugly crap?
@@ -282,6 +282,16 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg) {
 
         case CTSerialize::MessageBody_ChangeDefaultColor: {
             SERIALIZE_AND_RECEIVE(ChangeDefaultColor);
+            break;
+        }
+
+        case CTSerialize::MessageBody_RequestLevel: {
+            SERIALIZE_AND_RECEIVE(RequestLevel);
+            break;
+        }
+
+        case CTSerialize::MessageBody_ReturnLevelString: {
+            SERIALIZE_AND_RECEIVE(ReturnLevelString);
             break;
         }
 

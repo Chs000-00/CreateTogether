@@ -92,10 +92,14 @@ void sendRequestLevel() {
     auto netManager = NetManager::get();
     auto gameManager = GameManager::get();
     auto wave = CTSerialize::CreateGDWaveObject(netManager->m_builder, gameManager->getPlayerColor(), gameManager->getPlayerColor2(), gameManager->getPlayerDart(), gameManager->getPlayerGlow(), gameManager->getPlayerGlowColor());
-    auto requestLevelOffset = CTSerialize::CreateRequestLevel(netManager->m_builder, &wave);
+    auto requestLevelOffset = CTSerialize::CreateRequestLevel(netManager->m_builder, wave);
     auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_RequestLevel, requestLevelOffset.Union());
     netManager->sendMessage(messageHeaderOffset);
     netManager->m_builder.Clear();
+}
+
+void sendReturnLevelString() {
+    
 }
 
 void sendUpdateSong(uint64_t songID) {
