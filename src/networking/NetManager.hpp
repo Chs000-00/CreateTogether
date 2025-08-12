@@ -11,6 +11,7 @@
 
 #include <flatbuffers/flatbuffers.h>
 #include <ctserialize_generated.h>
+#include <ctcursor_generated.h>
 
 #include "../types/LobbyData.hpp"
 #include "../types/Cursor.hpp"
@@ -86,6 +87,7 @@ class NetManager {
         // Sends an entire message to a single person
         void sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out);
 
+        void sendCursorUpdateToAll();
 
         // Was the data sent from another user?
         // Determines whether or not to run the original function. 

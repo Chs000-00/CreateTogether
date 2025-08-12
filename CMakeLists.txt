@@ -16,21 +16,7 @@ set(COMPILE_DEBUG_SERVER ON)
 
 if (COMPILE_DEBUG_SERVER)
     message(status "Compiling debug server")
-
-    # project(CTDebugServer VERSION 1.0.0)
-
-    file(GLOB SERVER_SOURCES
-        src/debug/server.cpp
-    )
-
-    add_executable(server ${SERVER_SOURCES})
-
-    target_link_libraries(server
-        ${CMAKE_CURRENT_SOURCE_DIR}/lib/SteamWorkless/GameNetworkingSockets.lib
-    )
-
-    target_include_directories(server PUBLIC include)
-
+    add_subdirectory(src/debug)
     string( REPLACE "/DNDEBUG" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 
 endif()
@@ -110,6 +96,3 @@ target_include_directories(${PROJECT_NAME}
 
 # Set up dependencies, resources, and link Geode.
 setup_geode_mod(${PROJECT_NAME})
-
-# UUIDv4 was removed a long time ago, and is no longer used.
-# CPMAddPackage("gh:crashoz/uuid_v4#41238a4")

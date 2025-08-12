@@ -216,6 +216,7 @@ Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg) {
 
 Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg, SteamNetworkingIdentity msgSource) {
     auto netManager = NetManager::get();
+    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
 
     if (!netManager->m_isRequestingLevelString) {
         return Err("recvReturnLevelString: Not requesting a level string.");
@@ -229,6 +230,17 @@ Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg,
 
     #endif
 
+    auto uniqueIDList = msg->uniqueIDList();
+    auto objectArr = CCArrayExt<MyGameObject*>(level->createObjectsFromString(msg->levelString()->str(), false, false));
+
+    for (auto i = 0; i != std::min(objectArr.size(), (size_t)uniqueIDList->size()); ++i) {
+        auto mObject = (objectArr[i]);
+        auto uid = uniqueIDList->Get(i)->str();
+        mObject->m_fields->m_veryUniqueID = uid;
+        level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, uid);
+    }
+
+	netManager->m_isRequestingLevelString = false;
 
     return Ok(0);
 }

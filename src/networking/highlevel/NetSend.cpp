@@ -8,6 +8,10 @@ void addStringToIDList(IDList& uniqueIDList, const char* str) {
     uniqueIDList.push_back(netManager->m_builder.CreateString(str));
 }
 
+void sendCursorUpdates() {
+
+}
+
 void sendCreateObjects(const char* uniqueID, uint64_t objectID, CCPoint pos, float rotation, bool isHighDetail, bool noGlow, bool noEnter, bool flipX, bool flipY, float scaleX, float scaleY) {
     auto netManager = NetManager::get();
     auto objectPos = CTSerialize::CCPosI(pos.x, pos.y);
@@ -18,7 +22,6 @@ void sendCreateObjects(const char* uniqueID, uint64_t objectID, CCPoint pos, flo
     auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_CreateObjects, createObjectsOffset.Union());
     netManager->sendMessage(messageHeaderOffset);
     netManager->m_builder.Clear();
-
 }
 
 void sendDeleteObjects(IDList& uniqueIDList) {

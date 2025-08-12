@@ -43,4 +43,4 @@ public:
     void loadDataToList();
 };
 
-#endif STEAMWORKS
+#endif
