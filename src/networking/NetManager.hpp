@@ -57,7 +57,12 @@ class NetManager {
         uint64 m_lobbyId;
         
         // Is this the host? This shouldn't be relied upon, use the steamworks function instead in some cases.
-        bool m_isHost = false;
+
+        #ifdef STEAMWORKS
+            bool m_isHost = false;
+        #else
+            bool m_isHost = true;    
+        #endif
 
         // Who is the host? Used to check if messages come from the host.
         CSteamID m_hostID;

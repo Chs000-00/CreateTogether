@@ -1,6 +1,7 @@
 #include "../hooks/ModifyGameManager.hpp"
 #include "NetManager.hpp"
 #include "./highlevel/NetRecv.hpp"
+#include "./highlevel/NetSend.hpp"
 #include "../utils/Utills.hpp"
 #include <flatbuffers/minireflect.h>
 
@@ -144,11 +145,7 @@ void NetManager::enterLevelEditor() {
 
     host.SetSteamID(this->m_hostID);
 
-    auto requestLevelStringOffset = CTSerialize::CreateRequestLevel(this->m_builder);
-    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(this->m_builder, CTSerialize::MessageBody_RequestLevel, requestLevelStringOffset.Union());
-
-    this->sendMessageToUser(host, messageHeaderOffset);
-    this->m_builder.Clear();
+    sendRequestLevel();
 
     switchToScene(lev);
 }

@@ -1,7 +1,9 @@
+#include "Geode/loader/Log.hpp"
 #include "HighLevelHeader.hpp"
 #include "SharedHighLevelHeaders.hpp"
 #include "../../hooks/ModifyEditorLayer.hpp"
 #include "../../hooks/ModifyGameObject.hpp"
+#include <cmath>
 
 void addStringToIDList(IDList& uniqueIDList, const char* str) {
     auto netManager = NetManager::get();
