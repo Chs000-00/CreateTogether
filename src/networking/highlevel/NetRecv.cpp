@@ -198,13 +198,18 @@ Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg) {
     
     if (auto wave = msg->playerWave()) {
 
-        netManager->m_playerCursors.push_back(CreateTogetherCursor::create(CreateTogetherCursor::CursorData(
+        auto cursor = CreateTogetherCursor::create(CreateTogetherCursor::CursorData(
             wave->cursorColor1(),
             wave->cursorColor2(),
             wave->cursorID(),
             wave->cursorHasGlow(),
             wave->cursorGlowColor()
-        )));
+        ));
+
+        // TODO: release this
+        cursor->retain();
+
+        netManager->m_playerCursors.push_back(cursor);
     
     } 
     else {

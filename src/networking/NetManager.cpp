@@ -106,7 +106,6 @@ void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out
         SteamNetworkingSockets()->SendMessageToConnection(this->connection, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, nullptr);
     #endif
 }
-
  
 
 void NetManager::enterLevelEditor() {

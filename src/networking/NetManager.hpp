@@ -11,11 +11,11 @@
 
 #include <flatbuffers/flatbuffers.h>
 #include <ctserialize_generated.h>
-#include <ctcursor_generated.h>
 
 #include "../types/LobbyData.hpp"
 #include "../types/Cursor.hpp"
 #include "../ui/WaitingForHostPopup.hpp"
+#include "cursor/CursorManager.hpp"
 
 class NetManager {
     public:
@@ -25,6 +25,9 @@ class NetManager {
 
         // Returns this->m_wasDataSent
         static bool getWasDataSent();
+
+        CursorManager* m_CursorManager = new CursorManager;
+        
 
 
         // Called each tick or smth idk how this shit works
@@ -92,8 +95,6 @@ class NetManager {
         // Sends an entire message to a single person
         void sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Offset<CTSerialize::MessageHeader> out);
 
-        void sendCursorUpdateToAll();
-
         // Was the data sent from another user?
         // Determines whether or not to run the original function. 
         // This is set to true temporarily inside a recv function.
@@ -102,9 +103,6 @@ class NetManager {
         // Ignore recieved messages. This should be true to avoid calling message functions while playtesting or
         // Before the level was loaded.
         bool m_ignoreMessages = false;
-
-        std::vector<CreateTogetherCursor*> m_playerCursors;
-
     private:
         // Sends all the currently queued data. Oh and also deletes the data afterward.
         // void sendQueuedData();
