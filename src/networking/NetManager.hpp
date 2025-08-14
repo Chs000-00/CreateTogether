@@ -26,7 +26,7 @@ class NetManager {
         // Returns this->m_wasDataSent
         static bool getWasDataSent();
 
-        CursorManager* m_CursorManager = new CursorManager;
+        CursorManager* m_cursorManager = new CursorManager;
         
 
 
@@ -34,7 +34,7 @@ class NetManager {
         void update();
 
         // Called to enter the level editor
-        void enterLevelEditor();
+        void enterLevelEditorPrelude();
         
         // Joins a steam lobby with a specified ID
         #ifdef STEAMWORKS

@@ -191,6 +191,7 @@ Result<uint8_t> recvChangeDefaultColor(const CTSerialize::ChangeDefaultColor* ms
 
 Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg) {
     auto netManager = NetManager::get();
+    auto cursorManager = CursorManager::get();
 
     if (netManager->m_isHost) {
         sendReturnLevelString();
@@ -209,16 +210,17 @@ Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg) {
         // TODO: release this
         cursor->retain();
 
-        netManager->m_playerCursors.push_back(cursor);
+        cursorManager->m_playerCursors.push_back(cursor);
     
     } 
     else {
-        netManager->m_playerCursors.push_back(CreateTogetherCursor::create(2, 3));
+        cursorManager->m_playerCursors.push_back(CreateTogetherCursor::create(2, 3));
         return Err("recvRequestLevel: message has no wave object. Using default wave.");
     }
     return Ok(0);
 }
 
+// TODO: Enter the level editor only when this is called, so we can properly load the level.
 Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg, SteamNetworkingIdentity msgSource) {
     auto netManager = NetManager::get();
     auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
@@ -227,16 +229,56 @@ Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg,
         return Err("recvReturnLevelString: Not requesting a level string.");
     }
 
-    #ifndef STEAMWORKS
+    #ifdef NO_STEAMWORKS
 
     if (netManager->m_hostID != msgSource.GetSteamID()) {
         return Err("eActionReturnLevelString: Non-Host level string");
     }
 
-    #endif
+    if (msg->levelString()->str() == "ignore") {
+        log::info("Ignored");
+        auto gameLevel = GJGameLevel::create();
+        gameLevel->m_isEditable = true;
+        gameLevel->m_levelType = GJLevelType::Editor;
+        // gameLevel->m_levelDesc += "Created with Create Together";
+        auto lev = LevelEditorLayer::create(gameLevel, false);
 
+        // Workaround to fix movement stuff
+        netManager->m_wasDataSent = true;
+        switchToScene(lev);
+        netManager->m_wasDataSent = false;
+        netManager->m_isRequestingLevelString = false;
+
+        log::info("IsInLobby {}", netManager->m_isInLobby);
+
+        return Ok(1);
+    }
+
+    #endif
     auto uniqueIDList = msg->uniqueIDList();
-    auto objectArr = CCArrayExt<MyGameObject*>(level->createObjectsFromString(msg->levelString()->str(), false, false));
+
+    // this->m_isInEditorLayer = false;
+    auto gameLevel = GJGameLevel::create();
+
+    auto dsDict = std::make_unique<DS_Dictionary>();
+    if (!dsDict.get()->loadRootSubDictFromString(msg->levelString()->str())) {
+        return Err("recvReturnLevelString: Failed to load level data");
+    }
+
+    dsDict->stepIntoSubDictWithKey("root");
+
+    gameLevel->dataLoaded(dsDict.get());
+    gameLevel->m_isEditable = true;
+    gameLevel->m_levelType = GJLevelType::Editor;
+    // gameLevel->m_levelDesc += "Created with Create Together";
+    auto lev = LevelEditorLayer::create(gameLevel, false);
+
+    auto objectArr = CCArrayExt<MyGameObject*>(lev->m_objects);
+
+    // Workaround to fix movement stuff
+    netManager->m_wasDataSent = true;
+    switchToScene(lev);
+    netManager->m_wasDataSent = false;
 
     for (auto i = 0; i != std::min(objectArr.size(), (size_t)uniqueIDList->size()); ++i) {
         auto mObject = (objectArr[i]);
@@ -246,7 +288,6 @@ Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg,
     }
 
 	netManager->m_isRequestingLevelString = false;
-
     return Ok(0);
 }
 

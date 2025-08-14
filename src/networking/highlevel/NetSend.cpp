@@ -120,7 +120,12 @@ void sendReturnLevelString() {
         addStringToIDList(idlist, obj->m_fields->m_veryUniqueID.c_str());
     }
 
-    auto returnLevelStringOffset = CTSerialize::CreateReturnLevelString(netManager->m_builder, netManager->m_builder.CreateVector(idlist), netManager->m_builder.CreateString(level->getLevelString()));
+    auto dsDict = std::make_unique<DS_Dictionary>();
+    level->m_level->encodeWithCoder(dsDict.get());
+    auto data = dsDict->saveRootSubDictToString();
+
+
+    auto returnLevelStringOffset = CTSerialize::CreateReturnLevelString(netManager->m_builder, netManager->m_builder.CreateVector(idlist), netManager->m_builder.CreateString(data));
     auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_ReturnLevelString, returnLevelStringOffset.Union());
     netManager->sendMessage(messageHeaderOffset);
     netManager->m_builder.Clear();

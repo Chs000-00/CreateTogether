@@ -50,7 +50,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
 
     void joinServer() {
         auto netManager = NetManager::get();
-        netManager->enterLevelEditor();
+        netManager->enterLevelEditorPrelude();
     }
     
     #endif

@@ -108,18 +108,12 @@ void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out
 }
  
 
-void NetManager::enterLevelEditor() {
+void NetManager::enterLevelEditorPrelude() {
 
     log::info("Enter Level Editor Called.");
 
     WaitingForHostPopup::create();
     this->m_isRequestingLevelString = true;
-    // this->m_isInEditorLayer = false;
-    auto gameLevel = GJGameLevel::create();
-    gameLevel->m_isEditable = true;
-    gameLevel->m_levelType = GJLevelType::Editor;
-    // gameLevel->m_levelDesc += "Created with Create Together";
-    auto lev = LevelEditorLayer::create(gameLevel, false);
 
     #ifdef NO_STEAMWORKS
         SteamNetworkingIPAddr serverAddr;
@@ -134,10 +128,11 @@ void NetManager::enterLevelEditor() {
         if (this->connection == k_HSteamNetConnection_Invalid) {
             log::warn("Could not create a connection");
         }
-        this->m_isInLobby = true;
-        log::info("IsInLobby {}", this->m_isInLobby);
 
     #endif
+
+    this->m_isInLobby = true;
+
     this->fetchMemberList();
 
     SteamNetworkingIdentity host;
@@ -145,8 +140,6 @@ void NetManager::enterLevelEditor() {
     host.SetSteamID(this->m_hostID);
 
     sendRequestLevel();
-
-    switchToScene(lev);
 }
 
 

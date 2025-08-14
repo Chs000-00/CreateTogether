@@ -68,6 +68,14 @@ void pollMessages() {
 
         std::cout << "RecvMessage:" << s << '\n';
 
+        if (messageHeader->body_type() == CTSerialize::MessageBody_RequestLevel && connections.size() == 1) {
+            flatbuffers::FlatBufferBuilder builder;
+            auto returnLvlString = CTSerialize::CreateReturnLevelStringDirect(builder, nullptr, "ignore");
+            auto out = CTSerialize::CreateMessageHeader(builder, CTSerialize::MessageBody_ReturnLevelString, returnLvlString.Union());
+            builder.Finish(out);
+            SteamNetworkingSockets()->SendMessageToConnection(message->m_conn, builder.GetBufferPointer(), builder.GetSize(), k_nSteamNetworkingSend_Reliable, nullptr);        
+        }
+
         sendMessageToAllWithException(data, message->GetSize(), message->m_conn);
 
 		// TODO: Call release earlier

@@ -33,6 +33,7 @@ file(GLOB SOURCES
     src/utils/*.cpp
     src/networking/*.cpp
     src/networking/highLevel/*.cpp
+    src/networking/cursor/*.cpp
 )
 # Set up the mod binary
 add_library(${PROJECT_NAME} SHARED ${SOURCES})

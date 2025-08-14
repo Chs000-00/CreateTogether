@@ -89,7 +89,7 @@ void SteamManager::onLobbyEnter(LobbyEnter_t* pCallback) {
         log::info("onLobbyEntered called as host!");
     } else {
         netManager->m_lobbyId = pCallback->m_ulSteamIDLobby;
-        netManager->enterLevelEditor();
+        netManager->enterLevelEditorPrelude();
     }
 
     netManager->m_hostID = SteamMatchmaking()->GetLobbyOwner(netManager->m_lobbyId);
