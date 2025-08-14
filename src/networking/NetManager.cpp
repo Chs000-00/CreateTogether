@@ -112,6 +112,9 @@ void NetManager::enterLevelEditorPrelude() {
 
     log::info("Enter Level Editor Called.");
 
+    // Workaround to fix movement stuff
+    this->m_wasDataSent = true;
+
     WaitingForHostPopup::create();
     this->m_isRequestingLevelString = true;
 

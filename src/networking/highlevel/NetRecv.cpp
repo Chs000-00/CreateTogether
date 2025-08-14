@@ -243,8 +243,6 @@ Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg,
         // gameLevel->m_levelDesc += "Created with Create Together";
         auto lev = LevelEditorLayer::create(gameLevel, false);
 
-        // Workaround to fix movement stuff
-        netManager->m_wasDataSent = true;
         switchToScene(lev);
         netManager->m_wasDataSent = false;
         netManager->m_isRequestingLevelString = false;
@@ -265,18 +263,16 @@ Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg,
         return Err("recvReturnLevelString: Failed to load level data");
     }
 
-    dsDict->stepIntoSubDictWithKey("root");
+    // dsDict->stepIntoSubDictWithKey("root");
 
     gameLevel->dataLoaded(dsDict.get());
     gameLevel->m_isEditable = true;
     gameLevel->m_levelType = GJLevelType::Editor;
-    // gameLevel->m_levelDesc += "Created with Create Together";
+    // gameLevel->m_levelDesc += "Created with Create Together. Its creating together time";
     auto lev = LevelEditorLayer::create(gameLevel, false);
 
     auto objectArr = CCArrayExt<MyGameObject*>(lev->m_objects);
 
-    // Workaround to fix movement stuff
-    netManager->m_wasDataSent = true;
     switchToScene(lev);
     netManager->m_wasDataSent = false;
 
