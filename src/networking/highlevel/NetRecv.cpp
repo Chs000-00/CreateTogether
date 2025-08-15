@@ -256,17 +256,19 @@ Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg,
     auto uniqueIDList = msg->uniqueIDList();
 
     // this->m_isInEditorLayer = false;
-    auto gameLevel = GJGameLevel::create();
 
-    auto dsDict = std::make_unique<DS_Dictionary>();
-    if (!dsDict.get()->loadRootSubDictFromString(msg->levelString()->str())) {
+    auto dict = new DS_Dictionary();
+
+    // dict->loadRootSubDictFromString(msg->levelString()->str());
+
+    if (!dict->loadRootSubDictFromString(msg->levelString()->str())) {
         return Err("recvReturnLevelString: Failed to load level data");
     }
 
-    // dsDict->stepIntoSubDictWithKey("root");
-
-    gameLevel->dataLoaded(dsDict.get());
-    gameLevel->m_isEditable = true;
+    // dict->stepIntoSubDictWithKey("root");
+    auto gameLevel = GJGameLevel::create();
+    gameLevel->dataLoaded(dict);
+    // delete dict;
     gameLevel->m_levelType = GJLevelType::Editor;
     // gameLevel->m_levelDesc += "Created with Create Together. Its creating together time";
     auto lev = LevelEditorLayer::create(gameLevel, false);
