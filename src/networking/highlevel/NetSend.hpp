@@ -1,5 +1,5 @@
 #pragma once
-#include "SharedHighLevelHeaders.hpp"
+#include "SharedHighLevelHeaders.hpp" // IWYU pragma: keep
 
 // Too lazy to write out std::vector<flatbuffers::Offset<flatbuffers::String>>
 typedef std::vector<flatbuffers::Offset<flatbuffers::String>> IDList;

@@ -9,10 +9,6 @@ void addStringToIDList(IDList& uniqueIDList, const char* str) {
     uniqueIDList.push_back(netManager->m_builder.CreateString(str));
 }
 
-void sendCursorUpdates() {
-
-}
-
 void sendCreateObjects(const char* uniqueID, uint64_t objectID, CCPoint pos, float rotation, bool isHighDetail, bool noGlow, bool noEnter, bool flipX, bool flipY, float scaleX, float scaleY) {
     auto netManager = NetManager::get();
     auto objectPos = CTSerialize::CCPosI(pos.x, pos.y);
@@ -119,10 +115,12 @@ void sendReturnLevelString() {
         addStringToIDList(idlist, obj->m_fields->m_veryUniqueID.c_str());
     }
 
-    auto dict = new DS_Dictionary();
-    level->m_level->encodeWithCoder(dict);
-    auto data = dict->saveRootSubDictToString();
+    // auto dict = new DS_Dictionary();
+    // level->m_level->encodeWithCoder(dict);
+    // auto data = dict->saveRootSubDictToString();
     // delete dict;
+
+    auto data = level->getLevelString();
 
     auto returnLevelStringOffset = CTSerialize::CreateReturnLevelString(netManager->m_builder, netManager->m_builder.CreateVector(idlist), netManager->m_builder.CreateString(data));
     auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_ReturnLevelString, returnLevelStringOffset.Union());

@@ -80,14 +80,14 @@ void pollMessages() {
 
 		// TODO: Call release earlier
         message->Release();
-        delete data;
+        delete[] data;
     }
 }
 
 void initServer() {
     SteamNetworkingIPAddr serverLocalAddr;
     serverLocalAddr.Clear();
-	serverLocalAddr.m_port = DEDICATED_PORT;
+	serverLocalAddr.m_port = DEDICATED_EDITOR_PORT;
     SteamNetworkingConfigValue_t opt;
     opt.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallback );
     auto listenSocket = SteamNetworkingSockets()->CreateListenSocketIP( serverLocalAddr, 1, &opt );
@@ -115,8 +115,8 @@ int main(int argc, char *argv[]) {
 
     std::cout << "MOD_LOBBY_ID == " MOD_LOBBY_ID "\n";
     std::cout << "MOD_VERSION == " MOD_VERSION "\n";
-    std::cout << "DEDICATED_PORT == " << DEDICATED_PORT << '\n';
-    std::cout << "Hosting debug server on 127.0.0.1:" << DEDICATED_PORT << '\n';
+    std::cout << "DEDICATED_EDITOR_PORT == " << DEDICATED_EDITOR_PORT << '\n';
+    std::cout << "Hosting debug server on 127.0.0.1:" << DEDICATED_EDITOR_PORT << '\n';
 
     initLib();
     initServer();

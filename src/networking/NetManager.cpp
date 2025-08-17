@@ -1,15 +1,20 @@
+#include <Geode/Geode.hpp>
 #include "../hooks/ModifyGameManager.hpp"
 #include "NetManager.hpp"
-#include "./highlevel/NetRecv.hpp"
 #include "./highlevel/NetSend.hpp"
 #include "../utils/Utills.hpp"
+#include "highlevel/NetRecv.hpp" // IWYU pragma: keep
 #include <flatbuffers/minireflect.h>
+#include <ctserialize_generated.h>
+#include "../ui/WaitingForHostPopup.hpp"
 
+using namespace geode::prelude;
 
 // TODO: Try compiling ValveSoftware/GameNetworkingSockets:partner to possibly fix this ugly crap?
 #ifdef NO_STEAMWORKS
     #include <debug/steamnetworkingsockets.h>
     #include <debug/isteamnetworkingutils.h>
+    #include "debug/isteamnetworkingsockets.h"
     #include "../debug/client.hpp"
 #endif
 
@@ -86,7 +91,7 @@ void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Off
     log::debug("SentMessage:{}", s);
 
     #ifdef STEAMWORKS
-        SteamNetworkingMessages()->SendMessageToUser(usr, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
+        SteamNetworkingMessages()->SendMessageToUser(usr, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, EDITOR_CHANNEL);
     #else
         SteamNetworkingSockets()->SendMessageToConnection(this->connection, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, nullptr);
     #endif
@@ -100,7 +105,7 @@ void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out
 
     #ifdef STEAMWORKS
         for (auto const& member : this->m_playersInLobby) {
-            SteamNetworkingMessages()->SendMessageToUser(member, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, 0);
+            SteamNetworkingMessages()->SendMessageToUser(member, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, EDITOR_CHANNEL);
         }
     #else
         SteamNetworkingSockets()->SendMessageToConnection(this->connection, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, nullptr);
@@ -120,14 +125,14 @@ void NetManager::enterLevelEditorPrelude() {
 
     #ifdef NO_STEAMWORKS
         SteamNetworkingIPAddr serverAddr;
-        serverAddr.SetIPv4(0x7f000001, DEDICATED_PORT);
+        serverAddr.SetIPv4(0x7f000001, DEDICATED_EDITOR_PORT);
         char szAddr[ SteamNetworkingIPAddr::k_cchMaxString ];
-        serverAddr.ToString( szAddr, sizeof(szAddr), true );
+        serverAddr.ToString(szAddr, sizeof(szAddr), true);
         log::info("Connecting to {}", szAddr);
 
         SteamNetworkingConfigValue_t opt;
-        opt.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallback );
-        this->connection = SteamNetworkingSockets()->ConnectByIPAddress( serverAddr, 1, &opt );
+        opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallback);
+        this->connection = SteamNetworkingSockets()->ConnectByIPAddress(serverAddr, 1, &opt);
         if (this->connection == k_HSteamNetConnection_Invalid) {
             log::warn("Could not create a connection");
         }
@@ -189,7 +194,7 @@ void NetManager::receiveData() {
     SteamNetworkingMessage_t* messageList[MAX_MESSAGES];
 
     #ifdef STEAMWORKS
-        auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(0, messageList, MAX_MESSAGES);
+        auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(EDITOR_CHANNEL, messageList, MAX_MESSAGES);
     #else
         auto numMessages = SteamNetworkingSockets()->ReceiveMessagesOnConnection(this->connection, messageList, MAX_MESSAGES);
     #endif
@@ -230,7 +235,7 @@ void NetManager::receiveData() {
 
         // TODO: Call release earlier
         msg->Release();
-        delete data;
+        delete[] data;
     }
 }
 

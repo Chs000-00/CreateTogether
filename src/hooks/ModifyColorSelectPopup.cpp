@@ -1,6 +1,5 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/ColorSelectPopup.hpp>
-#include "ModifyGameManager.hpp"
 #include "ModifyGameObject.hpp"
 #include "HighLevelHeader.hpp"
 

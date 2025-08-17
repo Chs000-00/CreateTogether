@@ -223,7 +223,6 @@ Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg) {
 // TODO: Enter the level editor only when this is called, so we can properly load the level.
 Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg, SteamNetworkingIdentity msgSource) {
     auto netManager = NetManager::get();
-    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
 
     if (!netManager->m_isRequestingLevelString) {
         return Err("recvReturnLevelString: Not requesting a level string.");
@@ -255,34 +254,31 @@ Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg,
     #endif
     auto uniqueIDList = msg->uniqueIDList();
 
-    // this->m_isInEditorLayer = false;
+    std::string encodedString = ZipUtils::compressString(msg->levelString()->str(), false, 0);
 
-    auto dict = new DS_Dictionary();
-
-    // dict->loadRootSubDictFromString(msg->levelString()->str());
-
-    if (!dict->loadRootSubDictFromString(msg->levelString()->str())) {
-        return Err("recvReturnLevelString: Failed to load level data");
-    }
-
-    // dict->stepIntoSubDictWithKey("root");
     auto gameLevel = GJGameLevel::create();
-    gameLevel->dataLoaded(dict);
-    // delete dict;
     gameLevel->m_levelType = GJLevelType::Editor;
-    // gameLevel->m_levelDesc += "Created with Create Together. Its creating together time";
+    gameLevel->m_levelString = encodedString;
     auto lev = LevelEditorLayer::create(gameLevel, false);
 
     auto objectArr = CCArrayExt<MyGameObject*>(lev->m_objects);
 
     switchToScene(lev);
+    
+    auto betterLevel = static_cast<MyLevelEditorLayer*>(lev);
+
+
     netManager->m_wasDataSent = false;
+
+    if (!betterLevel) {
+        return Err("recvReturnLevelString: lev is nullptr");
+    }
 
     for (auto i = 0; i != std::min(objectArr.size(), (size_t)uniqueIDList->size()); ++i) {
         auto mObject = (objectArr[i]);
         auto uid = uniqueIDList->Get(i)->str();
         mObject->m_fields->m_veryUniqueID = uid;
-        level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, uid);
+        betterLevel->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, uid);
     }
 
 	netManager->m_isRequestingLevelString = false;

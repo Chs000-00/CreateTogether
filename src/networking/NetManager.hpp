@@ -13,8 +13,6 @@
 #include <ctserialize_generated.h>
 
 #include "../types/LobbyData.hpp"
-#include "../types/Cursor.hpp"
-#include "../ui/WaitingForHostPopup.hpp"
 #include "cursor/CursorManager.hpp"
 
 class NetManager {

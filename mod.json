@@ -14,6 +14,10 @@
 	"dependencies": {
   		"geode.node-ids": "v1.10.0"
 	},
+	"tags": [
+		"editor",
+		"online"
+	],
 	"settings": {
 		"only-default-wave": {
 			"type": "bool",

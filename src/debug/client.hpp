@@ -1,6 +1,9 @@
 // This file is used to make the code more bearable to read
 
-void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCallback_t* pInfo ) {
+#include "debug/isteamnetworkingsockets.h"
+#include "../networking/NetManager.hpp"
+
+inline void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCallback_t* pInfo ) {
 	auto netManager = NetManager::get();
 	switch ( pInfo->m_info.m_eState ) {
 		case k_ESteamNetworkingConnectionState_None:

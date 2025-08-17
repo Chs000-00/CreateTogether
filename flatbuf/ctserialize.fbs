@@ -89,6 +89,7 @@ table RequestLevel {
 table ReturnLevelString {
     uniqueIDList:[string];
     levelString:string;
+    ctVersion:string;
 }
 
 
