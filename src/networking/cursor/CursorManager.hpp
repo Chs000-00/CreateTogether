@@ -21,15 +21,16 @@ class CursorManager {
         static std::vector<CreateTogetherCursor*> getPlayerCursors();
 
         void sendCursorUpdateToAll();
-        void displayCursorAtPositon(CreateTogetherCursor* cursor, CCPoint position);
+        void updateCursorPositon(CreateTogetherCursor* cursor, CCPoint position);
         void cursorNetworkingPrelude();
+        void receiveCursorData();
+        Result<uint8_t> parseCursorData(const CTSerialize::MessageHeader* msg, SteamNetworkingIdentity msgSource);
         
         std::vector<CreateTogetherCursor*> m_playerCursors;
 
-        // TODO: Update func
 
         #ifdef NO_STEAMWORKS
-            HSteamNetConnection cursorConnection;
+            HSteamNetConnection m_cursorConnection;
         #endif
 
         flatbuffers::FlatBufferBuilder m_cursorBuilder;

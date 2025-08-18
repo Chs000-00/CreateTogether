@@ -6,7 +6,6 @@
     #include <isteamuser.h>
 #endif
 
-#include "ModifyGameManager.hpp"
 #include "HighLevelHeader.hpp"
 #include "../networking/NetManager.hpp"
 #include "ModifyGameObject.hpp"

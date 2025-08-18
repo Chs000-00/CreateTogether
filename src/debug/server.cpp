@@ -34,8 +34,8 @@ void sendMessageToAllWithException(uint8_t* data, uint32 size, HSteamNetPollGrou
 }
 
 void pollMessages() {
-    SteamNetworkingMessage_t* msgs[MAX_MESSAGES];
-    int numMessages = SteamNetworkingSockets()->ReceiveMessagesOnPollGroup(pollGroup, msgs, MAX_MESSAGES);
+    SteamNetworkingMessage_t* msgs[MAX_EDITOR_MESSAGES];
+    int numMessages = SteamNetworkingSockets()->ReceiveMessagesOnPollGroup(pollGroup, msgs, MAX_EDITOR_MESSAGES);
     
     if ( numMessages == 0 )
         return;

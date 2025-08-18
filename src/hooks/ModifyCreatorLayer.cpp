@@ -1,6 +1,5 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelBrowserLayer.hpp>
-#include "../layers/LobbiesLayer.hpp"
 #include "../networking/NetManager.hpp"
 
 

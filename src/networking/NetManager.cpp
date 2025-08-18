@@ -93,7 +93,7 @@ void NetManager::sendMessageToUser(SteamNetworkingIdentity usr, flatbuffers::Off
     #ifdef STEAMWORKS
         SteamNetworkingMessages()->SendMessageToUser(usr, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, EDITOR_CHANNEL);
     #else
-        SteamNetworkingSockets()->SendMessageToConnection(this->connection, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, nullptr);
+        SteamNetworkingSockets()->SendMessageToConnection(this->m_connection, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, nullptr);
     #endif
 }
 
@@ -108,7 +108,7 @@ void NetManager::sendMessage(flatbuffers::Offset<CTSerialize::MessageHeader> out
             SteamNetworkingMessages()->SendMessageToUser(member, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, EDITOR_CHANNEL);
         }
     #else
-        SteamNetworkingSockets()->SendMessageToConnection(this->connection, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, nullptr);
+        SteamNetworkingSockets()->SendMessageToConnection(this->m_connection, this->m_builder.GetBufferPointer(), this->m_builder.GetSize(), k_nSteamNetworkingSend_Reliable, nullptr);
     #endif
 }
  
@@ -128,13 +128,13 @@ void NetManager::enterLevelEditorPrelude() {
         serverAddr.SetIPv4(0x7f000001, DEDICATED_EDITOR_PORT);
         char szAddr[ SteamNetworkingIPAddr::k_cchMaxString ];
         serverAddr.ToString(szAddr, sizeof(szAddr), true);
-        log::info("Connecting to {}", szAddr);
+        log::info("Connecting to editor server at {}", szAddr);
 
         SteamNetworkingConfigValue_t opt;
         opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallback);
-        this->connection = SteamNetworkingSockets()->ConnectByIPAddress(serverAddr, 1, &opt);
-        if (this->connection == k_HSteamNetConnection_Invalid) {
-            log::warn("Could not create a connection");
+        this->m_connection = SteamNetworkingSockets()->ConnectByIPAddress(serverAddr, 1, &opt);
+        if (this->m_connection == k_HSteamNetConnection_Invalid) {
+            log::warn("Could not create a connection with the editor server");
         }
 
     #endif
@@ -191,12 +191,12 @@ void NetManager::receiveData() {
     // 	return;
     // }
 
-    SteamNetworkingMessage_t* messageList[MAX_MESSAGES];
+    SteamNetworkingMessage_t* messageList[MAX_EDITOR_MESSAGES];
 
     #ifdef STEAMWORKS
-        auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(EDITOR_CHANNEL, messageList, MAX_MESSAGES);
+        auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(EDITOR_CHANNEL, messageList, MAX_EDITOR_MESSAGES);
     #else
-        auto numMessages = SteamNetworkingSockets()->ReceiveMessagesOnConnection(this->connection, messageList, MAX_MESSAGES);
+        auto numMessages = SteamNetworkingSockets()->ReceiveMessagesOnConnection(this->m_connection, messageList, MAX_EDITOR_MESSAGES);
     #endif
 
     if (numMessages < 0) {

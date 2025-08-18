@@ -252,13 +252,14 @@ Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg,
     }
 
     #endif
+
     auto uniqueIDList = msg->uniqueIDList();
 
-    std::string encodedString = ZipUtils::compressString(msg->levelString()->str(), false, 0);
+    std::string baller = ZipUtils::compressString(msg->levelString()->str(), false, 0);
 
     auto gameLevel = GJGameLevel::create();
     gameLevel->m_levelType = GJLevelType::Editor;
-    gameLevel->m_levelString = encodedString;
+    gameLevel->m_levelString = baller;
     auto lev = LevelEditorLayer::create(gameLevel, false);
 
     auto objectArr = CCArrayExt<MyGameObject*>(lev->m_objects);

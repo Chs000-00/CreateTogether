@@ -1,3 +1,5 @@
+#pragma once
+
 // This file is used to make the code more bearable to read
 
 #include "debug/isteamnetworkingsockets.h"
@@ -28,7 +30,7 @@ inline void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusCha
 			// to finish up.  The reason information do not matter in this case,
 			// and we cannot linger because it's already closed on the other end,
 			// so we just pass 0's.
-			SteamNetworkingSockets()->CloseConnection(netManager->connection, 0, nullptr, false);
+			SteamNetworkingSockets()->CloseConnection(netManager->m_connection, 0, nullptr, false);
 			netManager->leaveLobby();
 		}
 		case k_ESteamNetworkingConnectionState_Connecting:

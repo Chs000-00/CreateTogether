@@ -82,7 +82,7 @@ class NetManager {
         flatbuffers::FlatBufferBuilder m_builder;
 
         #ifdef NO_STEAMWORKS
-            HSteamNetConnection connection;
+            HSteamNetConnection m_connection;
         #endif
         
         // TODO: Check EResult

@@ -1,12 +1,13 @@
 #pragma once
 
 #define MOD_LOBBY_ID "chs000.createtogether"
-#define MOD_VERSION "v0.6.1"
+#define MOD_VERSION "v0.7.2"
 
 #define DEDICATED_EDITOR_PORT 24018
 #define DEDICATED_CURSOR_PORT 24019
 
-#define MAX_MESSAGES 128
+#define MAX_EDITOR_MESSAGES 128
+#define MAX_CURSOR_MESSAGES 64
 
 #define EDITOR_CHANNEL 0
 #define CURSOR_CHANNEL 1
