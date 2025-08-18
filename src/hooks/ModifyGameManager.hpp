@@ -16,5 +16,5 @@ class $modify(MyGameManager, GameManager) {
         SteamManager* m_callbackManager = new SteamManager;
     };
 
-    void update(float p0);
+    // void update(float p0);
 };

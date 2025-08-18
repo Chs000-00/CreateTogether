@@ -22,6 +22,7 @@ class CursorManager {
 
         void sendCursorUpdateToAll();
         void updateCursorPositon(CreateTogetherCursor* cursor, CCPoint position);
+        void update();
         void cursorNetworkingPrelude();
         void receiveCursorData();
         Result<uint8_t> parseCursorData(const CTSerialize::MessageHeader* msg, SteamNetworkingIdentity msgSource);

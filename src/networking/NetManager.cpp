@@ -45,6 +45,7 @@ void NetManager::update() {
     if (this->m_isInLobby) {
         this->receiveData();
         // this->sendQueuedData();
+        this->m_cursorManager->update();
     }
 }
 

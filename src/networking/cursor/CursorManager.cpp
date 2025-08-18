@@ -36,6 +36,10 @@ void CursorManager::updateCursorPositon(CreateTogetherCursor* cursor, CCPoint po
         
 }
 
+void CursorManager::update() {
+    
+}
+
 void CursorManager::cursorNetworkingPrelude() {
     #ifdef NO_STEAMWORKS
         SteamNetworkingIPAddr serverAddr;
