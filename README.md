@@ -19,13 +19,12 @@ This project requires steamworks sdk! Install `steam_api64.dll` and `steam_api64
 geode build
 ```
 ## Local testing (If you have no friends)
-1. Enable NO_STEAMWORKS in CmakeLists
+1. Enable NO_STEAMWORKS & COMPILE_TEST_SERVER in CmakeLists
 2. Recompile
-3. Open test server (`node server.js`)
+3. Open test server (`build/.../server.exe`) (note you may be required to provide dlls)
 4. The game now supports connecting to 127.0.0.1, to do so:
-5. Click the yellow orb in CreatorLayer to join as host
-6. Click the LobbyList to join as nonhost
-7. Profit
+5. Click the LobbyList button to join (note you have to provide dlls into the games exe location)
+6. Profit
 
 # Resources
 * [Geode SDK Documentation](https://docs.geode-sdk.org/)
