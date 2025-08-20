@@ -222,12 +222,12 @@ Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg, SteamNetw
 
         cursorLayer->addChild(cursor);
 
-        cursorManager->m_playerCursors.insert({msgSource, cursor});
+        cursorManager->m_playerCursors.insert({getCursorHash(msgSource), cursor});
     
     } 
     else {
         auto cursor = CreateTogetherCursor::create(2, 3);
-        cursorManager->m_playerCursors.insert({msgSource, cursor});
+        cursorManager->m_playerCursors.insert({getCursorHash(msgSource), cursor});
 
         cursorLayer->addChild(cursor);
 

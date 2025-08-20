@@ -1,13 +1,12 @@
-#include "../../config.hpp"
+#include <Geode/Geode.hpp>
 
-#include <Geode/utils/cocos.hpp>
+#include "../../config.hpp"
 #include "CursorManager.hpp"
 #include "NetManager.hpp"
 #include "ccserialization_generated.h"
 #include "ctcursor_generated.h"
 #include "../../hooks/ModifyEditorLayer.hpp"
-#include <Geode/Result.hpp>
-#include <winuser.h>
+#include "../../utils/Utills.hpp"
 
 #ifdef NO_STEAMWORKS
     #include <debug/steamnetworkingsockets.h>
@@ -15,12 +14,15 @@
     #include "../debug/client.hpp"
 #endif
 
+using namespace geode::prelude;
+
+
 CursorManager* CursorManager::get() {
     return NetManager::get()->m_cursorManager;
 }
 
 CreateTogetherCursor* CursorManager::getPlayerCursor(SteamNetworkingIdentity id) {
-    return CursorManager::get()->m_playerCursors.at(id);
+    return CursorManager::get()->m_playerCursors.at(getCursorHash(id));
 }
 
 
@@ -117,7 +119,7 @@ Result<uint8_t> CursorManager::parseCursorData(const CTSerialize::cursor::Cursor
         
     if (auto msgPos = msg->position()) {
         cocos2d::CCPoint pos = {msgPos->x(), msgPos->y()};
-        updateCursorPositon(this->m_playerCursors.at(msgSource), pos);
+        updateCursorPositon(this->m_playerCursors.at(getCursorHash(msgSource)), pos);
     }
     else {
         return Err("parseCursorData: no position in message");

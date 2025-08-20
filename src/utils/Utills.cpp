@@ -1,6 +1,11 @@
 #include "Utills.hpp"
 
 #include <Geode/Geode.hpp>
+
+#ifdef NO_STEAMWORKS
+    #include <debug/isteamnetworkingutils.h>
+#endif
+
 using namespace geode::prelude;
 
 // Checks if a enum is within range.
