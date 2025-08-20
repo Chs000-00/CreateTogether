@@ -102,3 +102,9 @@ Result<uint8_t> toggleFromLevelSettings(LevelSettingsObject* settings, int optio
     }
     return Ok(0);
 }
+
+std::string getCursorHash(SteamNetworkingIdentity id) {
+    char buf[SteamNetworkingIdentity::k_cchMaxString];
+    id.ToString(buf, sizeof(buf));
+    return buf;
+}

@@ -2,6 +2,7 @@
 
 #include <ctserialize_generated.h>
 #include <ctcursor_generated.h>
+#include <string>
 #include "../../types/Cursor.hpp"
 
 #ifdef STEAMWORKS
@@ -27,7 +28,7 @@ class CursorManager {
         void receiveCursorData();
         Result<uint8_t> parseCursorData(const CTSerialize::cursor::CursorUpdate* msg, SteamNetworkingIdentity msgSource);
         
-        std::unordered_map<SteamNetworkingIdentity, CreateTogetherCursor*> m_playerCursors;
+        std::unordered_map<std::string, CreateTogetherCursor*> m_playerCursors;
 
         #ifdef NO_STEAMWORKS
             HSteamNetConnection m_cursorConnection;

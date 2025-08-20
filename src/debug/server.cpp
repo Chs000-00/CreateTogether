@@ -28,7 +28,7 @@ void handleSignal(int signum) {
 }
 
 void sendMessageToAllWithException(uint8_t* data, uint32 size, HSteamNetPollGroup exception) {
-	for (auto const& member : cursorConnections) {
+	for (auto const& member : connections) {
 
         if (member == exception) {
             continue;
@@ -40,7 +40,7 @@ void sendMessageToAllWithException(uint8_t* data, uint32 size, HSteamNetPollGrou
 
 
 void sendMessageToAllWithExceptionCursor(uint8_t* data, uint32 size, HSteamNetPollGroup exception) {
-	for (auto const& member : connections) {
+	for (auto const& member : cursorConnections) {
 
         if (member == exception) {
             continue;
@@ -88,6 +88,7 @@ void pollMessages() {
         std::cout << "RecvMessage:" << s << '\n';
 
         if (messageHeader->body_type() == CTSerialize::MessageBody_RequestLevel && connections.size() == 1) {
+            std::cout << "Sending ignore msg" << '\n';
             flatbuffers::FlatBufferBuilder builder;
             auto returnLvlString = CTSerialize::CreateReturnLevelStringDirect(builder, nullptr, "ignore");
             auto out = CTSerialize::CreateMessageHeader(builder, CTSerialize::MessageBody_ReturnLevelString, returnLvlString.Union());
@@ -199,6 +200,7 @@ int main(int argc, char *argv[]) {
 
     while (true) {
         pollMessages();
+        pollCursorMessages();
         SteamNetworkingSockets()->RunCallbacks();
     }
 }
