@@ -207,8 +207,7 @@ Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg, SteamNetw
         cursorLayer = CCLayer::create();
         cursorLayer->setID("cursor-layer"_spr);
         level->addChild(cursorLayer);
-    }
-    
+    }    
     
     if (auto wave = msg->playerWave()) {
 

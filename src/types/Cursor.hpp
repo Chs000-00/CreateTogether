@@ -23,11 +23,11 @@ public:
     void updateCursor(const CursorData& cursorData);
     SimplePlayer* getSimplePlayer();
 
-    SimplePlayer* m_cursorSprite = nullptr;
+    Ref<SimplePlayer> m_cursorSprite = nullptr;
 
     // Thanks again globed!
     void setColor(const cocos2d::ccColor3B& color) { m_cursorSprite->setColor(color); }
-    const cocos2d::ccColor3B& getColor() { return m_cursorSprite->getColor(); } // crash here
+    const cocos2d::ccColor3B& getColor() { return m_cursorSprite->getColor(); }
     const cocos2d::ccColor3B& getDisplayedColor() { return m_cursorSprite->getDisplayedColor(); }
     GLubyte getDisplayedOpacity() { return m_cursorSprite->getDisplayedOpacity(); }
     GLubyte getOpacity() { return m_cursorSprite->getOpacity(); }

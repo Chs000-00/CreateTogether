@@ -225,11 +225,11 @@ void NetManager::receiveData() {
             log::warn("Failed to verify message");
             return;
         }
-        
-        auto out = this->parseData(messageHeader, msg->m_identityPeer);
 
         auto s = flatbuffers::FlatBufferToString(data, CTSerialize::MessageHeaderTypeTable());
         log::debug("RecvMessage:{}", s);
+        
+        auto out = this->parseData(messageHeader, msg->m_identityPeer);
 
 
         if (!out) {
