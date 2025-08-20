@@ -18,7 +18,7 @@ Result<uint8_t> recvModifyObjects(const CTSerialize::ModifyObjects* msg);
 
 Result<uint8_t> recvChangeDefaultColor(const CTSerialize::ChangeDefaultColor* msg);
 
-Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg);
+Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg, SteamNetworkingIdentity msgSource);
 
 Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg, SteamNetworkingIdentity msgSource);
 

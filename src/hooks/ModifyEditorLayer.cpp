@@ -44,7 +44,7 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
         this->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID);
     }
 
-    this->m_fields->m_loadingFinished = true;
+    // this->m_fields->m_loadingFinished = true;
 
     return true;
 }

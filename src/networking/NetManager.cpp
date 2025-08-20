@@ -284,7 +284,7 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg, Ste
         }
 
         case CTSerialize::MessageBody_RequestLevel: {
-            SERIALIZE_AND_RECEIVE(RequestLevel);
+            SERIALIZE_AND_RECEIVE(RequestLevel, msgSource);
             break;
         }
 

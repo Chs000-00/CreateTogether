@@ -1,3 +1,4 @@
+#include "Geode/cocos/base_nodes/CCNode.h"
 #include "HighLevelHeader.hpp"
 #include "SharedHighLevelHeaders.hpp"
 #include "../../hooks/ModifyEditorLayer.hpp"
@@ -189,13 +190,22 @@ Result<uint8_t> recvChangeDefaultColor(const CTSerialize::ChangeDefaultColor* ms
     return Ok(0);
 }
 
-Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg) {
+Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg, SteamNetworkingIdentity msgSource) {
     auto netManager = NetManager::get();
     auto cursorManager = CursorManager::get();
+    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
 
     if (netManager->m_isHost) {
         sendReturnLevelString();
     }
+
+    CCNode* cursorLayer = level->getChildByID("cursor-layer"_spr);
+
+    if (!cursorLayer) {
+        cursorLayer = CCNode::create();
+        level->addChild(cursorLayer);
+    }
+    
     
     if (auto wave = msg->playerWave()) {
 
@@ -210,11 +220,17 @@ Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg) {
         // TODO: release this
         cursor->retain();
 
-        cursorManager->m_playerCursors.push_back(cursor);
+        cursorLayer->addChild(cursor);
+
+        cursorManager->m_playerCursors.insert({msgSource, cursor});
     
     } 
     else {
-        cursorManager->m_playerCursors.push_back(CreateTogetherCursor::create(2, 3));
+        auto cursor = CreateTogetherCursor::create(2, 3);
+        cursorManager->m_playerCursors.insert({msgSource, cursor});
+
+        cursorLayer->addChild(cursor);
+
         return Err("recvRequestLevel: message has no wave object. Using default wave.");
     }
     return Ok(0);

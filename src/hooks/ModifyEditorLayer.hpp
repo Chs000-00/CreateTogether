@@ -11,8 +11,6 @@
     #include <debug/isteamnetworkingmessages.h>
 #endif
 
-#include "ModifyGameManager.hpp"
-
 using namespace geode::prelude;
 class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 
@@ -22,7 +20,7 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
         unsigned int m_blocksPlaced = 0;
 
 
-        bool m_loadingFinished = false;
+        // bool m_loadingFinished = false;
         
         #ifdef STEAMWORKS
         uint64 m_userID = SteamUser()->GetSteamID().ConvertToUint64();
@@ -32,8 +30,7 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 
         // PlayLayer* m_fakePlayLayer = nullptr;
 
-        // There is a weird crash happening when using setObject
-        // Looks like it might be happening due to it being an autorelease object?
+        // TODO: Important! Check if CCDictionary is O(1)
         Ref<CCDictionary> m_pUniqueIDOfGameObject = nullptr;
     };
 

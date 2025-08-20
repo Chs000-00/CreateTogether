@@ -1,8 +1,13 @@
+#include "../../config.hpp"
+
+#include <Geode/utils/cocos.hpp>
 #include "CursorManager.hpp"
 #include "NetManager.hpp"
 #include "ccserialization_generated.h"
 #include "ctcursor_generated.h"
 #include "../../hooks/ModifyEditorLayer.hpp"
+#include <Geode/Result.hpp>
+#include <winuser.h>
 
 #ifdef NO_STEAMWORKS
     #include <debug/steamnetworkingsockets.h>
@@ -14,8 +19,8 @@ CursorManager* CursorManager::get() {
     return NetManager::get()->m_cursorManager;
 }
 
-std::vector<CreateTogetherCursor*> CursorManager::getPlayerCursors() {
-    return CursorManager::get()->m_playerCursors;
+CreateTogetherCursor* CursorManager::getPlayerCursor(SteamNetworkingIdentity id) {
+    return CursorManager::get()->m_playerCursors.at(id);
 }
 
 
@@ -25,7 +30,7 @@ void CursorManager::sendCursorUpdateToAll() {
     if (!level) {
         return;
     }
-
+    auto ccpos = level->m_objectLayer->getPosition() + getMousePos();
     auto pos = CTSerialize::CCPos();
     auto cursorUpdate = CTSerialize::cursor::CreateCursorUpdate(this->m_cursorBuilder, &pos, CTSerialize::cursor::StatusType_None);
     this->sendMessage(cursorUpdate);
@@ -33,11 +38,11 @@ void CursorManager::sendCursorUpdateToAll() {
 }
 
 void CursorManager::updateCursorPositon(CreateTogetherCursor* cursor, CCPoint position) {
-        
+    cursor->setPosition(position);
 }
 
 void CursorManager::update() {
-    
+    receiveCursorData();
 }
 
 void CursorManager::cursorNetworkingPrelude() {
@@ -69,7 +74,7 @@ void CursorManager::receiveCursorData() {
     #endif
 
     if (numMessages < 0) {
-        log::warn("NetManager::receiveData(): Error receiving messages");
+        log::warn("CursorManager::receiveData(): Error receiving messages");
     }
 
     for (int i = 0; i < numMessages; i++) {
@@ -83,12 +88,12 @@ void CursorManager::receiveCursorData() {
         
         // data = static_cast<const uint8_t*>(message->GetData());
         
-        auto messageHeader = CTSerialize::GetMessageHeader(data);
+        auto messageHeader = CTSerialize::cursor::GetCursorUpdate(data);
         flatbuffers::Verifier verifier(data, msg->GetSize());
-        bool isVerified = CTSerialize::VerifyMessageHeaderBuffer(verifier);
+        bool isVerified = CTSerialize::cursor::VerifyCursorUpdateBuffer(verifier);
 
         if (!isVerified) {
-            log::warn("Failed to verify message");
+            log::warn("Failed to verify cursor message");
             return;
         }
         
@@ -99,13 +104,26 @@ void CursorManager::receiveCursorData() {
 
 
         if (!out) {
-            log::warn("Something went wrong while parsing: {}", out.unwrapErr());
+            log::warn("Something went wrong while parsing cursor message: {}", out.unwrapErr());
         }
 
         // TODO: Call release earlier
         msg->Release();
         delete[] data;
     }
+}
+
+Result<uint8_t> CursorManager::parseCursorData(const CTSerialize::cursor::CursorUpdate* msg, SteamNetworkingIdentity msgSource) {
+        
+    if (auto msgPos = msg->position()) {
+        cocos2d::CCPoint pos = {msgPos->x(), msgPos->y()};
+        updateCursorPositon(this->m_playerCursors.at(msgSource), pos);
+    }
+    else {
+        return Err("parseCursorData: no position in message");
+    }
+    
+    return Ok(0);
 }
 
 void CursorManager::sendMessage(flatbuffers::Offset<CTSerialize::cursor::CursorUpdate> out) {
