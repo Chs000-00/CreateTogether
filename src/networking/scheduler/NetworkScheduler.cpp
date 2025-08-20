@@ -1,33 +1,17 @@
 #include "NetworkScheduler.hpp"
 #include "../../hooks/ModifyGameManager.hpp"
+#include "Geode/loader/Log.hpp"
 
 
 $execute {
+    log::info("Hello NetworkScheduler!");
     Loader::get()->queueInMainThread([]{
-        CCScheduler::get()->scheduleUpdateForTarget(NetworkScheduler::create(), 5000, false);
+        log::info("Hello from mainthread!");
+        CCScheduler::get()->scheduleUpdateForTarget(new NetworkScheduler{}, 5000, false);
     });
 }
 
-void NetworkScheduler::update() {
+void NetworkScheduler::update(float dt) {
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     gameManager->m_fields->m_netManager->update();
-}
-
-
-NetworkScheduler* NetworkScheduler::create() {
-    auto ret = new NetworkScheduler();
-    if (ret->init()) {
-        ret->autorelease();
-        return ret;
-    }
-
-    delete ret;
-    return nullptr;
-}
-
-bool NetworkScheduler::init() {
-    if (!CCNode::init()) {
-        return false;
-    }
-    return true;
 }

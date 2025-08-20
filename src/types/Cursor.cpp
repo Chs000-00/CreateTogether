@@ -1,6 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/binding/SimplePlayer.hpp>
 #include "Cursor.hpp"
+#include "Geode/binding/GameManager.hpp"
 
 using namespace geode::prelude;
 
@@ -26,7 +27,17 @@ CreateTogetherCursor* CreateTogetherCursor::create(const CursorData& cursorData)
 }
 
 void CreateTogetherCursor::updateCursor(const CursorData& cursorData) {
+    auto gameManager = GameManager::get();
+    this->m_cursorSprite->updatePlayerFrame(cursorData.cursorID, IconType::Wave);
+    this->m_cursorSprite->setColor(gameManager->colorForIdx(cursorData.cursorColor1));
+    this->m_cursorSprite->setSecondColor(gameManager->colorForIdx(cursorData.cursorColor2));
 
+    if (cursorData.cursorHasGlow) {
+        this->m_cursorSprite->setGlowOutline(gameManager->colorForIdx(cursorData.cursorGlowColor));
+    }
+    else {
+        this->m_cursorSprite->disableGlowOutline();
+    }
 }
 
 SimplePlayer* CreateTogetherCursor::getSimplePlayer() {
@@ -37,7 +48,7 @@ bool CreateTogetherCursor::init(const CursorData& cursorData) {
     if (!CCNode::init()) {
         return false;
     }
-
+    this->m_cursorSprite = SimplePlayer::create(0);
     this->updateCursor(cursorData);
     return true;
 }

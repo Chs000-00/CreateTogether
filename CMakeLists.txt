@@ -34,6 +34,7 @@ file(GLOB SOURCES
     src/networking/*.cpp
     src/networking/highLevel/*.cpp
     src/networking/cursor/*.cpp
+    src/networking/scheduler/*.cpp
 )
 # Set up the mod binary
 add_library(${PROJECT_NAME} SHARED ${SOURCES})

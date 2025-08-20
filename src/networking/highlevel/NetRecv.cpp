@@ -1,4 +1,5 @@
 #include "Geode/cocos/base_nodes/CCNode.h"
+#include "Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h"
 #include "HighLevelHeader.hpp"
 #include "SharedHighLevelHeaders.hpp"
 #include "../../hooks/ModifyEditorLayer.hpp"
@@ -202,7 +203,9 @@ Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg, SteamNetw
     CCNode* cursorLayer = level->getChildByID("cursor-layer"_spr);
 
     if (!cursorLayer) {
-        cursorLayer = CCNode::create();
+        log::info("Creating cursor-layer.");
+        cursorLayer = CCLayer::create();
+        cursorLayer->setID("cursor-layer"_spr);
         level->addChild(cursorLayer);
     }
     

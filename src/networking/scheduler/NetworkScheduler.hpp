@@ -5,13 +5,8 @@
 using namespace geode::prelude;
 
 
-class NetworkScheduler : public CCNode {
+class NetworkScheduler : public CCObject {
 public:
-    void update();
-
-    static NetworkScheduler* create();
-
-protected:
-    bool init();
+    void update(float dt);
 };
 

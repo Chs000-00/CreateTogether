@@ -144,6 +144,8 @@ void NetManager::enterLevelEditorPrelude() {
 
     this->fetchMemberList();
 
+    this->m_cursorManager->cursorNetworkingPrelude();
+
     SteamNetworkingIdentity host;
 
     host.SetSteamID(this->m_hostID);

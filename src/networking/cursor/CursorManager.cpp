@@ -70,13 +70,13 @@ void CursorManager::receiveCursorData() {
     SteamNetworkingMessage_t* messageList[MAX_CURSOR_MESSAGES];
 
     #ifdef STEAMWORKS
-        auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(EDITOR_CHANNEL, messageList, MAX_CURSOR_MESSAGES);
+        auto numMessages = SteamNetworkingMessages()->ReceiveMessagesOnChannel(CURSOR_CHANNEL, messageList, MAX_CURSOR_MESSAGES);
     #else
         auto numMessages = SteamNetworkingSockets()->ReceiveMessagesOnConnection(this->m_cursorConnection, messageList, MAX_CURSOR_MESSAGES);
     #endif
 
     if (numMessages < 0) {
-        log::warn("CursorManager::receiveData(): Error receiving messages");
+        log::warn("CursorManager::receiveData(): Error receiving messages {}", numMessages);
     }
 
     for (int i = 0; i < numMessages; i++) {
