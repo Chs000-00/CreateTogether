@@ -38,3 +38,5 @@ void sendChangeArt(SelectArtType artType, int artID, int line);
 void sendSpeedChange(int speed);
 
 void sendGameModeChange(uint8 gameMode);
+
+void sendPlayerCursorData();

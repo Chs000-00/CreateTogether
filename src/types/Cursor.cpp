@@ -5,15 +5,6 @@
 
 using namespace geode::prelude;
 
-CreateTogetherCursor* CreateTogetherCursor::create(int cursorColor1, int cursorColor2) {
-    return CreateTogetherCursor::create(CursorData(
-        cursorColor1,
-        cursorColor2,
-        1,
-        true,
-        0
-    ));
-}
 
 CreateTogetherCursor* CreateTogetherCursor::create(const CursorData& cursorData) {
     auto ret = new CreateTogetherCursor();
@@ -26,10 +17,19 @@ CreateTogetherCursor* CreateTogetherCursor::create(const CursorData& cursorData)
     return nullptr;
 }
 
+CreateTogetherCursor::CursorData CreateTogetherCursor::defaultCursorData(int cursorColor1, int cursorColor2) {
+    return CursorData(
+        cursorColor1,
+        cursorColor2,
+        1,
+        true,
+        0
+    );
+}
+
 void CreateTogetherCursor::updateCursor(const CursorData& cursorData) {
     auto gameManager = GameManager::get();
     this->m_cursorData = cursorData;
-    log::info("updateCursor");
     this->m_cursorSprite->updatePlayerFrame(cursorData.cursorID, IconType::Wave);
     this->m_cursorSprite->setColor(gameManager->colorForIdx(cursorData.cursorColor1));
     this->m_cursorSprite->setSecondColor(gameManager->colorForIdx(cursorData.cursorColor2));

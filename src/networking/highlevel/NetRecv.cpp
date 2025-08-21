@@ -1,6 +1,7 @@
 #include "Geode/cocos/base_nodes/CCNode.h"
 #include "Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h"
 #include "HighLevelHeader.hpp"
+#include "NetSend.hpp"
 #include "SharedHighLevelHeaders.hpp"
 #include "../../hooks/ModifyEditorLayer.hpp"
 #include "../../hooks/ModifyGameObject.hpp"
@@ -193,48 +194,14 @@ Result<uint8_t> recvChangeDefaultColor(const CTSerialize::ChangeDefaultColor* ms
 
 Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg, SteamNetworkingIdentity msgSource) {
     auto netManager = NetManager::get();
-    auto cursorManager = CursorManager::get();
-    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
 
     if (netManager->m_isHost) {
         sendReturnLevelString();
+        return Ok(1);
     }
 
-    CCNode* cursorLayer = level->getChildByID("cursor-layer"_spr);
+    sendPlayerCursorData();
 
-    if (!cursorLayer) {
-        log::info("Creating cursor-layer.");
-        cursorLayer = CCLayer::create();
-        cursorLayer->setID("cursor-layer"_spr);
-        level->addChild(cursorLayer);
-    }    
-    
-    if (auto wave = msg->playerWave()) {
-
-        auto cursor = CreateTogetherCursor::create(CreateTogetherCursor::CursorData(
-            wave->cursorColor1(),
-            wave->cursorColor2(),
-            wave->cursorID(),
-            wave->cursorHasGlow(),
-            wave->cursorGlowColor()
-        ));
-
-        // TODO: release this
-        cursor->retain();
-
-        cursorLayer->addChild(cursor);
-
-        cursorManager->m_playerCursors.insert({getCursorHash(msgSource), cursor});
-    
-    } 
-    else {
-        auto cursor = CreateTogetherCursor::create(2, 3);
-        cursorManager->m_playerCursors.insert({getCursorHash(msgSource), cursor});
-
-        cursorLayer->addChild(cursor);
-
-        return Err("recvRequestLevel: message has no wave object. Using default wave.");
-    }
     return Ok(0);
 }
 
@@ -355,5 +322,63 @@ Result<uint8_t> recvGameModeChange(const CTSerialize::GameModeChange* msg) {
     auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
     level->m_levelSettings->m_startMode = gameMode;
     level->levelSettingsUpdated();
+    return Ok(0);
+}
+
+Result<uint8_t> recvPlayerCursorData(const CTSerialize::PlayerCursorData* msg, SteamNetworkingIdentity msgSource) {
+
+    auto cursorManager = CursorManager::get();
+    auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
+
+
+    auto cursorHash = getCursorHash(msgSource);
+
+    CCNode* cursorLayer = level->getChildByID("cursor-layer"_spr);
+
+    if (!cursorLayer) {
+        log::info("Creating cursor-layer.");
+        cursorLayer = CCLayer::create();
+        cursorLayer->setID("cursor-layer"_spr);
+        level->addChild(cursorLayer);
+    }    
+
+    CreateTogetherCursor* cursor;
+    CreateTogetherCursor::CursorData data;
+
+    
+    if (auto wave = msg->playerWave()) {
+
+        data = CreateTogetherCursor::CursorData(
+            wave->cursorColor1(),
+            wave->cursorColor2(),
+            wave->cursorID(),
+            wave->cursorHasGlow(),
+            wave->cursorGlowColor()
+        );
+    } 
+    else {
+        data = CreateTogetherCursor::defaultCursorData(2, 3);
+        
+    }
+
+    if (cursorManager->m_playerCursors.contains(cursorHash)) {
+        cursorManager->m_playerCursors.at(cursorHash)->updateCursor(data);
+    }
+
+    else {
+        cursor = CreateTogetherCursor::create(data);
+
+        // TODO: release this
+        cursor->retain();
+
+        cursorLayer->addChild(cursor);
+
+        cursorManager->m_playerCursors.insert({cursorHash, cursor});
+    }
+
+    if (!msg->playerWave()) {
+        return Err("recvRequestLevel: message has no wave object. Using default wave.");
+    }
+
     return Ok(0);
 }

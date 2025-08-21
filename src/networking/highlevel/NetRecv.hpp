@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SharedHighLevelHeaders.hpp"
+#include <cstdint>
 
 Result<uint8_t> recvCreateObjects(const CTSerialize::CreateObjects* msg);
 
@@ -30,3 +31,4 @@ Result<uint8_t> recvSpeedChange(const CTSerialize::SpeedChange* msg);
 
 Result<uint8_t> recvGameModeChange(const CTSerialize::GameModeChange* msg);
 
+Result<uint8_t> recvPlayerCursorData(const CTSerialize::PlayerCursorData* msg, SteamNetworkingIdentity msgSource);

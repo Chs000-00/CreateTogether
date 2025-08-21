@@ -18,7 +18,9 @@ public:
     };
 
     static CreateTogetherCursor* create(const CursorData& cursorData);
-    static CreateTogetherCursor* create(int cursorColor1, int cursorColor2);
+    // static CreateTogetherCursor* create(int cursorColor1, int cursorColor2);
+
+    static CursorData defaultCursorData(int cursorColor1, int cursorColor2);
 
     void updateCursor(const CursorData& cursorData);
     SimplePlayer* getSimplePlayer();

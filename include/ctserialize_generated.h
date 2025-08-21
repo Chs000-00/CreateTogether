@@ -72,6 +72,9 @@ struct GameModeChangeBuilder;
 struct AdminAction;
 struct AdminActionBuilder;
 
+struct PlayerCursorData;
+struct PlayerCursorDataBuilder;
+
 struct GlobedHandshake;
 struct GlobedHandshakeBuilder;
 
@@ -111,6 +114,8 @@ inline const ::flatbuffers::TypeTable *GameModeChangeTypeTable();
 
 inline const ::flatbuffers::TypeTable *AdminActionTypeTable();
 
+inline const ::flatbuffers::TypeTable *PlayerCursorDataTypeTable();
+
 inline const ::flatbuffers::TypeTable *GlobedHandshakeTypeTable();
 
 enum MessageBody : uint8_t {
@@ -132,12 +137,13 @@ enum MessageBody : uint8_t {
   MessageBody_SpeedChange = 15,
   MessageBody_GameModeChange = 16,
   MessageBody_AdminAction = 17,
-  MessageBody_GlobedHandshake = 18,
+  MessageBody_PlayerCursorData = 18,
+  MessageBody_GlobedHandshake = 19,
   MessageBody_MIN = MessageBody_NONE,
   MessageBody_MAX = MessageBody_GlobedHandshake
 };
 
-inline const MessageBody (&EnumValuesMessageBody())[19] {
+inline const MessageBody (&EnumValuesMessageBody())[20] {
   static const MessageBody values[] = {
     MessageBody_NONE,
     MessageBody_CreateObjects,
@@ -157,13 +163,14 @@ inline const MessageBody (&EnumValuesMessageBody())[19] {
     MessageBody_SpeedChange,
     MessageBody_GameModeChange,
     MessageBody_AdminAction,
+    MessageBody_PlayerCursorData,
     MessageBody_GlobedHandshake
   };
   return values;
 }
 
 inline const char * const *EnumNamesMessageBody() {
-  static const char * const names[20] = {
+  static const char * const names[21] = {
     "NONE",
     "CreateObjects",
     "DeleteObjects",
@@ -182,6 +189,7 @@ inline const char * const *EnumNamesMessageBody() {
     "SpeedChange",
     "GameModeChange",
     "AdminAction",
+    "PlayerCursorData",
     "GlobedHandshake",
     nullptr
   };
@@ -264,6 +272,10 @@ template<> struct MessageBodyTraits<CTSerialize::GameModeChange> {
 
 template<> struct MessageBodyTraits<CTSerialize::AdminAction> {
   static const MessageBody enum_value = MessageBody_AdminAction;
+};
+
+template<> struct MessageBodyTraits<CTSerialize::PlayerCursorData> {
+  static const MessageBody enum_value = MessageBody_PlayerCursorData;
 };
 
 template<> struct MessageBodyTraits<CTSerialize::GlobedHandshake> {
@@ -376,6 +388,9 @@ struct MessageHeader FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const CTSerialize::AdminAction *body_as_AdminAction() const {
     return body_type() == CTSerialize::MessageBody_AdminAction ? static_cast<const CTSerialize::AdminAction *>(body()) : nullptr;
   }
+  const CTSerialize::PlayerCursorData *body_as_PlayerCursorData() const {
+    return body_type() == CTSerialize::MessageBody_PlayerCursorData ? static_cast<const CTSerialize::PlayerCursorData *>(body()) : nullptr;
+  }
   const CTSerialize::GlobedHandshake *body_as_GlobedHandshake() const {
     return body_type() == CTSerialize::MessageBody_GlobedHandshake ? static_cast<const CTSerialize::GlobedHandshake *>(body()) : nullptr;
   }
@@ -454,6 +469,10 @@ template<> inline const CTSerialize::GameModeChange *MessageHeader::body_as<CTSe
 
 template<> inline const CTSerialize::AdminAction *MessageHeader::body_as<CTSerialize::AdminAction>() const {
   return body_as_AdminAction();
+}
+
+template<> inline const CTSerialize::PlayerCursorData *MessageHeader::body_as<CTSerialize::PlayerCursorData>() const {
+  return body_as_PlayerCursorData();
 }
 
 template<> inline const CTSerialize::GlobedHandshake *MessageHeader::body_as<CTSerialize::GlobedHandshake>() const {
@@ -1116,16 +1135,8 @@ struct RequestLevel FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
     return RequestLevelTypeTable();
   }
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_PLAYERWAVE = 4
-  };
-  const CTSerialize::GDWaveObject *playerWave() const {
-    return GetPointer<const CTSerialize::GDWaveObject *>(VT_PLAYERWAVE);
-  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyOffset(verifier, VT_PLAYERWAVE) &&
-           verifier.VerifyTable(playerWave()) &&
            verifier.EndTable();
   }
 };
@@ -1134,9 +1145,6 @@ struct RequestLevelBuilder {
   typedef RequestLevel Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_playerWave(::flatbuffers::Offset<CTSerialize::GDWaveObject> playerWave) {
-    fbb_.AddOffset(RequestLevel::VT_PLAYERWAVE, playerWave);
-  }
   explicit RequestLevelBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -1149,10 +1157,8 @@ struct RequestLevelBuilder {
 };
 
 inline ::flatbuffers::Offset<RequestLevel> CreateRequestLevel(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<CTSerialize::GDWaveObject> playerWave = 0) {
+    ::flatbuffers::FlatBufferBuilder &_fbb) {
   RequestLevelBuilder builder_(_fbb);
-  builder_.add_playerWave(playerWave);
   return builder_.Finish();
 }
 
@@ -1163,13 +1169,17 @@ struct ReturnLevelString FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
   }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_UNIQUEIDLIST = 4,
-    VT_LEVELSTRING = 6
+    VT_LEVELSTRING = 6,
+    VT_CTVERSION = 8
   };
   const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList() const {
     return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_UNIQUEIDLIST);
   }
   const ::flatbuffers::String *levelString() const {
     return GetPointer<const ::flatbuffers::String *>(VT_LEVELSTRING);
+  }
+  const ::flatbuffers::String *ctVersion() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_CTVERSION);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -1178,6 +1188,8 @@ struct ReturnLevelString FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
            verifier.VerifyVectorOfStrings(uniqueIDList()) &&
            VerifyOffset(verifier, VT_LEVELSTRING) &&
            verifier.VerifyString(levelString()) &&
+           VerifyOffset(verifier, VT_CTVERSION) &&
+           verifier.VerifyString(ctVersion()) &&
            verifier.EndTable();
   }
 };
@@ -1191,6 +1203,9 @@ struct ReturnLevelStringBuilder {
   }
   void add_levelString(::flatbuffers::Offset<::flatbuffers::String> levelString) {
     fbb_.AddOffset(ReturnLevelString::VT_LEVELSTRING, levelString);
+  }
+  void add_ctVersion(::flatbuffers::Offset<::flatbuffers::String> ctVersion) {
+    fbb_.AddOffset(ReturnLevelString::VT_CTVERSION, ctVersion);
   }
   explicit ReturnLevelStringBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -1206,8 +1221,10 @@ struct ReturnLevelStringBuilder {
 inline ::flatbuffers::Offset<ReturnLevelString> CreateReturnLevelString(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> levelString = 0) {
+    ::flatbuffers::Offset<::flatbuffers::String> levelString = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> ctVersion = 0) {
   ReturnLevelStringBuilder builder_(_fbb);
+  builder_.add_ctVersion(ctVersion);
   builder_.add_levelString(levelString);
   builder_.add_uniqueIDList(uniqueIDList);
   return builder_.Finish();
@@ -1216,13 +1233,16 @@ inline ::flatbuffers::Offset<ReturnLevelString> CreateReturnLevelString(
 inline ::flatbuffers::Offset<ReturnLevelString> CreateReturnLevelStringDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList = nullptr,
-    const char *levelString = nullptr) {
+    const char *levelString = nullptr,
+    const char *ctVersion = nullptr) {
   auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*uniqueIDList) : 0;
   auto levelString__ = levelString ? _fbb.CreateString(levelString) : 0;
+  auto ctVersion__ = ctVersion ? _fbb.CreateString(ctVersion) : 0;
   return CTSerialize::CreateReturnLevelString(
       _fbb,
       uniqueIDList__,
-      levelString__);
+      levelString__,
+      ctVersion__);
 }
 
 struct UpdateFont FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
@@ -1555,6 +1575,51 @@ inline ::flatbuffers::Offset<AdminAction> CreateAdminActionDirect(
       reason__);
 }
 
+struct PlayerCursorData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef PlayerCursorDataBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return PlayerCursorDataTypeTable();
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_PLAYERWAVE = 4
+  };
+  const CTSerialize::GDWaveObject *playerWave() const {
+    return GetPointer<const CTSerialize::GDWaveObject *>(VT_PLAYERWAVE);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_PLAYERWAVE) &&
+           verifier.VerifyTable(playerWave()) &&
+           verifier.EndTable();
+  }
+};
+
+struct PlayerCursorDataBuilder {
+  typedef PlayerCursorData Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_playerWave(::flatbuffers::Offset<CTSerialize::GDWaveObject> playerWave) {
+    fbb_.AddOffset(PlayerCursorData::VT_PLAYERWAVE, playerWave);
+  }
+  explicit PlayerCursorDataBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<PlayerCursorData> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<PlayerCursorData>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<PlayerCursorData> CreatePlayerCursorData(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<CTSerialize::GDWaveObject> playerWave = 0) {
+  PlayerCursorDataBuilder builder_(_fbb);
+  builder_.add_playerWave(playerWave);
+  return builder_.Finish();
+}
+
 struct GlobedHandshake FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GlobedHandshakeBuilder Builder;
   static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
@@ -1672,6 +1737,10 @@ inline bool VerifyMessageBody(::flatbuffers::Verifier &verifier, const void *obj
       auto ptr = reinterpret_cast<const CTSerialize::AdminAction *>(obj);
       return verifier.VerifyTable(ptr);
     }
+    case MessageBody_PlayerCursorData: {
+      auto ptr = reinterpret_cast<const CTSerialize::PlayerCursorData *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
     case MessageBody_GlobedHandshake: {
       auto ptr = reinterpret_cast<const CTSerialize::GlobedHandshake *>(obj);
       return verifier.VerifyTable(ptr);
@@ -1712,7 +1781,8 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     { ::flatbuffers::ET_SEQUENCE, 0, 14 },
     { ::flatbuffers::ET_SEQUENCE, 0, 15 },
     { ::flatbuffers::ET_SEQUENCE, 0, 16 },
-    { ::flatbuffers::ET_SEQUENCE, 0, 17 }
+    { ::flatbuffers::ET_SEQUENCE, 0, 17 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 18 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
     CTSerialize::CreateObjectsTypeTable,
@@ -1732,6 +1802,7 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     CTSerialize::SpeedChangeTypeTable,
     CTSerialize::GameModeChangeTypeTable,
     CTSerialize::AdminActionTypeTable,
+    CTSerialize::PlayerCursorDataTypeTable,
     CTSerialize::GlobedHandshakeTypeTable
   };
   static const char * const names[] = {
@@ -1753,10 +1824,11 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     "SpeedChange",
     "GameModeChange",
     "AdminAction",
+    "PlayerCursorData",
     "GlobedHandshake"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_UNION, 19, type_codes, type_refs, nullptr, nullptr, names
+    ::flatbuffers::ST_UNION, 20, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -1960,17 +2032,8 @@ inline const ::flatbuffers::TypeTable *ChangeDefaultColorTypeTable() {
 }
 
 inline const ::flatbuffers::TypeTable *RequestLevelTypeTable() {
-  static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_SEQUENCE, 0, 0 }
-  };
-  static const ::flatbuffers::TypeFunction type_refs[] = {
-    CTSerialize::GDWaveObjectTypeTable
-  };
-  static const char * const names[] = {
-    "playerWave"
-  };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 1, type_codes, type_refs, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 0, nullptr, nullptr, nullptr, nullptr, nullptr
   };
   return &tt;
 }
@@ -1978,14 +2041,16 @@ inline const ::flatbuffers::TypeTable *RequestLevelTypeTable() {
 inline const ::flatbuffers::TypeTable *ReturnLevelStringTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
     { ::flatbuffers::ET_STRING, 1, -1 },
+    { ::flatbuffers::ET_STRING, 0, -1 },
     { ::flatbuffers::ET_STRING, 0, -1 }
   };
   static const char * const names[] = {
     "uniqueIDList",
-    "levelString"
+    "levelString",
+    "ctVersion"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 2, type_codes, nullptr, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 3, type_codes, nullptr, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -2083,6 +2148,22 @@ inline const ::flatbuffers::TypeTable *AdminActionTypeTable() {
   };
   static const ::flatbuffers::TypeTable tt = {
     ::flatbuffers::ST_TABLE, 4, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *PlayerCursorDataTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_SEQUENCE, 0, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::GDWaveObjectTypeTable
+  };
+  static const char * const names[] = {
+    "playerWave"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 1, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }

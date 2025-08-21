@@ -16,11 +16,4 @@ bool isValidEnumRange(int n, int min, int max);
 // Toggle stuff in levelSettings based off of an int
 Result<uint8_t> toggleFromLevelSettings(LevelSettingsObject* settings, int option);
 
-// Stupid ahh solution
-// #ifdef STEAMWORKS
-//     #define NETWORKING_ID_HASH CSteamID
-// #else
-//     #define NETWORKING_ID_HASH std::string
-// #endif
-
 std::string getCursorHash(SteamNetworkingIdentity id);

@@ -24,6 +24,7 @@ union MessageBody {
     SpeedChange,
     GameModeChange,
     AdminAction,
+    PlayerCursorData,
     GlobedHandshake
 }
 
@@ -83,7 +84,7 @@ table ChangeDefaultColor {
 }
 
 table RequestLevel { 
-    playerWave:GDWaveObject;
+    // playerWave:GDWaveObject;
 }
 
 table ReturnLevelString {
@@ -124,6 +125,10 @@ table AdminAction {
     userId:uint64; // This might not be unsigned. TODO: Check
     timeoutEpoch:uint64;
     reason:string;
+}
+
+table PlayerCursorData {
+    playerWave:GDWaveObject;
 }
 
 // TODO: Finish

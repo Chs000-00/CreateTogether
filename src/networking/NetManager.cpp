@@ -315,6 +315,11 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg, Ste
             break;
         }
 
+        case CTSerialize::MessageBody_PlayerCursorData: {
+            SERIALIZE_AND_RECEIVE(PlayerCursorData, msgSource);
+            break;
+        }
+
         default:
             return Err("Invalid Union Type");
     }

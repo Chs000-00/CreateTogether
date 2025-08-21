@@ -129,6 +129,10 @@ void pollCursorMessages() {
 
 		bool isVerified = CTSerialize::cursor::VerifyCursorUpdateBuffer(verifier);
 
+        auto s = flatbuffers::FlatBufferToString(data, CTSerialize::cursor::CursorUpdateTypeTable());
+
+        std::cout << "RecvMessageCURSOR:" << s << '\n';
+
         sendMessageToAllWithExceptionCursor(data, message->GetSize(), message->m_conn);
 
 		// TODO: Call release earlier
