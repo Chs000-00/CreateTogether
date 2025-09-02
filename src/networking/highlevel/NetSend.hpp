@@ -40,3 +40,5 @@ void sendSpeedChange(int speed);
 void sendGameModeChange(uint8 gameMode);
 
 void sendPlayerCursorData();
+
+void sendRequestForCursors();

@@ -75,6 +75,9 @@ struct AdminActionBuilder;
 struct PlayerCursorData;
 struct PlayerCursorDataBuilder;
 
+struct RequestForCursors;
+struct RequestForCursorsBuilder;
+
 struct GlobedHandshake;
 struct GlobedHandshakeBuilder;
 
@@ -116,6 +119,8 @@ inline const ::flatbuffers::TypeTable *AdminActionTypeTable();
 
 inline const ::flatbuffers::TypeTable *PlayerCursorDataTypeTable();
 
+inline const ::flatbuffers::TypeTable *RequestForCursorsTypeTable();
+
 inline const ::flatbuffers::TypeTable *GlobedHandshakeTypeTable();
 
 enum MessageBody : uint8_t {
@@ -138,12 +143,13 @@ enum MessageBody : uint8_t {
   MessageBody_GameModeChange = 16,
   MessageBody_AdminAction = 17,
   MessageBody_PlayerCursorData = 18,
-  MessageBody_GlobedHandshake = 19,
+  MessageBody_RequestForCursors = 19,
+  MessageBody_GlobedHandshake = 20,
   MessageBody_MIN = MessageBody_NONE,
   MessageBody_MAX = MessageBody_GlobedHandshake
 };
 
-inline const MessageBody (&EnumValuesMessageBody())[20] {
+inline const MessageBody (&EnumValuesMessageBody())[21] {
   static const MessageBody values[] = {
     MessageBody_NONE,
     MessageBody_CreateObjects,
@@ -164,13 +170,14 @@ inline const MessageBody (&EnumValuesMessageBody())[20] {
     MessageBody_GameModeChange,
     MessageBody_AdminAction,
     MessageBody_PlayerCursorData,
+    MessageBody_RequestForCursors,
     MessageBody_GlobedHandshake
   };
   return values;
 }
 
 inline const char * const *EnumNamesMessageBody() {
-  static const char * const names[21] = {
+  static const char * const names[22] = {
     "NONE",
     "CreateObjects",
     "DeleteObjects",
@@ -190,6 +197,7 @@ inline const char * const *EnumNamesMessageBody() {
     "GameModeChange",
     "AdminAction",
     "PlayerCursorData",
+    "RequestForCursors",
     "GlobedHandshake",
     nullptr
   };
@@ -276,6 +284,10 @@ template<> struct MessageBodyTraits<CTSerialize::AdminAction> {
 
 template<> struct MessageBodyTraits<CTSerialize::PlayerCursorData> {
   static const MessageBody enum_value = MessageBody_PlayerCursorData;
+};
+
+template<> struct MessageBodyTraits<CTSerialize::RequestForCursors> {
+  static const MessageBody enum_value = MessageBody_RequestForCursors;
 };
 
 template<> struct MessageBodyTraits<CTSerialize::GlobedHandshake> {
@@ -391,6 +403,9 @@ struct MessageHeader FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const CTSerialize::PlayerCursorData *body_as_PlayerCursorData() const {
     return body_type() == CTSerialize::MessageBody_PlayerCursorData ? static_cast<const CTSerialize::PlayerCursorData *>(body()) : nullptr;
   }
+  const CTSerialize::RequestForCursors *body_as_RequestForCursors() const {
+    return body_type() == CTSerialize::MessageBody_RequestForCursors ? static_cast<const CTSerialize::RequestForCursors *>(body()) : nullptr;
+  }
   const CTSerialize::GlobedHandshake *body_as_GlobedHandshake() const {
     return body_type() == CTSerialize::MessageBody_GlobedHandshake ? static_cast<const CTSerialize::GlobedHandshake *>(body()) : nullptr;
   }
@@ -473,6 +488,10 @@ template<> inline const CTSerialize::AdminAction *MessageHeader::body_as<CTSeria
 
 template<> inline const CTSerialize::PlayerCursorData *MessageHeader::body_as<CTSerialize::PlayerCursorData>() const {
   return body_as_PlayerCursorData();
+}
+
+template<> inline const CTSerialize::RequestForCursors *MessageHeader::body_as<CTSerialize::RequestForCursors>() const {
+  return body_as_RequestForCursors();
 }
 
 template<> inline const CTSerialize::GlobedHandshake *MessageHeader::body_as<CTSerialize::GlobedHandshake>() const {
@@ -1620,6 +1639,38 @@ inline ::flatbuffers::Offset<PlayerCursorData> CreatePlayerCursorData(
   return builder_.Finish();
 }
 
+struct RequestForCursors FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef RequestForCursorsBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return RequestForCursorsTypeTable();
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           verifier.EndTable();
+  }
+};
+
+struct RequestForCursorsBuilder {
+  typedef RequestForCursors Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  explicit RequestForCursorsBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<RequestForCursors> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<RequestForCursors>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<RequestForCursors> CreateRequestForCursors(
+    ::flatbuffers::FlatBufferBuilder &_fbb) {
+  RequestForCursorsBuilder builder_(_fbb);
+  return builder_.Finish();
+}
+
 struct GlobedHandshake FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GlobedHandshakeBuilder Builder;
   static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
@@ -1741,6 +1792,10 @@ inline bool VerifyMessageBody(::flatbuffers::Verifier &verifier, const void *obj
       auto ptr = reinterpret_cast<const CTSerialize::PlayerCursorData *>(obj);
       return verifier.VerifyTable(ptr);
     }
+    case MessageBody_RequestForCursors: {
+      auto ptr = reinterpret_cast<const CTSerialize::RequestForCursors *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
     case MessageBody_GlobedHandshake: {
       auto ptr = reinterpret_cast<const CTSerialize::GlobedHandshake *>(obj);
       return verifier.VerifyTable(ptr);
@@ -1782,7 +1837,8 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     { ::flatbuffers::ET_SEQUENCE, 0, 15 },
     { ::flatbuffers::ET_SEQUENCE, 0, 16 },
     { ::flatbuffers::ET_SEQUENCE, 0, 17 },
-    { ::flatbuffers::ET_SEQUENCE, 0, 18 }
+    { ::flatbuffers::ET_SEQUENCE, 0, 18 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 19 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
     CTSerialize::CreateObjectsTypeTable,
@@ -1803,6 +1859,7 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     CTSerialize::GameModeChangeTypeTable,
     CTSerialize::AdminActionTypeTable,
     CTSerialize::PlayerCursorDataTypeTable,
+    CTSerialize::RequestForCursorsTypeTable,
     CTSerialize::GlobedHandshakeTypeTable
   };
   static const char * const names[] = {
@@ -1825,10 +1882,11 @@ inline const ::flatbuffers::TypeTable *MessageBodyTypeTable() {
     "GameModeChange",
     "AdminAction",
     "PlayerCursorData",
+    "RequestForCursors",
     "GlobedHandshake"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_UNION, 20, type_codes, type_refs, nullptr, nullptr, names
+    ::flatbuffers::ST_UNION, 21, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -2164,6 +2222,13 @@ inline const ::flatbuffers::TypeTable *PlayerCursorDataTypeTable() {
   };
   static const ::flatbuffers::TypeTable tt = {
     ::flatbuffers::ST_TABLE, 1, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *RequestForCursorsTypeTable() {
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 0, nullptr, nullptr, nullptr, nullptr, nullptr
   };
   return &tt;
 }

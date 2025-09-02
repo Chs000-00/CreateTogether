@@ -91,9 +91,6 @@ void sendChangeDefaultColor(int groupID, ccColor3B currentColor, ccHSVValue hsv,
 }
 
 void sendRequestLevel() {
-
-    sendPlayerCursorData();
-
     auto netManager = NetManager::get();
     auto requestLevelOffset = CTSerialize::CreateRequestLevel(netManager->m_builder);
     auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_RequestLevel, requestLevelOffset.Union());
@@ -167,6 +164,14 @@ void sendPlayerCursorData() {
     auto wave = CTSerialize::CreateGDWaveObject(netManager->m_builder, gameManager->getPlayerColor(), gameManager->getPlayerColor2(), gameManager->getPlayerDart(), gameManager->getPlayerGlow(), gameManager->getPlayerGlowColor());
     auto playerCursorDataOffset = CTSerialize::CreatePlayerCursorData(netManager->m_builder,wave);
     auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_PlayerCursorData, playerCursorDataOffset.Union());
+    netManager->sendMessage(messageHeaderOffset);
+    netManager->m_builder.Clear();
+}
+
+void sendRequestForCursors() {
+    auto netManager = NetManager::get();
+    auto requestForCursorsOffset = CTSerialize::CreateRequestForCursors(netManager->m_builder);
+    auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_RequestForCursors, requestForCursorsOffset.Union());
     netManager->sendMessage(messageHeaderOffset);
     netManager->m_builder.Clear();
 }

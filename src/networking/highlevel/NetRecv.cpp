@@ -200,8 +200,6 @@ Result<uint8_t> recvRequestLevel(const CTSerialize::RequestLevel* msg, SteamNetw
         return Ok(1);
     }
 
-    sendPlayerCursorData();
-
     return Ok(0);
 }
 
@@ -268,6 +266,9 @@ Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg,
     }
 
 	netManager->m_isRequestingLevelString = false;
+
+    sendRequestForCursors();
+
     return Ok(0);
 }
 
@@ -333,7 +334,7 @@ Result<uint8_t> recvPlayerCursorData(const CTSerialize::PlayerCursorData* msg, S
 
     auto cursorHash = getCursorHash(msgSource);
 
-    CCNode* cursorLayer = level->getChildByID("cursor-layer"_spr);
+    CCNode* cursorLayer = level->m_objectLayer->getChildByID("cursor-layer"_spr);
 
     if (!cursorLayer) {
         log::info("Creating cursor-layer.");
@@ -380,5 +381,10 @@ Result<uint8_t> recvPlayerCursorData(const CTSerialize::PlayerCursorData* msg, S
         return Err("recvRequestLevel: message has no wave object. Using default wave.");
     }
 
+    return Ok(0);
+}
+
+Result<uint8_t> recvRequestForCursors(const CTSerialize::RequestForCursors* msg) {
+    sendPlayerCursorData();
     return Ok(0);
 }

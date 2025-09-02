@@ -2,6 +2,7 @@
 
 #include "../../config.hpp"
 #include "CursorManager.hpp"
+#include "Geode/loader/Log.hpp"
 #include "NetManager.hpp"
 #include "ccserialization_generated.h"
 #include "ctcursor_generated.h"
@@ -30,8 +31,10 @@ void CursorManager::sendCursorUpdateToAll() {
     auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
 
     if (!level) {
+        log::error("Could not find level?");
         return;
     }
+
     auto ccpos = level->m_objectLayer->getPosition() + getMousePos();
     auto pos = CTSerialize::CCPos();
     auto cursorUpdate = CTSerialize::cursor::CreateCursorUpdate(this->m_cursorBuilder, &pos, CTSerialize::cursor::StatusType_None);
@@ -45,9 +48,19 @@ void CursorManager::updateCursorPositon(CreateTogetherCursor* cursor, CCPoint po
 
 void CursorManager::update() {
     receiveCursorData();
+
+    auto netManager = NetManager::get();
+
+    if (!netManager->m_ignoreMessages && netManager->m_isInLobby) {
+        this->sendCursorUpdateToAll();
+    }
+
 }
 
 void CursorManager::cursorNetworkingPrelude() {
+
+    log::info("Setting up CursorManager.");
+
     #ifdef NO_STEAMWORKS
         SteamNetworkingIPAddr serverAddr;
         serverAddr.SetIPv4(0x7f000001, DEDICATED_CURSOR_PORT);
@@ -56,6 +69,7 @@ void CursorManager::cursorNetworkingPrelude() {
         log::info("Connecting to cursor server at {}", szAddr);
 
         SteamNetworkingConfigValue_t opt;
+        // todo: use a unique connectionStatus
         opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallback);
         this->m_cursorConnection = SteamNetworkingSockets()->ConnectByIPAddress(serverAddr, 1, &opt);
         if (this->m_cursorConnection == k_HSteamNetConnection_Invalid) {
@@ -63,6 +77,8 @@ void CursorManager::cursorNetworkingPrelude() {
         }
 
     #endif
+
+    // TODO: FINISH
 }
 
 void CursorManager::receiveCursorData() {
@@ -137,9 +153,9 @@ void CursorManager::sendMessage(flatbuffers::Offset<CTSerialize::cursor::CursorU
 
     #ifdef STEAMWORKS
         for (auto const& member : netManager->m_playersInLobby) {
-            SteamNetworkingMessages()->SendMessageToUser(member, netManager->m_connection, this->m_cursorBuilder.GetBufferPointer(), this->m_cursorBuilder.GetSize(), k_nSteamNetworkingSend_UnreliableNoDelay, CURSOR_CHANNEL);
+            SteamNetworkingMessages()->SendMessageToUser(member, this->m_cursorConnection, this->m_cursorBuilder.GetBufferPointer(), this->m_cursorBuilder.GetSize(), k_nSteamNetworkingSend_UnreliableNoDelay, CURSOR_CHANNEL);
         }
     #else
-        SteamNetworkingSockets()->SendMessageToConnection(netManager->m_connection, this->m_cursorBuilder.GetBufferPointer(), this->m_cursorBuilder.GetSize(), k_nSteamNetworkingSend_UnreliableNoDelay, nullptr);
+        SteamNetworkingSockets()->SendMessageToConnection(this->m_cursorConnection, this->m_cursorBuilder.GetBufferPointer(), this->m_cursorBuilder.GetSize(), k_nSteamNetworkingSend_UnreliableNoDelay, nullptr);
     #endif
 }

@@ -25,6 +25,7 @@ union MessageBody {
     GameModeChange,
     AdminAction,
     PlayerCursorData,
+    RequestForCursors,
     GlobedHandshake
 }
 
@@ -84,7 +85,7 @@ table ChangeDefaultColor {
 }
 
 table RequestLevel { 
-    // playerWave:GDWaveObject;
+
 }
 
 table ReturnLevelString {
@@ -129,6 +130,10 @@ table AdminAction {
 
 table PlayerCursorData {
     playerWave:GDWaveObject;
+}
+
+table RequestForCursors {
+
 }
 
 // TODO: Finish

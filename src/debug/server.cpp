@@ -131,7 +131,7 @@ void pollCursorMessages() {
 
         auto s = flatbuffers::FlatBufferToString(data, CTSerialize::cursor::CursorUpdateTypeTable());
 
-        std::cout << "RecvMessageCURSOR:" << s << '\n';
+        // std::cout << "RecvMessageCURSOR:" << s << '\n';
 
         sendMessageToAllWithExceptionCursor(data, message->GetSize(), message->m_conn);
 
@@ -347,7 +347,7 @@ void steamNetConnectionStatusChangedCallbackCursor( SteamNetConnectionStatusChan
 				}
 
 				// Assign the poll group
-				if ( !SteamNetworkingSockets()->SetConnectionPollGroup( pInfo->m_hConn, pollGroup ) ) {
+				if ( !SteamNetworkingSockets()->SetConnectionPollGroup( pInfo->m_hConn, cursorPollGroup ) ) {
                     std::cout << "Failed to set poll group? (Cursor)" << '\n';
 					SteamNetworkingSockets()->CloseConnection( pInfo->m_hConn, 0, nullptr, false );
 					break;

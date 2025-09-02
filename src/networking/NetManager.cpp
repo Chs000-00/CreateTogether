@@ -320,6 +320,11 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg, Ste
             break;
         }
 
+        case CTSerialize::MessageBody_RequestForCursors: {
+            SERIALIZE_AND_RECEIVE(RequestForCursors);
+            break;
+        }
+
         default:
             return Err("Invalid Union Type");
     }
