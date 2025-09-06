@@ -2,7 +2,9 @@
 
 #include "../../config.hpp"
 #include "CursorManager.hpp"
+#include "Geode/cocos/cocoa/CCGeometry.h"
 #include "Geode/loader/Log.hpp"
+#include "Geode/utils/cocos.hpp"
 #include "NetManager.hpp"
 #include "ccserialization_generated.h"
 #include "ctcursor_generated.h"
@@ -26,17 +28,18 @@ CreateTogetherCursor* CursorManager::getPlayerCursor(SteamNetworkingIdentity id)
     return CursorManager::get()->m_playerCursors.at(getCursorHash(id));
 }
 
-
+// TODO: Check for mouse movement
 void CursorManager::sendCursorUpdateToAll() {
     auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
 
     if (!level) {
-        log::error("Could not find level?");
+        log::warn("Could not find level? This might get spammed.");
         return;
     }
 
-    auto ccpos = level->m_objectLayer->getPosition() + getMousePos();
-    auto pos = CTSerialize::CCPos();
+    auto mp = screenToGame(getMousePos(), level);
+
+    auto pos = CTSerialize::CCPos(mp.x, mp.y);
     auto cursorUpdate = CTSerialize::cursor::CreateCursorUpdate(this->m_cursorBuilder, &pos, CTSerialize::cursor::StatusType_None);
     this->sendMessage(cursorUpdate);
     this->m_cursorBuilder.Clear();
@@ -134,8 +137,15 @@ void CursorManager::receiveCursorData() {
 Result<uint8_t> CursorManager::parseCursorData(const CTSerialize::cursor::CursorUpdate* msg, SteamNetworkingIdentity msgSource) {
         
     if (auto msgPos = msg->position()) {
+
+        auto cursorItr = this->m_playerCursors.find(getCursorHash(msgSource));
+
+        if (cursorItr == this->m_playerCursors.end()) {
+            return Err("parseCursorData: no existing player cursor");
+        }
+
         cocos2d::CCPoint pos = {msgPos->x(), msgPos->y()};
-        updateCursorPositon(this->m_playerCursors.at(getCursorHash(msgSource)), pos);
+        updateCursorPositon(cursorItr->second, pos);
     }
     else {
         return Err("parseCursorData: no position in message");

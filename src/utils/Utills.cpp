@@ -1,6 +1,11 @@
 #include "Utills.hpp"
 
+#include <numbers>
 #include <Geode/Geode.hpp>
+#include <Geode/binding/PlayLayer.hpp>
+#include "../config.hpp"
+#include "steamnetworkingtypes.h"
+
 
 #ifdef NO_STEAMWORKS
     #include <debug/isteamnetworkingutils.h>
@@ -109,8 +114,47 @@ Result<uint8_t> toggleFromLevelSettings(LevelSettingsObject* settings, int optio
 }
 
 std::string getCursorHash(SteamNetworkingIdentity id) {
+
+    // Really bad band-aid fix, but I don't want to rewrite this code.
+    #ifdef NO_STEAMWORKS
+        SteamNetworkingIPAddr fromServerAddr;
+        fromServerAddr = id.m_ip;
+        fromServerAddr.m_port = DEDICATED_CURSOR_PORT;
+        id.SetIPAddr(fromServerAddr);
+    #endif
+
     char buf[SteamNetworkingIdentity::k_cchMaxString];
+
+
     id.ToString(buf, sizeof(buf));
-    log::debug("CursorHash {}", buf);
+    // log::debug("CursorHash {}", buf);
     return buf;
+}
+
+double degToRad(double degrees) {
+    return degrees * std::numbers::pi / 180;
+}
+
+cocos2d::CCPoint rotateVector(const cocos2d::CCPoint& vector, double angle) {
+    auto x = vector.x * cos(angle) - vector.y * sin(angle);
+    auto y = vector.x * sin(angle) + vector.y * cos(angle);
+    return ccp(x, y);
+}
+
+cocos2d::CCPoint screenToGame(const cocos2d::CCPoint& screenPos, GJBaseGameLayer* relativeLayer) {
+   auto cameraPos = relativeLayer->m_gameState.m_cameraPosition;
+   auto cameraScale = relativeLayer->m_gameState.m_cameraZoom;
+   auto cameraAngle = relativeLayer->m_gameState.m_cameraAngle; 
+
+    // Rotate the position around the camera angle
+    auto angle = degToRad(cameraAngle);
+    auto rotatedPos = rotateVector(screenPos, angle);
+
+    // Scale the position
+    auto scaledPos = ccp(rotatedPos.x / cameraScale, rotatedPos.y / cameraScale);
+
+    // Add the camera position
+    auto point = ccp(cameraPos.x + scaledPos.x, cameraPos.y + scaledPos.y);
+
+    return point;
 }

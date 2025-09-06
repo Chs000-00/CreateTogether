@@ -169,6 +169,7 @@ void sendPlayerCursorData() {
 }
 
 void sendRequestForCursors() {
+    sendPlayerCursorData();
     auto netManager = NetManager::get();
     auto requestForCursorsOffset = CTSerialize::CreateRequestForCursors(netManager->m_builder);
     auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_RequestForCursors, requestForCursorsOffset.Union());

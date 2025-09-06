@@ -5,3 +5,5 @@ Adds multiplayer-like level editing via <cp>steamworks</c>, no need to port-forw
   
 Supports public lobbies and private lobbies. <c>Dedicated Lobbies are still in beta</c>, but may come in the future.
 **This mod is currently in beta, please report all bugs or incomplete features to the github repo!**  
+  
+Special thanks to the geode sdk server for helping answer all my questions, and to all my beta-testers, without whoem this project would not have been possible.  

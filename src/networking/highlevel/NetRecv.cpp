@@ -1,5 +1,6 @@
 #include "Geode/cocos/base_nodes/CCNode.h"
 #include "Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h"
+#include "Geode/loader/Log.hpp"
 #include "HighLevelHeader.hpp"
 #include "NetSend.hpp"
 #include "SharedHighLevelHeaders.hpp"
@@ -340,7 +341,7 @@ Result<uint8_t> recvPlayerCursorData(const CTSerialize::PlayerCursorData* msg, S
         log::info("Creating cursor-layer.");
         cursorLayer = CCLayer::create();
         cursorLayer->setID("cursor-layer"_spr);
-        level->addChild(cursorLayer);
+        level->m_objectLayer->addChild(cursorLayer);
     }    
 
     CreateTogetherCursor* cursor;
@@ -359,22 +360,28 @@ Result<uint8_t> recvPlayerCursorData(const CTSerialize::PlayerCursorData* msg, S
     } 
     else {
         data = CreateTogetherCursor::defaultCursorData(2, 3);
-        
     }
 
-    if (cursorManager->m_playerCursors.contains(cursorHash)) {
-        cursorManager->m_playerCursors.at(cursorHash)->updateCursor(data);
-    }
+    auto cursorItr = cursorManager->m_playerCursors.find(getCursorHash(msgSource));
 
-    else {
+    if (cursorItr == cursorManager->m_playerCursors.end()) {        
+
+        log::info("Creating Cursor.");
+
         cursor = CreateTogetherCursor::create(data);
 
         // TODO: release this
         cursor->retain();
 
+        cursor->setRotation(240);
+
         cursorLayer->addChild(cursor);
 
         cursorManager->m_playerCursors.insert({cursorHash, cursor});
+    }
+    else {
+        log::debug("Updating Cursor.");
+        cursorItr->second->updateCursor(data);
     }
 
     if (!msg->playerWave()) {
