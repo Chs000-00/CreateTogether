@@ -63,3 +63,6 @@ build-*/
 # CLion
 .idea/
 /cmake-build-*/
+
+# Libraries
+!/lib/steam_api64.lib

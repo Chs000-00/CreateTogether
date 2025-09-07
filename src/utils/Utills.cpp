@@ -1,9 +1,12 @@
 #include "Utills.hpp"
 
+#include <Geode/binding/LevelEditorLayer.hpp>
+#include <gl/glu.h>
 #include <numbers>
 #include <Geode/Geode.hpp>
 #include <Geode/binding/PlayLayer.hpp>
 #include "../config.hpp"
+#include "Geode/loader/Log.hpp"
 #include "steamnetworkingtypes.h"
 
 
@@ -129,32 +132,4 @@ std::string getCursorHash(SteamNetworkingIdentity id) {
     id.ToString(buf, sizeof(buf));
     // log::debug("CursorHash {}", buf);
     return buf;
-}
-
-double degToRad(double degrees) {
-    return degrees * std::numbers::pi / 180;
-}
-
-cocos2d::CCPoint rotateVector(const cocos2d::CCPoint& vector, double angle) {
-    auto x = vector.x * cos(angle) - vector.y * sin(angle);
-    auto y = vector.x * sin(angle) + vector.y * cos(angle);
-    return ccp(x, y);
-}
-
-cocos2d::CCPoint screenToGame(const cocos2d::CCPoint& screenPos, GJBaseGameLayer* relativeLayer) {
-   auto cameraPos = relativeLayer->m_gameState.m_cameraPosition;
-   auto cameraScale = relativeLayer->m_gameState.m_cameraZoom;
-   auto cameraAngle = relativeLayer->m_gameState.m_cameraAngle; 
-
-    // Rotate the position around the camera angle
-    auto angle = degToRad(cameraAngle);
-    auto rotatedPos = rotateVector(screenPos, angle);
-
-    // Scale the position
-    auto scaledPos = ccp(rotatedPos.x / cameraScale, rotatedPos.y / cameraScale);
-
-    // Add the camera position
-    auto point = ccp(cameraPos.x + scaledPos.x, cameraPos.y + scaledPos.y);
-
-    return point;
 }

@@ -339,7 +339,7 @@ Result<uint8_t> recvPlayerCursorData(const CTSerialize::PlayerCursorData* msg, S
 
     if (!cursorLayer) {
         log::info("Creating cursor-layer.");
-        cursorLayer = CCLayer::create();
+        cursorLayer = CCNode::create();
         cursorLayer->setID("cursor-layer"_spr);
         level->m_objectLayer->addChild(cursorLayer);
     }    

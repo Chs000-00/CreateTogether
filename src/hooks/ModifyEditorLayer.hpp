@@ -3,6 +3,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/binding/GameObject.hpp>
+#include "../utils/Utills.hpp"
 
 #ifdef STEAMWORKS
     #include <isteamnetworkingmessages.h>
@@ -29,8 +30,6 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
         #endif
 
         // PlayLayer* m_fakePlayLayer = nullptr;
-
-        // TODO: Important! Check if CCDictionary is O(1)
         Ref<CCDictionary> m_pUniqueIDOfGameObject = nullptr;
     };
 

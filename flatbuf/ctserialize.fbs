@@ -4,7 +4,6 @@ include "gdserialization.fbs";
 namespace CTSerialize; 
 
 // Yes this gives out style guideline errors. Cry about it
-// TODO: Uhh Rename these files to something better I guess idk im too lazy to do that
 
 union MessageBody {
     CreateObjects,
@@ -103,7 +102,7 @@ table UpdateSong {
     songID:uint64;
 }
 
-// TODO: ChangeArt
+
 table ChangeArt {
     artType:ArtType;
     artID:int;

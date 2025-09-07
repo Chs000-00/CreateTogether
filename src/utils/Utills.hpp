@@ -2,6 +2,7 @@
 
 #include "debug/steamnetworkingtypes.h"
 #include <Geode/Geode.hpp>
+#include <Geode/binding/GJBaseGameLayer.hpp>
 #include <Geode/binding/LevelSettingsObject.hpp>
 
 using namespace geode::prelude;
@@ -18,10 +19,3 @@ Result<uint8_t> toggleFromLevelSettings(LevelSettingsObject* settings, int optio
 
 // Change the SteamNetworkingIdentity to a string for hashing, so the cursor code could work properly.
 std::string getCursorHash(SteamNetworkingIdentity id);
-
-// Thanks eclipse!!
-double degToRad(double degrees);
-
-cocos2d::CCPoint rotateVector(const cocos2d::CCPoint& vector, double angle);
-
-cocos2d::CCPoint screenToGame(const cocos2d::CCPoint& screenPos, GJBaseGameLayer* relativeLayer);
