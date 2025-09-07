@@ -373,6 +373,8 @@ Result<uint8_t> recvPlayerCursorData(const CTSerialize::PlayerCursorData* msg, S
         // TODO: release this
         cursor->retain();
 
+        cursor->setAnchorPoint(ccp(1.0f, 0.5f));
+
         cursor->setRotation(240);
 
         cursorLayer->addChild(cursor);

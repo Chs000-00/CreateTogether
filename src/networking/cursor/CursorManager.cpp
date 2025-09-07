@@ -39,7 +39,6 @@ void CursorManager::sendCursorUpdateToAll() {
 
     auto mp = level->m_objectLayer->convertToNodeSpace(getMousePos());
 
-    // TODO: Calculate the offsets
     auto pos = CTSerialize::CCPos(mp.x, mp.y);
     auto cursorUpdate = CTSerialize::cursor::CreateCursorUpdate(this->m_cursorBuilder, &pos, CTSerialize::cursor::StatusType_None);
     this->sendMessage(cursorUpdate);
