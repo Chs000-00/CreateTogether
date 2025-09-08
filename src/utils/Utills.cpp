@@ -1,17 +1,16 @@
 #include "Utills.hpp"
 
+#include <Geode/Geode.hpp>
 #include <Geode/binding/LevelEditorLayer.hpp>
 #include <gl/glu.h>
-#include <numbers>
-#include <Geode/Geode.hpp>
 #include <Geode/binding/PlayLayer.hpp>
 #include "../config.hpp"
-#include "Geode/loader/Log.hpp"
-#include "steamnetworkingtypes.h"
 
 
 #ifdef NO_STEAMWORKS
     #include <debug/isteamnetworkingutils.h>
+#else
+    #include <isteamnetworkingutils.h>
 #endif
 
 using namespace geode::prelude;

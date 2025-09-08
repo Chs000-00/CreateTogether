@@ -2,7 +2,6 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/ui/LoadingSpinner.hpp>
-#include <Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h>
 #include <Geode/binding/TableView.hpp>
 
 // #ifdef STEAMWORKS
@@ -81,7 +80,7 @@ void LobbiesLayer::refreshLobbyList(CCObject* sender) {
     this->m_menu->getChildByID("loading-spinner")->setVisible(true);
 
     // SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterFar);
-    AddRequestLobbyListStringFilter("lobby_type", MOD_LOBBY_ID, k_ELobbyComparisonEqual);
+    SteamMatchmaking()->AddRequestLobbyListStringFilter("lobby_type", MOD_LOBBY_ID, k_ELobbyComparisonEqual);
 	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
     this->m_lobbyMatchListCallResult.Set(hSteamAPICall, this, &LobbiesLayer::onLobbyMatchList);
 

@@ -163,9 +163,9 @@ void CursorManager::sendMessage(flatbuffers::Offset<CTSerialize::cursor::CursorU
 
     #ifdef STEAMWORKS
         for (auto const& member : netManager->m_playersInLobby) {
-            SteamNetworkingMessages()->SendMessageToUser(member, this->m_cursorConnection, this->m_cursorBuilder.GetBufferPointer(), this->m_cursorBuilder.GetSize(), k_nSteamNetworkingSend_UnreliableNoDelay, CURSOR_CHANNEL);
+            SteamNetworkingMessages()->SendMessageToUser(member, this->m_cursorBuilder.GetBufferPointer(), this->m_cursorBuilder.GetSize(), k_nSteamNetworkingSend_UnreliableNoDelay, CURSOR_CHANNEL);
         }
     #else
-        SteamNetworkingSockets()->SendMessageToConnection(this->m_cursorConnection, this->m_cursorBuilder.GetBufferPointer(), this->m_cursorBuilder.GetSize(), k_nSteamNetworkingSend_UnreliableNoDelay, nullptr);
+            SteamNetworkingSockets()->SendMessageToConnection(this->m_cursorConnection, this->m_cursorBuilder.GetBufferPointer(), this->m_cursorBuilder.GetSize(), k_nSteamNetworkingSend_UnreliableNoDelay, nullptr);
     #endif
 }

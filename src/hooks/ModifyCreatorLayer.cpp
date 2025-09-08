@@ -1,7 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelBrowserLayer.hpp>
 #include "../networking/NetManager.hpp"
-
+#include "../layers/LobbiesLayer.hpp"
 
 
 using namespace geode::prelude;

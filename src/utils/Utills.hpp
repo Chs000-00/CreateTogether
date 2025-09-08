@@ -1,9 +1,14 @@
 #pragma once
 
-#include "debug/steamnetworkingtypes.h"
 #include <Geode/Geode.hpp>
 #include <Geode/binding/GJBaseGameLayer.hpp>
 #include <Geode/binding/LevelSettingsObject.hpp>
+
+#ifdef NO_STEAMWORKS
+    #include <debug/steamnetworkingtypes.h>
+#else
+    #include <steamnetworkingtypes.h>
+#endif
 
 using namespace geode::prelude;
 
