@@ -40,9 +40,10 @@ table DeleteObjects {
     uniqueIDList:[string];
 }
 
+// TODO: Implement a hash-table like optimization for move objects, with posOff being the key and a list of UUID's being the
+// value. I Could also make a list of a table [MoveMerge] which has a UID and a position offset
 table MoveObjects {
-    uniqueID:string;
-    positionOffset:CCPos;
+    moveDictionary:[MoveDictionary];
 }
 
 table LevelSettingChange {
@@ -68,7 +69,7 @@ table ModifyObjects {
 }
 
 table ChangeGroupID {
-    groupID:uint32; // TODO: uhh uhh I forgot my uint32max this might not be hyperoptimal
+    groupID:uint16;
     isAdding:bool;
     uniqueIDList:[string];
 }

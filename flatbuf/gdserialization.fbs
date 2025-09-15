@@ -17,6 +17,11 @@ table GDGameObjectMin {
     scale:NodeScale;
 }
 
+table MoveDictionary {
+    positionOffsetKey:CCPos (key);
+    uniqueIDList:[string];
+}
+
 table GDWaveObject {
     cursorColor1:int;
     cursorColor2:int;

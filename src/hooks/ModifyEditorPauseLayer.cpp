@@ -61,7 +61,7 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
     // TODO: There might be an issue with exiting the lobby before you get to confirm exiting on the popup.
 
     void onExitEditor(CCObject* sender) {
-        log::info("SAVEANDEXIT");
+        log::debug("On Exit");
         // auto gameManager = static_cast<MyGameManager*>(GameManager::get());
         static_cast<MyLevelEditorLayer*>(this->m_editorLayer)->m_fields->m_pUniqueIDOfGameObject->release();
         NetManager::get()->leaveLobby();
@@ -69,7 +69,7 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
     }
 
     void onExitNoSave(CCObject* sender) {
-        log::info("NOSAVEEXIT");
+        log::debug("On Exit No Save");
         auto gameManager = static_cast<MyGameManager*>(GameManager::get());
         static_cast<MyLevelEditorLayer*>(this->m_editorLayer)->m_fields->m_pUniqueIDOfGameObject->release();
         NetManager::get()->leaveLobby();
@@ -84,7 +84,11 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
             EditorPauseLayer::onSaveAndPlay(sender); // And exit editor (whoops)
         }
         else {
-            // TODO: Playlayer stuff
+            FLAlertLayer::create(
+                "In Progress",
+                "Playtesting is currently being worked at. It will be added in a future update.",
+                "Ok"
+            )->show();
         }
     }
 };

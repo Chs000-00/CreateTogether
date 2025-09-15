@@ -110,6 +110,8 @@ class NetManager {
         // Parse data. Called in receiveData.
         Result<uint8_t> parseData(const CTSerialize::MessageHeader* msg, SteamNetworkingIdentity msgSource);
 
+        void flushDictionaries();
+
         // Steamnetworking has no way to kick/ban users. I think? Instead just remove the dudes access to m_playersInLobby and any
         // Further attempts to join (this member is specificaly for fetchMemberList())
         // None of this has timeouts cause I am too lazy to implement them so idk

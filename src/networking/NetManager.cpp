@@ -46,6 +46,7 @@ void NetManager::update() {
         this->receiveData();
         // this->sendQueuedData();
         this->m_cursorManager->update();
+        this->flushDictionaries();
     }
 }
 
