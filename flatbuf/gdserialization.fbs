@@ -2,8 +2,6 @@ include "ccserialization.fbs";
 
 namespace CTSerialize; 
 
-// Enums go here
-
 /// The data a GD Game Object has when placed in the editor
 table GDGameObjectMin {
     uniqueID:string;
