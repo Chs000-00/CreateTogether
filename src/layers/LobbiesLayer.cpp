@@ -76,14 +76,12 @@ bool LobbiesLayer::init() {
 void LobbiesLayer::refreshLobbyList(CCObject* sender) {
     log::info("Refreshing lobby list");
 
-
     this->m_menu->getChildByID("loading-spinner")->setVisible(true);
 
     // SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterFar);
     SteamMatchmaking()->AddRequestLobbyListStringFilter("lobby_type", MOD_LOBBY_ID, k_ELobbyComparisonEqual);
 	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
     this->m_lobbyMatchListCallResult.Set(hSteamAPICall, this, &LobbiesLayer::onLobbyMatchList);
-
 }
 
 
@@ -92,7 +90,6 @@ void LobbiesLayer::keyBackClicked() {
 }
 
 void LobbiesLayer::onBack(CCObject* sender) {
-
     CC_SAFE_RELEASE(this->m_menu);
     CCDirector::get()->replaceScene(CCTransitionFade::create(0.5, LevelBrowserLayer::scene(GJSearchObject::create(SearchType::MyLevels))));
 }
@@ -105,7 +102,6 @@ void LobbiesLayer::onJoin(CCObject* sender) {
 }
 
 void LobbiesLayer::loadDataToList() {
-
     auto menu = this->m_menu;
 
     auto scrollLayer = menu->getChildByID("scroll-layer");

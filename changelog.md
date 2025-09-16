@@ -2,4 +2,7 @@
 
 - Initial release
 - Basic Features
-- Steamnetworking
+    - Not all of them
+- Steamnetworking Integration (Only)
+- Cursor Sync
+- Plenty of bugs

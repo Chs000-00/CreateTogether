@@ -67,8 +67,8 @@ class $modify(EditorUI) {
         
         for (auto obj : objectArr) {
             // Crash here, TODO: Fix
-            auto uid = std::to_string(editorLayer->m_fields->m_userID) + "!" + std::to_string(editorLayer->m_fields->m_blocksPlaced);
-            obj->m_fields->m_veryUniqueID = uid;
+            auto vuid = std::to_string(editorLayer->m_fields->m_userID) + "!" + std::to_string(editorLayer->m_fields->m_blocksPlaced);
+            obj->m_fields->m_veryUniqueID = vuid;
             editorLayer->m_fields->m_blocksPlaced += 1;
             editorLayer->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID);
         }

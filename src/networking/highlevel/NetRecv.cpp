@@ -127,9 +127,9 @@ Result<uint8_t> recvPasteObjects(const CTSerialize::PasteObjects* msg) {
     // This might be inefficient as this requires looping over the arr twice.
     for (auto i = 0; i != std::min(objectArr.size(), (size_t)uniqueIDList->size()); ++i) {
         auto mObject = (objectArr[i]);
-        auto uid = uniqueIDList->Get(i)->str();
-        mObject->m_fields->m_veryUniqueID = uid;
-        level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, uid);
+        auto vuid = uniqueIDList->Get(i)->str();
+        mObject->m_fields->m_veryUniqueID = vuid;
+        level->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, vuid);
     }
     return Ok(0);
 }
@@ -144,20 +144,20 @@ Result<uint8_t> recvModifyObjects(const CTSerialize::ModifyObjects* msg) {
     auto objectArr = CCArrayExt<MyGameObject*>(level->createObjectsFromString(pasteString->str(), false, false));
 
     if (objectArr.size() != uniqueIDList->size()) {
-        log::warn("recvModifyObjects: Mismatched objectArr and editUUIDs size!");
+        log::warn("recvModifyObjects: Mismatched objectArr and editvUIDs size!");
     }
 
     for (auto i = 0; i != std::min(objectArr.size(), (size_t)uniqueIDList->size()); ++i) {
         auto newObj = (objectArr[i]);
-        auto uid = uniqueIDList->Get(i)->c_str();
+        auto vuid = uniqueIDList->Get(i)->c_str();
 
-        if (auto oldObj = static_cast<MyGameObject*>(level->m_fields->m_pUniqueIDOfGameObject->objectForKey(uid))) {
+        if (auto oldObj = static_cast<MyGameObject*>(level->m_fields->m_pUniqueIDOfGameObject->objectForKey(vuid))) {
             level->deleteObject(oldObj);
-            newObj->m_fields->m_veryUniqueID = uid;
-            level->m_fields->m_pUniqueIDOfGameObject->setObject(newObj, uid);
+            newObj->m_fields->m_veryUniqueID = vuid;
+            level->m_fields->m_pUniqueIDOfGameObject->setObject(newObj, vuid);
         }
         else {
-            return Err("object UID not found");
+            return Err("object vUID not found");
         }
     }
     return Ok(0);
@@ -261,9 +261,9 @@ Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg,
 
     for (auto i = 0; i != std::min(objectArr.size(), (size_t)uniqueIDList->size()); ++i) {
         auto mObject = (objectArr[i]);
-        auto uid = uniqueIDList->Get(i)->str();
-        mObject->m_fields->m_veryUniqueID = uid;
-        betterLevel->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, uid);
+        auto vuid = uniqueIDList->Get(i)->str();
+        mObject->m_fields->m_veryUniqueID = vuid;
+        betterLevel->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, vuid);
     }
 
 	netManager->m_isRequestingLevelString = false;

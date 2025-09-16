@@ -16,8 +16,6 @@ using namespace geode::prelude;
 class $modify(MyLevelEditorLayer, LevelEditorLayer) {
 
     struct Fields {
-        // Was the data sent from another user?
-        // bool m_wasDataSent = false;
         unsigned int m_blocksPlaced = 0;
 
 
@@ -29,14 +27,10 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
         uint64 m_userID;
         #endif
 
-        // PlayLayer* m_fakePlayLayer = nullptr;
         Ref<CCDictionary> m_pUniqueIDOfGameObject = nullptr;
     };
 
-    // Fakes a play layer so I dont have to deal with weird networking
-    // And sync stuff weirdly
-    // void createFakePlayLayer();
-
+    
     GameObject* createObject(int p0, cocos2d::CCPoint p1, bool p2);
     // void updateLevelFont(int p0);
     bool init(GJGameLevel* p0, bool p1);

@@ -38,8 +38,8 @@ bool MyLevelEditorLayer::init(GJGameLevel* p0, bool p1) {
 
     // This might be inefficient as this requires looping over the arr twice.
     for (auto obj : objectArr) {
-        auto uid = stringSteamID + std::to_string(this->m_fields->m_blocksPlaced);
-        obj->m_fields->m_veryUniqueID = uid;
+        auto vuid = stringSteamID + std::to_string(this->m_fields->m_blocksPlaced);
+        obj->m_fields->m_veryUniqueID = vuid;
         this->m_fields->m_blocksPlaced += 1;
         this->m_fields->m_pUniqueIDOfGameObject->setObject(obj, obj->m_fields->m_veryUniqueID);
     }
@@ -62,12 +62,12 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
 
     auto stringSteamID = std::to_string(this->m_fields->m_userID);
     // This string should be unique for every user
-    auto uid = stringSteamID + "!" + std::to_string(this->m_fields->m_blocksPlaced);
+    auto vuid = stringSteamID + "!" + std::to_string(this->m_fields->m_blocksPlaced);
     this->m_fields->m_blocksPlaced += 1;
 
-    createdGameObject->m_fields->m_veryUniqueID = uid;
+    createdGameObject->m_fields->m_veryUniqueID = vuid;
 
-    this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, uid);
+    this->m_fields->m_pUniqueIDOfGameObject->setObject(createdGameObject, vuid);
 
     GameObject* selected;
 
@@ -77,12 +77,12 @@ GameObject* MyLevelEditorLayer::createObject(int p0, cocos2d::CCPoint p1, bool p
         selected = createdGameObject;
     }
     
-    // Assign UUIds when a user is not in lobby
+    // Assign vUIDs when a user is not in lobby
     if (!NetManager::getIsInLobby()) {
         return createdGameObject;
     }
 
-    sendCreateObjects(uid.c_str(), p0, p1, selected->getRotation(), selected->m_isHighDetail, selected->m_hasNoGlow, selected->m_isDontEnter, selected->m_isFlipX, selected->m_isFlipY, selected->getScaleX(), selected->getScaleY());
+    sendCreateObjects(vuid.c_str(), p0, p1, selected->getRotation(), selected->m_isHighDetail, selected->m_hasNoGlow, selected->m_isDontEnter, selected->m_isFlipX, selected->m_isFlipY, selected->getScaleX(), selected->getScaleY());
      
     return createdGameObject;
 }

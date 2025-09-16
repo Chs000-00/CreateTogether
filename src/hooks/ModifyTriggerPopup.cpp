@@ -10,15 +10,11 @@ class $modify(MySetupTriggerPopup, SetupTriggerPopup) {
     void onClose(cocos2d::CCObject* sender) {
         SetupTriggerPopup::onClose(sender);
 
-        // log::info("closedPopup");
-
-
         if (!NetManager::getIsInLobby()) {
             return;
         }
 
         // TODO: This might break if multiple gameObjects are selected
-        // auto ret = getJsonFromGameObject(this->m_gameObject);
 
         auto editorUI = EditorUI::get();
 

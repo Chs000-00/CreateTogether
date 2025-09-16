@@ -40,8 +40,8 @@ table DeleteObjects {
     uniqueIDList:[string];
 }
 
-// TODO: Implement a hash-table like optimization for move objects, with posOff being the key and a list of UUID's being the
-// value. I Could also make a list of a table [MoveMerge] which has a UID and a position offset
+// TODO: Implement a hash-table like optimization for move objects, with posOff being the key and a list of vUID's being the
+// value. I Could also make a list of a table [MoveMerge] which has a vUID and a position offset
 table MoveObjects {
     moveDictionary:[MoveDictionary];
 }
