@@ -12,6 +12,7 @@ jobs:
     runs-on: Windows-latest
 
     steps:
+      - uses: actions/checkout@v4
       - uses: geode-sdk/build-geode-mod@main
         id: build
     
