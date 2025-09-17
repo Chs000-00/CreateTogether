@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Geode/Geode.hpp>
+#include "../../hooks/ModifyGameManager.hpp"
+
 
 using namespace geode::prelude;
 
