@@ -104,7 +104,7 @@ Result<uint8_t> toggleFromLevelSettings(LevelSettingsObject* settings, int optio
             break;
 
         case 22:
-            settings->m_propertykA45 = !settings->m_propertykA45;
+            settings->m_decreaseBoostSlide = !settings->m_decreaseBoostSlide;
             break;
 
         

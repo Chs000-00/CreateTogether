@@ -127,5 +127,5 @@ enum SettingOptionType : byte {
     AllowStaticRotate = 18,
     ReverseSync = 19,
     NoTimePenalty = 20,
-    propkA45 = 22 // TODO: Give this a proper name
+    DecreaseBoostSlide = 22
 }
