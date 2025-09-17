@@ -2,7 +2,6 @@
 
 #include "../../config.hpp"
 #include "CursorManager.hpp"
-#include "Geode/cocos/cocoa/CCGeometry.h"
 #include "Geode/loader/Log.hpp"
 #include "Geode/utils/cocos.hpp"
 #include "NetManager.hpp"
@@ -66,7 +65,7 @@ void CursorManager::cursorNetworkingPrelude() {
 
     #ifdef NO_STEAMWORKS
         SteamNetworkingIPAddr serverAddr;
-        serverAddr.SetIPv4(0x7f000001, DEDICATED_CURSOR_PORT);
+        serverAddr.SetIPv4(DEDICATED_SERVER_IP, DEDICATED_CURSOR_PORT);
         char szAddr[ SteamNetworkingIPAddr::k_cchMaxString ];
         serverAddr.ToString(szAddr, sizeof(szAddr), true);
         log::info("Connecting to cursor server at {}", szAddr);

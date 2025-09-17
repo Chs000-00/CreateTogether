@@ -1,18 +1,19 @@
 # CreateTogether
-This is where he makes a mod.
+This is where he COOKS a mod.
 
 <img src="logo.png" width="150" alt="the mod's very epic logo" />
 
+Note: this mod is currently incomplete and may cause issues.
 Yes I know this code is gross-looking, but feel free to contribute with a pr.
-
 
 ## Getting started
 We recommend heading over to [the getting started section on our docs](https://docs.geode-sdk.org/getting-started/) for useful info on what to do next.
 
 ## Build instructions
-For more info, see [our docs](https://docs.geode-sdk.org/getting-started/create-mod#build)
+For more info, see [the geode docs](https://docs.geode-sdk.org/getting-started/create-mod#build)
 
-This project requires steamworks sdk! Install `steam_api64.dll` and `steam_api64.lib` into the `lib/` folder!  
+~~This project requires steamworks sdk! Install `steam_api64.dll` and `steam_api64.lib` into the `lib/` folder!~~
+EDIT: Not anymore
 
 ```sh
 # Assuming you have the Geode CLI set up already
@@ -33,3 +34,4 @@ geode build
 * [Geode CLI](https://github.com/geode-sdk/cli)
 * [Bindings](https://github.com/geode-sdk/bindings/)
 * [Dev Tools](https://github.com/geode-sdk/DevTools)
+

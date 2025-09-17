@@ -19,7 +19,6 @@ class $modify(SetupPulsePopup) {
             }
 
             // TODO: This might break if multiple gameObjects are selected
-            // auto ret = getJsonFromGameObject(this->m_gameObject);
 
             auto editorUI = EditorUI::get();
 

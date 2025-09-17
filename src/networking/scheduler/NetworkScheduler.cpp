@@ -4,14 +4,15 @@
 
 
 $execute {
-    log::info("Hello NetworkScheduler!");
+    log::info("Creating CT NetworkScheduler!");
     Loader::get()->queueInMainThread([]{
-        log::info("Hello from mainthread!");
         CCScheduler::get()->scheduleUpdateForTarget(new NetworkScheduler{}, 5000, false);
     });
 }
 
 void NetworkScheduler::update(float dt) {
-    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-    gameManager->m_fields->m_netManager->update();
+    if (!m_staticGameManager) {
+        this->m_staticGameManager = static_cast<MyGameManager*>(GameManager::get());
+    }
+    m_staticGameManager->m_fields->m_netManager->update();
 }

@@ -37,7 +37,7 @@ table CreateObjects {
 }
 
 table DeleteObjects {
-    uniqueIDList:[string];
+    uniqueIDList:[veryUniqueID];
 }
 
 // TODO: Implement a hash-table like optimization for move objects, with posOff being the key and a list of vUID's being the
@@ -55,23 +55,23 @@ table RotateObjects {
     rotation:float;
     // I... Think this is the anchor point... No clue...
     anchor:CCPos;
-    uniqueIDList:[string];
+    uniqueIDList:[veryUniqueID];
 }
 
 table PasteObjects {
-    uniqueIDList:[string];
+    uniqueIDList:[veryUniqueID];
     pastedString:string;
 }
 
 table ModifyObjects {
-    uniqueIDList:[string];
+    uniqueIDList:[veryUniqueID];
     pastedString:string;
 }
 
 table ChangeGroupID {
     groupID:uint16;
     isAdding:bool;
-    uniqueIDList:[string];
+    uniqueIDList:[veryUniqueID];
 }
 
 table ChangeDefaultColor {
@@ -89,7 +89,7 @@ table RequestLevel {
 }
 
 table ReturnLevelString {
-    uniqueIDList:[string];
+    uniqueIDList:[veryUniqueID];
     levelString:string;
     ctVersion:string;
 }

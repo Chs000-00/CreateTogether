@@ -127,7 +127,7 @@ void NetManager::enterLevelEditorPrelude() {
 
     #ifdef NO_STEAMWORKS
         SteamNetworkingIPAddr serverAddr;
-        serverAddr.SetIPv4(0x7f000001, DEDICATED_EDITOR_PORT);
+        serverAddr.SetIPv4(DEDICATED_SERVER_IP, DEDICATED_EDITOR_PORT);
         char szAddr[ SteamNetworkingIPAddr::k_cchMaxString ];
         serverAddr.ToString(szAddr, sizeof(szAddr), true);
         log::info("Connecting to editor server at {}", szAddr);
@@ -181,7 +181,7 @@ void NetManager::fetchMemberList() {
     
     // SteamNetworkingIdentity server;
 
-    // server.SetIPv4Addr(0x7f000001, DEDICATED_PORT);
+    // server.SetIPv4Addr(DEDICATED_SERVER_IP, DEDICATED_PORT);
 
     // this->m_playersInLobby.push_back(server);
 

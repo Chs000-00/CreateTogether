@@ -2,9 +2,15 @@ include "ccserialization.fbs";
 
 namespace CTSerialize; 
 
+// Simple container for showing vuids
+table veryUniqueID {
+    associatedID:uint64;
+    objectvUID:uint32;
+} 
+
 /// The data a GD Game Object has when placed in the editor
 table GDGameObjectMin {
-    uniqueID:string;
+    uniqueID:veryUniqueID;
     objID:uint64;
     pos:CCPosI;
     rotation:float;
@@ -17,7 +23,7 @@ table GDGameObjectMin {
 
 table MoveDictionary {
     positionOffsetKey:CCPos (key);
-    uniqueIDList:[string];
+    uniqueIDList:[veryUniqueID];
 }
 
 table GDWaveObject {
@@ -56,7 +62,6 @@ enum SongSelectType : byte {
     Default = 0,
     Custom = 1
 }
-
 
 enum EditCommand : byte {
     SmallLeft = 1,

@@ -3,7 +3,9 @@ include "ccserialization.fbs";
 namespace CTSerialize.cursor; 
 
 enum StatusType : byte {
-    None = 0,
+    Show = 0, // User is editing level
+    EditorPlaytesting, // User is playtesting the level from the editor
+    RealPlaytesting, // User is playtesting the level
     EditingTrigger,
     EditingLevelSettings,
     LevelEditorPaused
@@ -12,6 +14,7 @@ enum StatusType : byte {
 table CursorUpdate {
     position:CCPos;
     status:StatusType;
+    associatedID:uint64;
 }
 
 root_type CursorUpdate;
