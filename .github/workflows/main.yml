@@ -1,0 +1,21 @@
+name: Build Geode Mod
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "deploy"
+jobs:
+  build:
+  
+    name: Windows
+    runs-on: Windows-latest
+
+    steps:
+      - uses: geode-sdk/build-geode-mod@main
+        id: build
+      
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Create Together
+          path: ${{ steps.build.outputs.build-output }}
