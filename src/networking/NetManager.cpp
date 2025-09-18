@@ -333,6 +333,10 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg, Ste
     return Ok(0);
 }
 
+void flushDictionaries() {
+
+}
+
 #ifdef STEAMWORKS
 void NetManager::joinSteamLobby(GameLobbyJoinRequested_t* lobbyInfo) {
     // TODO: Remove this
