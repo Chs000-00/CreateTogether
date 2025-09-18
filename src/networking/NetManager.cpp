@@ -333,7 +333,7 @@ Result<uint8_t> NetManager::parseData(const CTSerialize::MessageHeader* msg, Ste
     return Ok(0);
 }
 
-void flushDictionaries() {
+void NetManager::flushDictionaries() {
 
 }
 
