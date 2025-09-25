@@ -3,7 +3,7 @@ class Singleton {
 
 public:
     static T* get() {
-        static NetManager inst;
+        static T inst;
         return p;
     }
 
