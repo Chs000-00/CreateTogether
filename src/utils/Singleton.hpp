@@ -4,7 +4,7 @@ class Singleton {
 public:
     static T* get() {
         static T inst;
-        return p;
+        return inst;
     }
 
 protected:
