@@ -21,6 +21,8 @@ using namespace geode::prelude;
 
 // Why the f*** can't c++ inline this f***ing shit properly without some stupid use of header guards
 NetManager* NetManager::get() {
+    // static NetManager inst;
+    // return inst;
     auto gameManager = static_cast<MyGameManager*>(GameManager::get());
     return gameManager->m_fields->m_netManager;
 }
