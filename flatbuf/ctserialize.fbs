@@ -43,7 +43,7 @@ table DeleteObjects {
 // TODO: Implement a hash-table like optimization for move objects, with posOff being the key and a list of vUID's being the
 // value. I Could also make a list of a table [MoveMerge] which has a vUID and a position offset
 table MoveObjects {
-    moveDictionary:[MoveDictionary];
+    moveEntires:[MoveEntry];
 }
 
 table LevelSettingChange {
@@ -53,7 +53,7 @@ table LevelSettingChange {
 
 table RotateObjects {
     rotation:float;
-    // I... Think this is the anchor point... No clue...
+    // Might or might not actually be the anchor point
     anchor:CCPos;
     uniqueIDList:[veryUniqueID];
 }

@@ -21,8 +21,8 @@ table GDGameObjectMin {
     scale:NodeScale;
 }
 
-table MoveDictionary {
-    positionOffsetKey:CCPos (key);
+table MoveEntry {
+    positionOffsetKey:CCPos;
     uniqueIDList:[veryUniqueID];
 }
 
