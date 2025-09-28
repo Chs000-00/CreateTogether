@@ -19,6 +19,7 @@ table GDGameObjectMin {
     noEnter:bool;
     flip:ObjectFlip;
     scale:NodeScale;
+    layer:short
 }
 
 table MoveEntry {
