@@ -3,9 +3,10 @@ include "ccserialization.fbs";
 namespace CTSerialize; 
 
 // Simple container for showing vuids
+// TODO: Figure out how to properly hash a vUID
 table veryUniqueID {
     associatedID:uint64;
-    objectvUID:uint32;
+    objectID:uint32;
 } 
 
 /// The data a GD Game Object has when placed in the editor
@@ -27,6 +28,8 @@ table MoveEntry {
     uniqueIDList:[veryUniqueID];
 }
 
+// A player wave container
+// Used for cursors
 table GDWaveObject {
     cursorColor1:int;
     cursorColor2:int;
@@ -34,6 +37,8 @@ table GDWaveObject {
     cursorHasGlow:bool;
     cursorGlowColor:int;
 }
+
+// GD ENUMS
 
 enum Speed : byte {
     Normal = 0,
