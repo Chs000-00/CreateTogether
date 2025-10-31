@@ -15,9 +15,10 @@
 #include "../types/LobbyData.hpp"
 #include "cursor/CursorManager.hpp"
 
-class NetManager {
+#include "../utils/Singleton.hpp"
+
+class NetManager : public Singleton<NetManager> {
     public:
-        static NetManager* get();
 
         static bool getIsInLobby();
 

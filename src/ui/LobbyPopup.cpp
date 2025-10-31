@@ -7,8 +7,9 @@
 #endif
 
 #include "LobbyPopup.hpp"
-#include "../hooks/ModifyGameManager.hpp"
-#include "../networking/NetManager.hpp"
+#include "SteamManager.hpp"
+#include "NetManager.hpp"
+#include "../config.hpp"
 
 using namespace geode::prelude;
 
@@ -94,8 +95,6 @@ void LobbyPopup::onPublicToggle(CCMenuItemToggler* sender) {
 
     log::debug("Setting isPublic to {}.", netManager->m_options.isPrivate);
 
-    auto steamCallbacks = static_cast<MyGameManager*>(GameManager::get())->m_fields->m_callbackManager;
-
     if (NetManager::getIsInLobby()) {
         
         // TODO: Check if this code works
@@ -121,8 +120,6 @@ void LobbyPopup::onPublicToggle(CCMenuItemToggler* sender) {
 void LobbyPopup::startHosting(CCObject* sender) {
 
     auto netManager = NetManager::get();
-    auto steamCallbacks = static_cast<MyGameManager*>(GameManager::get())->m_fields->m_callbackManager;
-
 
 
     this->onClose(nullptr);
@@ -131,22 +128,22 @@ void LobbyPopup::startHosting(CCObject* sender) {
     if (netManager->m_options.canFriendsJoin) {
         if (netManager->m_options.isPrivate) {
             log::info("Creating public lobby.");
-            steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, MAX_USERS);
+            SteamManager::get()->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePublic, MAX_USERS);
         }
         else {
             log::info("Creating friends only lobby.");
-            steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, MAX_USERS);
+            SteamManager::get()->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypeFriendsOnly, MAX_USERS);
         }
     }
     else {
         if (!netManager->m_options.isPrivate) {
             log::info("Creating private lobby.");
-            steamCallbacks->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePrivate, MAX_USERS);
+            SteamManager::get()->m_lobbyCreated = SteamMatchmaking()->CreateLobby(k_ELobbyTypePrivate, MAX_USERS);
         }    
     }
 
     netManager->m_isHost = true;
-    steamCallbacks->m_isInLobbyCallResult.Set(steamCallbacks->m_lobbyCreated, steamCallbacks, &SteamManager::onLobbyCreated);
+    SteamManager::get()->m_isInLobbyCallResult.Set(SteamManager::get()->m_lobbyCreated, SteamManager::get(), &SteamManager::onLobbyCreated);
 }
 
 void LobbyPopup::inviteFriends(CCObject* sender) {

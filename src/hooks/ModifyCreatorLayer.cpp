@@ -51,7 +51,7 @@ class $modify(MyLevelBrowserLayer, LevelBrowserLayer) {
         auto netManager = NetManager::get();
         netManager->enterLevelEditorPrelude();
     }
-    
+
     #endif
     
 };

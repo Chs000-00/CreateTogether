@@ -1,10 +1,13 @@
+#pragma once
+
 template <class T>
 class Singleton {
 
 public:
     static T* get() {
-        static T inst;
-        return inst;
+        if(!instance)
+            instance = new T;
+        return instance;
     }
 
 protected:
@@ -12,4 +15,5 @@ protected:
 
      Singleton(Singleton const &) = delete;
      Singleton &operator=(const Singleton &) = delete;
-}
+     static inline T* instance = nullptr;
+};

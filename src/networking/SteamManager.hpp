@@ -12,8 +12,11 @@
 #include "../layers/LobbiesLayer.hpp"
 #include "../config.hpp"
 
+#include "../utils/Singleton.hpp"
 
-class SteamManager {
+
+
+class SteamManager: public Singleton<SteamManager> {
     public:
         SteamAPICall_t m_lobbyCreated;
         SteamAPICall_t m_lobbyJoined;

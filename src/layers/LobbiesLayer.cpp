@@ -10,8 +10,8 @@
 
 #include "LobbiesLayer.hpp"
 #include "../ui/LevelListBorder.hpp"
-#include "../hooks/ModifyGameManager.hpp"
 #include "../config.hpp"
+#include "SteamManager.hpp"
 
 using namespace geode::prelude;
 
@@ -97,8 +97,7 @@ void LobbiesLayer::onBack(CCObject* sender) {
 void LobbiesLayer::onJoin(CCObject* sender) {
     auto lobbyID = this->m_data.at(sender->getTag()).steamId;
     log::info("Joining lobby with steamID: {}", lobbyID.ConvertToUint64());
-    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-	gameManager->m_fields->m_callbackManager->m_lobbyJoined = SteamMatchmaking()->JoinLobby(lobbyID); 
+	SteamManager::get()->m_lobbyJoined = SteamMatchmaking()->JoinLobby(lobbyID); 
 }
 
 void LobbiesLayer::loadDataToList() {

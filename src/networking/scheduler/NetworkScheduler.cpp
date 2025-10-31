@@ -1,6 +1,6 @@
 #include "NetworkScheduler.hpp"
-#include "../../hooks/ModifyGameManager.hpp"
 #include "Geode/loader/Log.hpp"
+#include "NetManager.hpp"
 
 
 $execute {
@@ -11,8 +11,5 @@ $execute {
 }
 
 void NetworkScheduler::update(float dt) {
-    if (!m_staticGameManager) {
-        this->m_staticGameManager = static_cast<MyGameManager*>(GameManager::get());
-    }
-    m_staticGameManager->m_fields->m_netManager->update();
+    NetManager::get()->update();
 }

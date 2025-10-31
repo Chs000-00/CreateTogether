@@ -1,5 +1,4 @@
 #include <Geode/Geode.hpp>
-#include "../hooks/ModifyGameManager.hpp"
 #include "NetManager.hpp"
 #include "./highlevel/NetSend.hpp"
 #include "../utils/Utills.hpp"
@@ -7,6 +6,7 @@
 #include <flatbuffers/minireflect.h>
 #include <ctserialize_generated.h>
 #include "../ui/WaitingForHostPopup.hpp"
+#include "../config.hpp"
 
 using namespace geode::prelude;
 
@@ -18,14 +18,6 @@ using namespace geode::prelude;
     #include "../debug/client.hpp"
 #endif
 
-
-// Why the f*** can't c++ inline this f***ing shit properly without some stupid use of header guards
-NetManager* NetManager::get() {
-    // static NetManager inst;
-    // return inst;
-    auto gameManager = static_cast<MyGameManager*>(GameManager::get());
-    return gameManager->m_fields->m_netManager;
-}
 
 bool NetManager::getIsInLobby() {
     return NetManager::get()->m_isInLobby;
