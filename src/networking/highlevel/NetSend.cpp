@@ -16,7 +16,7 @@ void sendCreateObjects(const char* uniqueID, uint64_t objectID, CCPoint pos, flo
     auto flip = CTSerialize::ObjectFlip(flipX, flipY);
     auto objectScale = CTSerialize::NodeScale(scaleX, scaleY);
     auto uniqueIDOffset = CTSerialize::CreateveryUniqueID(netManager->m_builder);
-    auto minObj = CTSerialize::CreateGDGameObjectMin(netManager->m_builder, uniqueIDOffset, objectID, &objectPos, rotation, isHighDetail, noGlow, noEnter, &flip, &objectScale); //uhh add stuff here
+    auto minObj = CTSerialize::CreateGDGameObjectMin(netManager->m_builder, uniqueIDOffset, objectID, &objectPos, rotation, isHighDetail, noGlow, noEnter, &flip, &objectScale, layer); //uhh add stuff here
     auto createObjectsOffset = CTSerialize::CreateCreateObjects(netManager->m_builder, minObj);
     auto messageHeaderOffset = CTSerialize::CreateMessageHeader(netManager->m_builder, CTSerialize::MessageBody_CreateObjects, createObjectsOffset.Union());
     netManager->sendMessage(messageHeaderOffset);
