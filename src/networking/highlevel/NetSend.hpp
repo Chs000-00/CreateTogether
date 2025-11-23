@@ -7,7 +7,7 @@ typedef std::vector<flatbuffers::Offset<flatbuffers::String>> IDList;
 
 void addStringToIDList(IDList& uniqueIDList, const char* str);
 
-void sendCreateObjects(const char* uniqueID, uint64_t objectID, CCPoint pos, float rotation, bool isHighDetail, bool noGlow, bool noEnter, bool flipX, bool flipY, float scaleX, float scaleY);
+void sendCreateObjects(const char* uniqueID, uint64_t objectID, CCPoint pos, float rotation, bool isHighDetail, bool noGlow, bool noEnter, bool flipX, bool flipY, float scaleX, float scaleY, short layer);
 
 void sendDeleteObjects(IDList& uniqueIDList);
 

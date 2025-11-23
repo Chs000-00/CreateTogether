@@ -24,17 +24,21 @@ struct CursorUpdateBuilder;
 inline const ::flatbuffers::TypeTable *CursorUpdateTypeTable();
 
 enum StatusType : int8_t {
-  StatusType_None = 0,
-  StatusType_EditingTrigger = 1,
-  StatusType_EditingLevelSettings = 2,
-  StatusType_LevelEditorPaused = 3,
-  StatusType_MIN = StatusType_None,
+  StatusType_Show = 0,
+  StatusType_EditorPlaytesting = 1,
+  StatusType_RealPlaytesting = 2,
+  StatusType_EditingTrigger = 3,
+  StatusType_EditingLevelSettings = 4,
+  StatusType_LevelEditorPaused = 5,
+  StatusType_MIN = StatusType_Show,
   StatusType_MAX = StatusType_LevelEditorPaused
 };
 
-inline const StatusType (&EnumValuesStatusType())[4] {
+inline const StatusType (&EnumValuesStatusType())[6] {
   static const StatusType values[] = {
-    StatusType_None,
+    StatusType_Show,
+    StatusType_EditorPlaytesting,
+    StatusType_RealPlaytesting,
     StatusType_EditingTrigger,
     StatusType_EditingLevelSettings,
     StatusType_LevelEditorPaused
@@ -43,8 +47,10 @@ inline const StatusType (&EnumValuesStatusType())[4] {
 }
 
 inline const char * const *EnumNamesStatusType() {
-  static const char * const names[5] = {
-    "None",
+  static const char * const names[7] = {
+    "Show",
+    "EditorPlaytesting",
+    "RealPlaytesting",
     "EditingTrigger",
     "EditingLevelSettings",
     "LevelEditorPaused",
@@ -54,7 +60,7 @@ inline const char * const *EnumNamesStatusType() {
 }
 
 inline const char *EnumNameStatusType(StatusType e) {
-  if (::flatbuffers::IsOutRange(e, StatusType_None, StatusType_LevelEditorPaused)) return "";
+  if (::flatbuffers::IsOutRange(e, StatusType_Show, StatusType_LevelEditorPaused)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesStatusType()[index];
 }
@@ -66,7 +72,8 @@ struct CursorUpdate FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_POSITION = 4,
-    VT_STATUS = 6
+    VT_STATUS = 6,
+    VT_ASSOCIATEDID = 8
   };
   const CTSerialize::CCPos *position() const {
     return GetStruct<const CTSerialize::CCPos *>(VT_POSITION);
@@ -74,10 +81,14 @@ struct CursorUpdate FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   CTSerialize::cursor::StatusType status() const {
     return static_cast<CTSerialize::cursor::StatusType>(GetField<int8_t>(VT_STATUS, 0));
   }
+  uint64_t associatedID() const {
+    return GetField<uint64_t>(VT_ASSOCIATEDID, 0);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<CTSerialize::CCPos>(verifier, VT_POSITION, 4) &&
            VerifyField<int8_t>(verifier, VT_STATUS, 1) &&
+           VerifyField<uint64_t>(verifier, VT_ASSOCIATEDID, 8) &&
            verifier.EndTable();
   }
 };
@@ -91,6 +102,9 @@ struct CursorUpdateBuilder {
   }
   void add_status(CTSerialize::cursor::StatusType status) {
     fbb_.AddElement<int8_t>(CursorUpdate::VT_STATUS, static_cast<int8_t>(status), 0);
+  }
+  void add_associatedID(uint64_t associatedID) {
+    fbb_.AddElement<uint64_t>(CursorUpdate::VT_ASSOCIATEDID, associatedID, 0);
   }
   explicit CursorUpdateBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -106,8 +120,10 @@ struct CursorUpdateBuilder {
 inline ::flatbuffers::Offset<CursorUpdate> CreateCursorUpdate(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     const CTSerialize::CCPos *position = nullptr,
-    CTSerialize::cursor::StatusType status = CTSerialize::cursor::StatusType_None) {
+    CTSerialize::cursor::StatusType status = CTSerialize::cursor::StatusType_Show,
+    uint64_t associatedID = 0) {
   CursorUpdateBuilder builder_(_fbb);
+  builder_.add_associatedID(associatedID);
   builder_.add_position(position);
   builder_.add_status(status);
   return builder_.Finish();
@@ -118,19 +134,23 @@ inline const ::flatbuffers::TypeTable *StatusTypeTypeTable() {
     { ::flatbuffers::ET_CHAR, 0, 0 },
     { ::flatbuffers::ET_CHAR, 0, 0 },
     { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
+    { ::flatbuffers::ET_CHAR, 0, 0 },
     { ::flatbuffers::ET_CHAR, 0, 0 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
     CTSerialize::cursor::StatusTypeTypeTable
   };
   static const char * const names[] = {
-    "None",
+    "Show",
+    "EditorPlaytesting",
+    "RealPlaytesting",
     "EditingTrigger",
     "EditingLevelSettings",
     "LevelEditorPaused"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_ENUM, 4, type_codes, type_refs, nullptr, nullptr, names
+    ::flatbuffers::ST_ENUM, 6, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -138,7 +158,8 @@ inline const ::flatbuffers::TypeTable *StatusTypeTypeTable() {
 inline const ::flatbuffers::TypeTable *CursorUpdateTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
     { ::flatbuffers::ET_SEQUENCE, 0, 0 },
-    { ::flatbuffers::ET_CHAR, 0, 1 }
+    { ::flatbuffers::ET_CHAR, 0, 1 },
+    { ::flatbuffers::ET_ULONG, 0, -1 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
     CTSerialize::CCPosTypeTable,
@@ -146,10 +167,11 @@ inline const ::flatbuffers::TypeTable *CursorUpdateTypeTable() {
   };
   static const char * const names[] = {
     "position",
-    "status"
+    "status",
+    "associatedID"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 2, type_codes, type_refs, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }

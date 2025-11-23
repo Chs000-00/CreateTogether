@@ -582,14 +582,14 @@ struct DeleteObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_UNIQUEIDLIST = 4
   };
-  const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_UNIQUEIDLIST);
+  const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *>(VT_UNIQUEIDLIST);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_UNIQUEIDLIST) &&
            verifier.VerifyVector(uniqueIDList()) &&
-           verifier.VerifyVectorOfStrings(uniqueIDList()) &&
+           verifier.VerifyVectorOfTables(uniqueIDList()) &&
            verifier.EndTable();
   }
 };
@@ -598,7 +598,7 @@ struct DeleteObjectsBuilder {
   typedef DeleteObjects Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList) {
+  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList) {
     fbb_.AddOffset(DeleteObjects::VT_UNIQUEIDLIST, uniqueIDList);
   }
   explicit DeleteObjectsBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
@@ -614,7 +614,7 @@ struct DeleteObjectsBuilder {
 
 inline ::flatbuffers::Offset<DeleteObjects> CreateDeleteObjects(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList = 0) {
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList = 0) {
   DeleteObjectsBuilder builder_(_fbb);
   builder_.add_uniqueIDList(uniqueIDList);
   return builder_.Finish();
@@ -622,8 +622,8 @@ inline ::flatbuffers::Offset<DeleteObjects> CreateDeleteObjects(
 
 inline ::flatbuffers::Offset<DeleteObjects> CreateDeleteObjectsDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList = nullptr) {
-  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*uniqueIDList) : 0;
+    const std::vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList = nullptr) {
+  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>(*uniqueIDList) : 0;
   return CTSerialize::CreateDeleteObjects(
       _fbb,
       uniqueIDList__);
@@ -635,20 +635,16 @@ struct MoveObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     return MoveObjectsTypeTable();
   }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_UNIQUEID = 4,
-    VT_POSITIONOFFSET = 6
+    VT_MOVEENTIRES = 4
   };
-  const ::flatbuffers::String *uniqueID() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_UNIQUEID);
-  }
-  const CTSerialize::CCPos *positionOffset() const {
-    return GetStruct<const CTSerialize::CCPos *>(VT_POSITIONOFFSET);
+  const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::MoveEntry>> *moveEntires() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::MoveEntry>> *>(VT_MOVEENTIRES);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyOffset(verifier, VT_UNIQUEID) &&
-           verifier.VerifyString(uniqueID()) &&
-           VerifyField<CTSerialize::CCPos>(verifier, VT_POSITIONOFFSET, 4) &&
+           VerifyOffset(verifier, VT_MOVEENTIRES) &&
+           verifier.VerifyVector(moveEntires()) &&
+           verifier.VerifyVectorOfTables(moveEntires()) &&
            verifier.EndTable();
   }
 };
@@ -657,11 +653,8 @@ struct MoveObjectsBuilder {
   typedef MoveObjects Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_uniqueID(::flatbuffers::Offset<::flatbuffers::String> uniqueID) {
-    fbb_.AddOffset(MoveObjects::VT_UNIQUEID, uniqueID);
-  }
-  void add_positionOffset(const CTSerialize::CCPos *positionOffset) {
-    fbb_.AddStruct(MoveObjects::VT_POSITIONOFFSET, positionOffset);
+  void add_moveEntires(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::MoveEntry>>> moveEntires) {
+    fbb_.AddOffset(MoveObjects::VT_MOVEENTIRES, moveEntires);
   }
   explicit MoveObjectsBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -676,23 +669,19 @@ struct MoveObjectsBuilder {
 
 inline ::flatbuffers::Offset<MoveObjects> CreateMoveObjects(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> uniqueID = 0,
-    const CTSerialize::CCPos *positionOffset = nullptr) {
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::MoveEntry>>> moveEntires = 0) {
   MoveObjectsBuilder builder_(_fbb);
-  builder_.add_positionOffset(positionOffset);
-  builder_.add_uniqueID(uniqueID);
+  builder_.add_moveEntires(moveEntires);
   return builder_.Finish();
 }
 
 inline ::flatbuffers::Offset<MoveObjects> CreateMoveObjectsDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    const char *uniqueID = nullptr,
-    const CTSerialize::CCPos *positionOffset = nullptr) {
-  auto uniqueID__ = uniqueID ? _fbb.CreateString(uniqueID) : 0;
+    const std::vector<::flatbuffers::Offset<CTSerialize::MoveEntry>> *moveEntires = nullptr) {
+  auto moveEntires__ = moveEntires ? _fbb.CreateVector<::flatbuffers::Offset<CTSerialize::MoveEntry>>(*moveEntires) : 0;
   return CTSerialize::CreateMoveObjects(
       _fbb,
-      uniqueID__,
-      positionOffset);
+      moveEntires__);
 }
 
 struct LevelSettingChange FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
@@ -765,8 +754,8 @@ struct RotateObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const CTSerialize::CCPos *anchor() const {
     return GetStruct<const CTSerialize::CCPos *>(VT_ANCHOR);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_UNIQUEIDLIST);
+  const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *>(VT_UNIQUEIDLIST);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -774,7 +763,7 @@ struct RotateObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            VerifyField<CTSerialize::CCPos>(verifier, VT_ANCHOR, 4) &&
            VerifyOffset(verifier, VT_UNIQUEIDLIST) &&
            verifier.VerifyVector(uniqueIDList()) &&
-           verifier.VerifyVectorOfStrings(uniqueIDList()) &&
+           verifier.VerifyVectorOfTables(uniqueIDList()) &&
            verifier.EndTable();
   }
 };
@@ -789,7 +778,7 @@ struct RotateObjectsBuilder {
   void add_anchor(const CTSerialize::CCPos *anchor) {
     fbb_.AddStruct(RotateObjects::VT_ANCHOR, anchor);
   }
-  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList) {
+  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList) {
     fbb_.AddOffset(RotateObjects::VT_UNIQUEIDLIST, uniqueIDList);
   }
   explicit RotateObjectsBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
@@ -807,7 +796,7 @@ inline ::flatbuffers::Offset<RotateObjects> CreateRotateObjects(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     float rotation = 0.0f,
     const CTSerialize::CCPos *anchor = nullptr,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList = 0) {
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList = 0) {
   RotateObjectsBuilder builder_(_fbb);
   builder_.add_uniqueIDList(uniqueIDList);
   builder_.add_anchor(anchor);
@@ -819,8 +808,8 @@ inline ::flatbuffers::Offset<RotateObjects> CreateRotateObjectsDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     float rotation = 0.0f,
     const CTSerialize::CCPos *anchor = nullptr,
-    const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList = nullptr) {
-  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*uniqueIDList) : 0;
+    const std::vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList = nullptr) {
+  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>(*uniqueIDList) : 0;
   return CTSerialize::CreateRotateObjects(
       _fbb,
       rotation,
@@ -837,8 +826,8 @@ struct PasteObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_UNIQUEIDLIST = 4,
     VT_PASTEDSTRING = 6
   };
-  const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_UNIQUEIDLIST);
+  const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *>(VT_UNIQUEIDLIST);
   }
   const ::flatbuffers::String *pastedString() const {
     return GetPointer<const ::flatbuffers::String *>(VT_PASTEDSTRING);
@@ -847,7 +836,7 @@ struct PasteObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_UNIQUEIDLIST) &&
            verifier.VerifyVector(uniqueIDList()) &&
-           verifier.VerifyVectorOfStrings(uniqueIDList()) &&
+           verifier.VerifyVectorOfTables(uniqueIDList()) &&
            VerifyOffset(verifier, VT_PASTEDSTRING) &&
            verifier.VerifyString(pastedString()) &&
            verifier.EndTable();
@@ -858,7 +847,7 @@ struct PasteObjectsBuilder {
   typedef PasteObjects Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList) {
+  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList) {
     fbb_.AddOffset(PasteObjects::VT_UNIQUEIDLIST, uniqueIDList);
   }
   void add_pastedString(::flatbuffers::Offset<::flatbuffers::String> pastedString) {
@@ -877,7 +866,7 @@ struct PasteObjectsBuilder {
 
 inline ::flatbuffers::Offset<PasteObjects> CreatePasteObjects(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList = 0,
     ::flatbuffers::Offset<::flatbuffers::String> pastedString = 0) {
   PasteObjectsBuilder builder_(_fbb);
   builder_.add_pastedString(pastedString);
@@ -887,9 +876,9 @@ inline ::flatbuffers::Offset<PasteObjects> CreatePasteObjects(
 
 inline ::flatbuffers::Offset<PasteObjects> CreatePasteObjectsDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList = nullptr,
+    const std::vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList = nullptr,
     const char *pastedString = nullptr) {
-  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*uniqueIDList) : 0;
+  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>(*uniqueIDList) : 0;
   auto pastedString__ = pastedString ? _fbb.CreateString(pastedString) : 0;
   return CTSerialize::CreatePasteObjects(
       _fbb,
@@ -906,8 +895,8 @@ struct ModifyObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_UNIQUEIDLIST = 4,
     VT_PASTEDSTRING = 6
   };
-  const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_UNIQUEIDLIST);
+  const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *>(VT_UNIQUEIDLIST);
   }
   const ::flatbuffers::String *pastedString() const {
     return GetPointer<const ::flatbuffers::String *>(VT_PASTEDSTRING);
@@ -916,7 +905,7 @@ struct ModifyObjects FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_UNIQUEIDLIST) &&
            verifier.VerifyVector(uniqueIDList()) &&
-           verifier.VerifyVectorOfStrings(uniqueIDList()) &&
+           verifier.VerifyVectorOfTables(uniqueIDList()) &&
            VerifyOffset(verifier, VT_PASTEDSTRING) &&
            verifier.VerifyString(pastedString()) &&
            verifier.EndTable();
@@ -927,7 +916,7 @@ struct ModifyObjectsBuilder {
   typedef ModifyObjects Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList) {
+  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList) {
     fbb_.AddOffset(ModifyObjects::VT_UNIQUEIDLIST, uniqueIDList);
   }
   void add_pastedString(::flatbuffers::Offset<::flatbuffers::String> pastedString) {
@@ -946,7 +935,7 @@ struct ModifyObjectsBuilder {
 
 inline ::flatbuffers::Offset<ModifyObjects> CreateModifyObjects(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList = 0,
     ::flatbuffers::Offset<::flatbuffers::String> pastedString = 0) {
   ModifyObjectsBuilder builder_(_fbb);
   builder_.add_pastedString(pastedString);
@@ -956,9 +945,9 @@ inline ::flatbuffers::Offset<ModifyObjects> CreateModifyObjects(
 
 inline ::flatbuffers::Offset<ModifyObjects> CreateModifyObjectsDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList = nullptr,
+    const std::vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList = nullptr,
     const char *pastedString = nullptr) {
-  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*uniqueIDList) : 0;
+  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>(*uniqueIDList) : 0;
   auto pastedString__ = pastedString ? _fbb.CreateString(pastedString) : 0;
   return CTSerialize::CreateModifyObjects(
       _fbb,
@@ -976,22 +965,22 @@ struct ChangeGroupID FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_ISADDING = 6,
     VT_UNIQUEIDLIST = 8
   };
-  uint32_t groupID() const {
-    return GetField<uint32_t>(VT_GROUPID, 0);
+  uint16_t groupID() const {
+    return GetField<uint16_t>(VT_GROUPID, 0);
   }
   bool isAdding() const {
     return GetField<uint8_t>(VT_ISADDING, 0) != 0;
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_UNIQUEIDLIST);
+  const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *>(VT_UNIQUEIDLIST);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint32_t>(verifier, VT_GROUPID, 4) &&
+           VerifyField<uint16_t>(verifier, VT_GROUPID, 2) &&
            VerifyField<uint8_t>(verifier, VT_ISADDING, 1) &&
            VerifyOffset(verifier, VT_UNIQUEIDLIST) &&
            verifier.VerifyVector(uniqueIDList()) &&
-           verifier.VerifyVectorOfStrings(uniqueIDList()) &&
+           verifier.VerifyVectorOfTables(uniqueIDList()) &&
            verifier.EndTable();
   }
 };
@@ -1000,13 +989,13 @@ struct ChangeGroupIDBuilder {
   typedef ChangeGroupID Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_groupID(uint32_t groupID) {
-    fbb_.AddElement<uint32_t>(ChangeGroupID::VT_GROUPID, groupID, 0);
+  void add_groupID(uint16_t groupID) {
+    fbb_.AddElement<uint16_t>(ChangeGroupID::VT_GROUPID, groupID, 0);
   }
   void add_isAdding(bool isAdding) {
     fbb_.AddElement<uint8_t>(ChangeGroupID::VT_ISADDING, static_cast<uint8_t>(isAdding), 0);
   }
-  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList) {
+  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList) {
     fbb_.AddOffset(ChangeGroupID::VT_UNIQUEIDLIST, uniqueIDList);
   }
   explicit ChangeGroupIDBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
@@ -1022,9 +1011,9 @@ struct ChangeGroupIDBuilder {
 
 inline ::flatbuffers::Offset<ChangeGroupID> CreateChangeGroupID(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint32_t groupID = 0,
+    uint16_t groupID = 0,
     bool isAdding = false,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList = 0) {
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList = 0) {
   ChangeGroupIDBuilder builder_(_fbb);
   builder_.add_uniqueIDList(uniqueIDList);
   builder_.add_groupID(groupID);
@@ -1034,10 +1023,10 @@ inline ::flatbuffers::Offset<ChangeGroupID> CreateChangeGroupID(
 
 inline ::flatbuffers::Offset<ChangeGroupID> CreateChangeGroupIDDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint32_t groupID = 0,
+    uint16_t groupID = 0,
     bool isAdding = false,
-    const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList = nullptr) {
-  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*uniqueIDList) : 0;
+    const std::vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList = nullptr) {
+  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>(*uniqueIDList) : 0;
   return CTSerialize::CreateChangeGroupID(
       _fbb,
       groupID,
@@ -1191,8 +1180,8 @@ struct ReturnLevelString FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
     VT_LEVELSTRING = 6,
     VT_CTVERSION = 8
   };
-  const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_UNIQUEIDLIST);
+  const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *>(VT_UNIQUEIDLIST);
   }
   const ::flatbuffers::String *levelString() const {
     return GetPointer<const ::flatbuffers::String *>(VT_LEVELSTRING);
@@ -1204,7 +1193,7 @@ struct ReturnLevelString FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_UNIQUEIDLIST) &&
            verifier.VerifyVector(uniqueIDList()) &&
-           verifier.VerifyVectorOfStrings(uniqueIDList()) &&
+           verifier.VerifyVectorOfTables(uniqueIDList()) &&
            VerifyOffset(verifier, VT_LEVELSTRING) &&
            verifier.VerifyString(levelString()) &&
            VerifyOffset(verifier, VT_CTVERSION) &&
@@ -1217,7 +1206,7 @@ struct ReturnLevelStringBuilder {
   typedef ReturnLevelString Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList) {
+  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList) {
     fbb_.AddOffset(ReturnLevelString::VT_UNIQUEIDLIST, uniqueIDList);
   }
   void add_levelString(::flatbuffers::Offset<::flatbuffers::String> levelString) {
@@ -1239,7 +1228,7 @@ struct ReturnLevelStringBuilder {
 
 inline ::flatbuffers::Offset<ReturnLevelString> CreateReturnLevelString(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> uniqueIDList = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList = 0,
     ::flatbuffers::Offset<::flatbuffers::String> levelString = 0,
     ::flatbuffers::Offset<::flatbuffers::String> ctVersion = 0) {
   ReturnLevelStringBuilder builder_(_fbb);
@@ -1251,10 +1240,10 @@ inline ::flatbuffers::Offset<ReturnLevelString> CreateReturnLevelString(
 
 inline ::flatbuffers::Offset<ReturnLevelString> CreateReturnLevelStringDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *uniqueIDList = nullptr,
+    const std::vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList = nullptr,
     const char *levelString = nullptr,
     const char *ctVersion = nullptr) {
-  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*uniqueIDList) : 0;
+  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>(*uniqueIDList) : 0;
   auto levelString__ = levelString ? _fbb.CreateString(levelString) : 0;
   auto ctVersion__ = ctVersion ? _fbb.CreateString(ctVersion) : 0;
   return CTSerialize::CreateReturnLevelString(
@@ -1949,31 +1938,32 @@ inline const ::flatbuffers::TypeTable *CreateObjectsTypeTable() {
 
 inline const ::flatbuffers::TypeTable *DeleteObjectsTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_STRING, 1, -1 }
+    { ::flatbuffers::ET_SEQUENCE, 1, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::veryUniqueIDTypeTable
   };
   static const char * const names[] = {
     "uniqueIDList"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 1, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
 
 inline const ::flatbuffers::TypeTable *MoveObjectsTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_STRING, 0, -1 },
-    { ::flatbuffers::ET_SEQUENCE, 0, 0 }
+    { ::flatbuffers::ET_SEQUENCE, 1, 0 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
-    CTSerialize::CCPosTypeTable
+    CTSerialize::MoveEntryTypeTable
   };
   static const char * const names[] = {
-    "uniqueID",
-    "positionOffset"
+    "moveEntires"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 2, type_codes, type_refs, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 1, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -1997,10 +1987,11 @@ inline const ::flatbuffers::TypeTable *RotateObjectsTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
     { ::flatbuffers::ET_FLOAT, 0, -1 },
     { ::flatbuffers::ET_SEQUENCE, 0, 0 },
-    { ::flatbuffers::ET_STRING, 1, -1 }
+    { ::flatbuffers::ET_SEQUENCE, 1, 1 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
-    CTSerialize::CCPosTypeTable
+    CTSerialize::CCPosTypeTable,
+    CTSerialize::veryUniqueIDTypeTable
   };
   static const char * const names[] = {
     "rotation",
@@ -2015,39 +2006,48 @@ inline const ::flatbuffers::TypeTable *RotateObjectsTypeTable() {
 
 inline const ::flatbuffers::TypeTable *PasteObjectsTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_STRING, 1, -1 },
+    { ::flatbuffers::ET_SEQUENCE, 1, 0 },
     { ::flatbuffers::ET_STRING, 0, -1 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::veryUniqueIDTypeTable
   };
   static const char * const names[] = {
     "uniqueIDList",
     "pastedString"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 2, type_codes, nullptr, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 2, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
 
 inline const ::flatbuffers::TypeTable *ModifyObjectsTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_STRING, 1, -1 },
+    { ::flatbuffers::ET_SEQUENCE, 1, 0 },
     { ::flatbuffers::ET_STRING, 0, -1 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::veryUniqueIDTypeTable
   };
   static const char * const names[] = {
     "uniqueIDList",
     "pastedString"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 2, type_codes, nullptr, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 2, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
 
 inline const ::flatbuffers::TypeTable *ChangeGroupIDTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_UINT, 0, -1 },
+    { ::flatbuffers::ET_USHORT, 0, -1 },
     { ::flatbuffers::ET_BOOL, 0, -1 },
-    { ::flatbuffers::ET_STRING, 1, -1 }
+    { ::flatbuffers::ET_SEQUENCE, 1, 0 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::veryUniqueIDTypeTable
   };
   static const char * const names[] = {
     "groupID",
@@ -2055,7 +2055,7 @@ inline const ::flatbuffers::TypeTable *ChangeGroupIDTypeTable() {
     "uniqueIDList"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 3, type_codes, nullptr, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -2098,9 +2098,12 @@ inline const ::flatbuffers::TypeTable *RequestLevelTypeTable() {
 
 inline const ::flatbuffers::TypeTable *ReturnLevelStringTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_STRING, 1, -1 },
+    { ::flatbuffers::ET_SEQUENCE, 1, 0 },
     { ::flatbuffers::ET_STRING, 0, -1 },
     { ::flatbuffers::ET_STRING, 0, -1 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::veryUniqueIDTypeTable
   };
   static const char * const names[] = {
     "uniqueIDList",
@@ -2108,7 +2111,7 @@ inline const ::flatbuffers::TypeTable *ReturnLevelStringTypeTable() {
     "ctVersion"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 3, type_codes, nullptr, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }

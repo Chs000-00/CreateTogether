@@ -17,13 +17,23 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 25 &&
 
 namespace CTSerialize {
 
+struct veryUniqueID;
+struct veryUniqueIDBuilder;
+
 struct GDGameObjectMin;
 struct GDGameObjectMinBuilder;
+
+struct MoveEntry;
+struct MoveEntryBuilder;
 
 struct GDWaveObject;
 struct GDWaveObjectBuilder;
 
+inline const ::flatbuffers::TypeTable *veryUniqueIDTypeTable();
+
 inline const ::flatbuffers::TypeTable *GDGameObjectMinTypeTable();
+
+inline const ::flatbuffers::TypeTable *MoveEntryTypeTable();
 
 inline const ::flatbuffers::TypeTable *GDWaveObjectTypeTable();
 
@@ -309,9 +319,9 @@ enum SettingOptionType : int8_t {
   SettingOptionType_AllowStaticRotate = 18,
   SettingOptionType_ReverseSync = 19,
   SettingOptionType_NoTimePenalty = 20,
-  SettingOptionType_propkA45 = 22,
+  SettingOptionType_DecreaseBoostSlide = 22,
   SettingOptionType_MIN = SettingOptionType_StartMini,
-  SettingOptionType_MAX = SettingOptionType_propkA45
+  SettingOptionType_MAX = SettingOptionType_DecreaseBoostSlide
 };
 
 inline const SettingOptionType (&EnumValuesSettingOptionType())[21] {
@@ -336,7 +346,7 @@ inline const SettingOptionType (&EnumValuesSettingOptionType())[21] {
     SettingOptionType_AllowStaticRotate,
     SettingOptionType_ReverseSync,
     SettingOptionType_NoTimePenalty,
-    SettingOptionType_propkA45
+    SettingOptionType_DecreaseBoostSlide
   };
   return values;
 }
@@ -365,16 +375,70 @@ inline const char * const *EnumNamesSettingOptionType() {
     "ReverseSync",
     "NoTimePenalty",
     "",
-    "propkA45",
+    "DecreaseBoostSlide",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameSettingOptionType(SettingOptionType e) {
-  if (::flatbuffers::IsOutRange(e, SettingOptionType_StartMini, SettingOptionType_propkA45)) return "";
+  if (::flatbuffers::IsOutRange(e, SettingOptionType_StartMini, SettingOptionType_DecreaseBoostSlide)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesSettingOptionType()[index];
+}
+
+struct veryUniqueID FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef veryUniqueIDBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return veryUniqueIDTypeTable();
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_ASSOCIATEDID = 4,
+    VT_OBJECTID = 6
+  };
+  uint64_t associatedID() const {
+    return GetField<uint64_t>(VT_ASSOCIATEDID, 0);
+  }
+  uint32_t objectID() const {
+    return GetField<uint32_t>(VT_OBJECTID, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint64_t>(verifier, VT_ASSOCIATEDID, 8) &&
+           VerifyField<uint32_t>(verifier, VT_OBJECTID, 4) &&
+           verifier.EndTable();
+  }
+};
+
+struct veryUniqueIDBuilder {
+  typedef veryUniqueID Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_associatedID(uint64_t associatedID) {
+    fbb_.AddElement<uint64_t>(veryUniqueID::VT_ASSOCIATEDID, associatedID, 0);
+  }
+  void add_objectID(uint32_t objectID) {
+    fbb_.AddElement<uint32_t>(veryUniqueID::VT_OBJECTID, objectID, 0);
+  }
+  explicit veryUniqueIDBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<veryUniqueID> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<veryUniqueID>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<veryUniqueID> CreateveryUniqueID(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint64_t associatedID = 0,
+    uint32_t objectID = 0) {
+  veryUniqueIDBuilder builder_(_fbb);
+  builder_.add_associatedID(associatedID);
+  builder_.add_objectID(objectID);
+  return builder_.Finish();
 }
 
 /// The data a GD Game Object has when placed in the editor
@@ -392,10 +456,11 @@ struct GDGameObjectMin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_NOGLOW = 14,
     VT_NOENTER = 16,
     VT_FLIP = 18,
-    VT_SCALE = 20
+    VT_SCALE = 20,
+    VT_LAYER = 22
   };
-  const ::flatbuffers::String *uniqueID() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_UNIQUEID);
+  const CTSerialize::veryUniqueID *uniqueID() const {
+    return GetPointer<const CTSerialize::veryUniqueID *>(VT_UNIQUEID);
   }
   uint64_t objID() const {
     return GetField<uint64_t>(VT_OBJID, 0);
@@ -421,10 +486,13 @@ struct GDGameObjectMin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const CTSerialize::NodeScale *scale() const {
     return GetStruct<const CTSerialize::NodeScale *>(VT_SCALE);
   }
+  int16_t layer() const {
+    return GetField<int16_t>(VT_LAYER, 0);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_UNIQUEID) &&
-           verifier.VerifyString(uniqueID()) &&
+           verifier.VerifyTable(uniqueID()) &&
            VerifyField<uint64_t>(verifier, VT_OBJID, 8) &&
            VerifyField<CTSerialize::CCPosI>(verifier, VT_POS, 4) &&
            VerifyField<float>(verifier, VT_ROTATION, 4) &&
@@ -433,6 +501,7 @@ struct GDGameObjectMin FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            VerifyField<uint8_t>(verifier, VT_NOENTER, 1) &&
            VerifyField<CTSerialize::ObjectFlip>(verifier, VT_FLIP, 1) &&
            VerifyField<CTSerialize::NodeScale>(verifier, VT_SCALE, 4) &&
+           VerifyField<int16_t>(verifier, VT_LAYER, 2) &&
            verifier.EndTable();
   }
 };
@@ -441,7 +510,7 @@ struct GDGameObjectMinBuilder {
   typedef GDGameObjectMin Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_uniqueID(::flatbuffers::Offset<::flatbuffers::String> uniqueID) {
+  void add_uniqueID(::flatbuffers::Offset<CTSerialize::veryUniqueID> uniqueID) {
     fbb_.AddOffset(GDGameObjectMin::VT_UNIQUEID, uniqueID);
   }
   void add_objID(uint64_t objID) {
@@ -468,6 +537,9 @@ struct GDGameObjectMinBuilder {
   void add_scale(const CTSerialize::NodeScale *scale) {
     fbb_.AddStruct(GDGameObjectMin::VT_SCALE, scale);
   }
+  void add_layer(int16_t layer) {
+    fbb_.AddElement<int16_t>(GDGameObjectMin::VT_LAYER, layer, 0);
+  }
   explicit GDGameObjectMinBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -481,7 +553,7 @@ struct GDGameObjectMinBuilder {
 
 inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMin(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> uniqueID = 0,
+    ::flatbuffers::Offset<CTSerialize::veryUniqueID> uniqueID = 0,
     uint64_t objID = 0,
     const CTSerialize::CCPosI *pos = nullptr,
     float rotation = 0.0f,
@@ -489,7 +561,8 @@ inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMin(
     bool noGlow = false,
     bool noEnter = false,
     const CTSerialize::ObjectFlip *flip = nullptr,
-    const CTSerialize::NodeScale *scale = nullptr) {
+    const CTSerialize::NodeScale *scale = nullptr,
+    int16_t layer = 0) {
   GDGameObjectMinBuilder builder_(_fbb);
   builder_.add_objID(objID);
   builder_.add_scale(scale);
@@ -497,35 +570,78 @@ inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMin(
   builder_.add_rotation(rotation);
   builder_.add_pos(pos);
   builder_.add_uniqueID(uniqueID);
+  builder_.add_layer(layer);
   builder_.add_noEnter(noEnter);
   builder_.add_noGlow(noGlow);
   builder_.add_isHighDetail(isHighDetail);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<GDGameObjectMin> CreateGDGameObjectMinDirect(
+struct MoveEntry FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef MoveEntryBuilder Builder;
+  static const ::flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return MoveEntryTypeTable();
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_POSITIONOFFSETKEY = 4,
+    VT_UNIQUEIDLIST = 6
+  };
+  const CTSerialize::CCPos *positionOffsetKey() const {
+    return GetStruct<const CTSerialize::CCPos *>(VT_POSITIONOFFSETKEY);
+  }
+  const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *>(VT_UNIQUEIDLIST);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<CTSerialize::CCPos>(verifier, VT_POSITIONOFFSETKEY, 4) &&
+           VerifyOffset(verifier, VT_UNIQUEIDLIST) &&
+           verifier.VerifyVector(uniqueIDList()) &&
+           verifier.VerifyVectorOfTables(uniqueIDList()) &&
+           verifier.EndTable();
+  }
+};
+
+struct MoveEntryBuilder {
+  typedef MoveEntry Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_positionOffsetKey(const CTSerialize::CCPos *positionOffsetKey) {
+    fbb_.AddStruct(MoveEntry::VT_POSITIONOFFSETKEY, positionOffsetKey);
+  }
+  void add_uniqueIDList(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList) {
+    fbb_.AddOffset(MoveEntry::VT_UNIQUEIDLIST, uniqueIDList);
+  }
+  explicit MoveEntryBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<MoveEntry> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<MoveEntry>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<MoveEntry> CreateMoveEntry(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    const char *uniqueID = nullptr,
-    uint64_t objID = 0,
-    const CTSerialize::CCPosI *pos = nullptr,
-    float rotation = 0.0f,
-    bool isHighDetail = false,
-    bool noGlow = false,
-    bool noEnter = false,
-    const CTSerialize::ObjectFlip *flip = nullptr,
-    const CTSerialize::NodeScale *scale = nullptr) {
-  auto uniqueID__ = uniqueID ? _fbb.CreateString(uniqueID) : 0;
-  return CTSerialize::CreateGDGameObjectMin(
+    const CTSerialize::CCPos *positionOffsetKey = nullptr,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>> uniqueIDList = 0) {
+  MoveEntryBuilder builder_(_fbb);
+  builder_.add_uniqueIDList(uniqueIDList);
+  builder_.add_positionOffsetKey(positionOffsetKey);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<MoveEntry> CreateMoveEntryDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    const CTSerialize::CCPos *positionOffsetKey = nullptr,
+    const std::vector<::flatbuffers::Offset<CTSerialize::veryUniqueID>> *uniqueIDList = nullptr) {
+  auto uniqueIDList__ = uniqueIDList ? _fbb.CreateVector<::flatbuffers::Offset<CTSerialize::veryUniqueID>>(*uniqueIDList) : 0;
+  return CTSerialize::CreateMoveEntry(
       _fbb,
-      uniqueID__,
-      objID,
-      pos,
-      rotation,
-      isHighDetail,
-      noGlow,
-      noEnter,
-      flip,
-      scale);
+      positionOffsetKey,
+      uniqueIDList__);
 }
 
 struct GDWaveObject FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
@@ -827,7 +943,7 @@ inline const ::flatbuffers::TypeTable *SettingOptionTypeTypeTable() {
     "AllowStaticRotate",
     "ReverseSync",
     "NoTimePenalty",
-    "propkA45"
+    "DecreaseBoostSlide"
   };
   static const ::flatbuffers::TypeTable tt = {
     ::flatbuffers::ST_ENUM, 21, type_codes, type_refs, nullptr, values, names
@@ -835,19 +951,36 @@ inline const ::flatbuffers::TypeTable *SettingOptionTypeTypeTable() {
   return &tt;
 }
 
+inline const ::flatbuffers::TypeTable *veryUniqueIDTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_ULONG, 0, -1 },
+    { ::flatbuffers::ET_UINT, 0, -1 }
+  };
+  static const char * const names[] = {
+    "associatedID",
+    "objectID"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 2, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
 inline const ::flatbuffers::TypeTable *GDGameObjectMinTypeTable() {
   static const ::flatbuffers::TypeCode type_codes[] = {
-    { ::flatbuffers::ET_STRING, 0, -1 },
-    { ::flatbuffers::ET_ULONG, 0, -1 },
     { ::flatbuffers::ET_SEQUENCE, 0, 0 },
+    { ::flatbuffers::ET_ULONG, 0, -1 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 1 },
     { ::flatbuffers::ET_FLOAT, 0, -1 },
     { ::flatbuffers::ET_BOOL, 0, -1 },
     { ::flatbuffers::ET_BOOL, 0, -1 },
     { ::flatbuffers::ET_BOOL, 0, -1 },
-    { ::flatbuffers::ET_SEQUENCE, 0, 1 },
-    { ::flatbuffers::ET_SEQUENCE, 0, 2 }
+    { ::flatbuffers::ET_SEQUENCE, 0, 2 },
+    { ::flatbuffers::ET_SEQUENCE, 0, 3 },
+    { ::flatbuffers::ET_SHORT, 0, -1 }
   };
   static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::veryUniqueIDTypeTable,
     CTSerialize::CCPosITypeTable,
     CTSerialize::ObjectFlipTypeTable,
     CTSerialize::NodeScaleTypeTable
@@ -861,10 +994,30 @@ inline const ::flatbuffers::TypeTable *GDGameObjectMinTypeTable() {
     "noGlow",
     "noEnter",
     "flip",
-    "scale"
+    "scale",
+    "layer"
   };
   static const ::flatbuffers::TypeTable tt = {
-    ::flatbuffers::ST_TABLE, 9, type_codes, type_refs, nullptr, nullptr, names
+    ::flatbuffers::ST_TABLE, 10, type_codes, type_refs, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const ::flatbuffers::TypeTable *MoveEntryTypeTable() {
+  static const ::flatbuffers::TypeCode type_codes[] = {
+    { ::flatbuffers::ET_SEQUENCE, 0, 0 },
+    { ::flatbuffers::ET_SEQUENCE, 1, 1 }
+  };
+  static const ::flatbuffers::TypeFunction type_refs[] = {
+    CTSerialize::CCPosTypeTable,
+    CTSerialize::veryUniqueIDTypeTable
+  };
+  static const char * const names[] = {
+    "positionOffsetKey",
+    "uniqueIDList"
+  };
+  static const ::flatbuffers::TypeTable tt = {
+    ::flatbuffers::ST_TABLE, 2, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
