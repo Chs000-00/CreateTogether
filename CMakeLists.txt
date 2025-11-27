@@ -48,6 +48,9 @@ endif()
 # set(GEODE_LINK_NIGHTLY ON)
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
+CPMAddPackage("gh:camila314/UIBuilder#main")
+target_link_libraries(${PROJECT_NAME} UIBuilder)
+
 # Thankye globed
 # Can *Safely* be commented out when not compiling with test server
 if (NO_STEAMWORKS)

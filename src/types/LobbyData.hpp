@@ -27,4 +27,3 @@ struct lobbyOptions {
     // TODO: Implement
     bool canFriendsJoin = true;
 };
-

@@ -1,0 +1,103 @@
+{
+    "type": "Root",
+    "anchor": [0.5, 0.5],
+    "size": [0, 0],
+    "layoutOpts": {
+        "type": "AnchorLayoutOptions",
+        "anchor": 0
+    },
+    "children": [{
+        "type": "Node",
+        "anchor": [0.5, 0.5],
+        "size": [288.75, 110],
+        "id": "column",
+        "layout": {
+            "type": "AxisLayout",
+            "axis": 1,
+            "alignment": 1,
+            "crossAlignment": 1,
+            "lineAlignment": 1,
+            "autoScale": false,
+            "autoGrow": 0
+        },
+        "children": [{
+            "type": "Scale 9 Button",
+            "anchor": [0.5, 0.5],
+            "size": [209, 31],
+            "id": "text-button",
+            "zOrder": -1,
+            "layout": {
+                "type": "AnchorLayout"
+            },
+            "children": [{
+                "type": "Label",
+                "anchor": [0.5, 0.5],
+                "id": "Button Label",
+                "scale": [0.800000011920929, 0.800000011920929],
+                "tag": 0,
+                "layoutOpts": {
+                    "type": "AnchorLayoutOptions",
+                    "anchor": 0
+                },
+                "text": "Start Hosting",
+                "font": "bigFont.fnt",
+                "kerning": 1
+            }],
+            "spriteName": "GJ_button_01.png"
+        }, {
+            "type": "Node",
+            "anchor": [0.5, 0.5],
+            "size": [288.75, 34.5],
+            "id": "row",
+            "zOrder": 1,
+            "layout": {
+                "type": "AxisLayout",
+                "axis": 0,
+                "alignment": 1,
+                "crossAlignment": 1,
+                "lineAlignment": 1,
+                "autoScale": false,
+                "autoGrow": 0
+            },
+            "children": [{
+                "type": "Toggle",
+                "anchor": [0.5, 0.5],
+                "onSprite": "GJ_checkOn_001.png",
+                "offSprite": "GJ_checkOff_001.png"
+            }, {
+                "type": "Label",
+                "anchor": [0.5, 0.5],
+                "text": "Require invite",
+                "font": "bigFont.fnt",
+                "kerning": 1
+            }]
+        }, {
+            "type": "Node",
+            "anchor": [0.5, 0.5],
+            "size": [281.75, 34.5],
+            "id": "row",
+            "zOrder": 2,
+            "layout": {
+                "type": "AxisLayout",
+                "axis": 0,
+                "alignment": 1,
+                "crossAlignment": 1,
+                "lineAlignment": 1,
+                "autoScale": false,
+                "autoGrow": 0
+            },
+            "children": [{
+                "type": "Toggle",
+                "anchor": [0.5, 0.5],
+                "onSprite": "GJ_checkOn_001.png",
+                "offSprite": "GJ_checkOff_001.png"
+            }, {
+                "type": "Label",
+                "anchor": [0.5, 0.5],
+                "text": "Private Lobby",
+                "font": "bigFont.fnt",
+                "kerning": 1
+            }]
+        }]
+    }]
+}
