@@ -3,7 +3,7 @@ include "ccserialization.fbs";
 namespace CTSerialize; 
 
 // Simple container for showing vuids
-// TODO: Figure out how to properly hash a vUID
+// TODO: Figure out how to properly hash a vUID. This may not be needed...
 table veryUniqueID {
     associatedID:uint64;
     objectID:uint32;

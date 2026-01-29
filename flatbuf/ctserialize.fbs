@@ -14,6 +14,9 @@ union MessageBody {
     PasteObjects,
     ModifyObjects,
     ChangeGroupID,
+    ModifyObjectAdvancedOptions,
+    ModifyObjectBasicOptions,
+    ModifyObjectSpecialOptions,
     ChangeDefaultColor,
     RequestLevel,
     ReturnLevelString,
@@ -72,6 +75,27 @@ table ChangeGroupID {
     groupID:uint16;
     isAdding:bool;
     uniqueIDList:[veryUniqueID];
+}
+
+// These are the options inside the edit group button
+table ModifyObjectAdvancedOptions {
+    uniqueIDList:[veryUniqueID];
+}
+
+// These are the options inside the edit object button
+table ModifyObjectBasicOptions {
+    uniqueIDList:[veryUniqueID];
+
+    newText:string; // if exists
+    newGroup1Color:uint32; // or something
+}
+
+// These are the options inside the edit special button.
+// Because I am lazy, these will be using the pastedString method, but may migrate to the
+// Other method instead
+table ModifyObjectSpecialOptions {
+    uniqueIDList:[veryUniqueID];
+    pastedString:string;
 }
 
 table ChangeDefaultColor {
