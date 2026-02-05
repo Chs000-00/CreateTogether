@@ -79,6 +79,8 @@ void LobbiesLayer::refreshLobbyList(CCObject* sender) {
     this->m_menu->getChildByID("loading-spinner")->setVisible(true);
 
     // SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterFar);
+
+    // Make sure no other mod uses steamworks
     SteamMatchmaking()->AddRequestLobbyListStringFilter("lobby_type", MOD_LOBBY_ID, k_ELobbyComparisonEqual);
 	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
     this->m_lobbyMatchListCallResult.Set(hSteamAPICall, this, &LobbiesLayer::onLobbyMatchList);

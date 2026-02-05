@@ -12,11 +12,11 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(NO_STEAMWORKS OFF)
 
 # This is different from NO_STEAMWORKS.
-set(COMPILE_DEBUG_SERVER OFF)
+set(COMPILE_DEDICATED_SERVER OFF)
 
-if (COMPILE_DEBUG_SERVER)
-    message(status "Compiling debug server")
-    add_subdirectory(src/debug)
+if (COMPILE_DEDICATED_SERVER)
+    message(status "Compiling dedicated server")
+    add_subdirectory(src/dedicated)
     string( REPLACE "/DNDEBUG" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 
 endif()

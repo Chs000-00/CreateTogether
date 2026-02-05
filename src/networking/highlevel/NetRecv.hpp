@@ -2,7 +2,7 @@
 
 #include "SharedHighLevelHeaders.hpp"
 #include "ctserialize_generated.h"
-#include "debug/steamnetworkingtypes.h"
+#include "dedicated/steamnetworkingtypes.h"
 #include <cstdint>
 
 Result<uint8_t> recvCreateObjects(const CTSerialize::CreateObjects* msg);

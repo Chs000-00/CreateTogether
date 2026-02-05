@@ -10,14 +10,12 @@
 
 using namespace geode::prelude;
 
-// TODO: Try compiling ValveSoftware/GameNetworkingSockets:partner to possibly fix this ugly crap?
 #ifdef NO_STEAMWORKS
     #include <debug/steamnetworkingsockets.h>
     #include <debug/isteamnetworkingutils.h>
-    #include "debug/isteamnetworkingsockets.h"
-    #include "../debug/client.hpp"
+    #include "dedicated/isteamnetworkingsockets.h"
+    #include "../dedicated/client.hpp"
 #endif
-
 
 bool NetManager::getIsInLobby() {
     return NetManager::get()->m_isInLobby;

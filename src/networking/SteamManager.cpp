@@ -155,8 +155,6 @@ void SteamManager::onNetworkingMessagesSessionRequest(SteamNetworkingMessagesSes
 
 #else
 
-
-
 // Note this is only called if NO_STEAMWORKS is defined
 SteamManager::SteamManager() {
 

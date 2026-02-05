@@ -24,6 +24,3 @@ Result<uint8_t> toggleFromLevelSettings(LevelSettingsObject* settings, int optio
 
 // Change the SteamNetworkingIdentity to a string for hashing, so the cursor code could work properly.
 std::string getCursorHash(SteamNetworkingIdentity id);
-
-// New function to get a hash from a vuid. Still needs to be worked on.
-//std::string getvUIDHash(SteamNetworkingIdentity id);

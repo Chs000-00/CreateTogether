@@ -5,7 +5,6 @@
 
 using namespace geode::prelude;
 
-
 CreateTogetherCursor* CreateTogetherCursor::create(const CursorData& cursorData) {
     auto ret = new CreateTogetherCursor();
     if (ret->init(cursorData)) {
