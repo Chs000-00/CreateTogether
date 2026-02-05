@@ -5,7 +5,7 @@
 	},
 	"id": "chs000.createtogether",
 	"name": "Create Together",
-	"version": "v0.5.2",
+	"version": "v0.5.3",
 	"developer": "chs000",
 	"description": "Multiplayer level editing with steamworks",
 	"links": {

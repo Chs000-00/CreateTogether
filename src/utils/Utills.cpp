@@ -17,10 +17,11 @@ using namespace geode::prelude;
 
 // Checks if a enum is within range.
 // Comparison uses <=
-bool isValidEnumRange(int n, int min, int max) {
+bool isWithinRange(int n, int min, int max) {
     return (min <= n && n <= max);
 }
 
+// Toggle the proper setting from an intOption.
 Result<uint8_t> toggleFromLevelSettings(LevelSettingsObject* settings, int option) {
     switch (option) {
         case 0:
@@ -117,7 +118,7 @@ Result<uint8_t> toggleFromLevelSettings(LevelSettingsObject* settings, int optio
 
 std::string getCursorHash(SteamNetworkingIdentity id) {
 
-    // Really bad band-aid fix, but I don't want to rewrite this code.
+    // Really bad band-aid fix
     #ifdef NO_STEAMWORKS
         SteamNetworkingIPAddr fromServerAddr;
         fromServerAddr = id.m_ip;

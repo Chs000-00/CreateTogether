@@ -17,10 +17,13 @@ using namespace geode::prelude;
 
 // Checks if a enum is within range.
 // Comparison uses <=
-bool isValidEnumRange(int n, int min, int max);
+bool isWithinRange(int n, int min, int max);
 
 // Toggle stuff in levelSettings based off of an int
 Result<uint8_t> toggleFromLevelSettings(LevelSettingsObject* settings, int option);
 
 // Change the SteamNetworkingIdentity to a string for hashing, so the cursor code could work properly.
 std::string getCursorHash(SteamNetworkingIdentity id);
+
+// New function to get a hash from a vuid. Still needs to be worked on.
+//std::string getvUIDHash(SteamNetworkingIdentity id);

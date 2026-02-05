@@ -61,7 +61,8 @@ void NetManager::leaveLobby() {
 
         #else
 
-            log::info("Leaving debug lobby");
+            // TODO: Finish?
+            log::info("Leaving dedicated lobby");
             
         #endif
 
@@ -124,13 +125,13 @@ void NetManager::enterLevelEditorPrelude() {
         serverAddr.SetIPv4(DEDICATED_SERVER_IP, DEDICATED_EDITOR_PORT);
         char szAddr[ SteamNetworkingIPAddr::k_cchMaxString ];
         serverAddr.ToString(szAddr, sizeof(szAddr), true);
-        log::info("Connecting to editor server at {}", szAddr);
+        log::info("Connecting to editor server at IP {}", szAddr);
 
         SteamNetworkingConfigValue_t opt;
         opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallback);
         this->m_connection = SteamNetworkingSockets()->ConnectByIPAddress(serverAddr, 1, &opt);
         if (this->m_connection == k_HSteamNetConnection_Invalid) {
-            log::warn("Could not create a connection with the editor server");
+            log::warn("Could not establish a connection with the dedicated server");
         }
 
     #endif
@@ -171,7 +172,7 @@ void NetManager::fetchMemberList() {
         } 
     #else
 
-    log::warn("fetchMemberList without STEAMWORKS. Ignoring...");
+    log::warn("fetchMemberList was called without STEAMWORKS. This should not happen! Ignoring...");
     
     // SteamNetworkingIdentity server;
 
@@ -198,7 +199,7 @@ void NetManager::receiveData() {
     #endif
 
     if (numMessages < 0) {
-        log::warn("NetManager::receiveData(): Error receiving messages");
+        log::warn("NetManager::receiveData(): Unknown error when receiving messages");
     }
 
     for (int i = 0; i < numMessages; i++) {
