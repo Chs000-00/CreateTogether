@@ -218,8 +218,10 @@ Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg,
         return Err("eActionReturnLevelString: Non-Host level string");
     }
 
+    // TODO: Ignore this stuff more elegantly.
+    // This is a bandaid fix regarding an issue with dedcated servers.
     if (msg->levelString()->str() == "ignore") {
-        log::info("Ignored");
+        log::info("Ignored ghost level request");
         auto gameLevel = GJGameLevel::create();
         gameLevel->m_isEditable = true;
         gameLevel->m_levelType = GJLevelType::Editor;
@@ -366,7 +368,7 @@ Result<uint8_t> recvPlayerCursorData(const CTSerialize::PlayerCursorData* msg, S
 
     if (cursorItr == cursorManager->m_playerCursors.end()) {        
 
-        log::info("Creating Cursor.");
+        log::info("Creating Cursor from recived data.");
 
         cursor = CreateTogetherCursor::create(data);
 
@@ -382,7 +384,7 @@ Result<uint8_t> recvPlayerCursorData(const CTSerialize::PlayerCursorData* msg, S
         cursorManager->m_playerCursors.insert({cursorHash, cursor});
     }
     else {
-        log::debug("Updating Cursor.");
+        log::debug("Updating Cursor from recived data.");
         cursorItr->second->updateCursor(data);
     }
 

@@ -34,7 +34,6 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
     }
 
     void onHostPopupButton(CCObject* sender) {
-        // TODO: add if condition over cast
         auto netManager = NetManager::get();
 
         if (!NetManager::getIsInLobby()) {
@@ -53,6 +52,14 @@ class $modify(MyEditorPauseLayer, EditorPauseLayer) {
         // Make sure we really did in fact create a popup
         if (m_fields->m_lobbyPopup) {
             m_fields->m_lobbyPopup->show();
+        }
+
+        if (!Mod::get()->setSavedValue("shown-beta-warning", true)) {
+            FLAlertLayer::create(
+                "Warning:",
+                "Create together is currently in beta! Issues can and will happen, so make sure you backed up your levels beforehand!",
+                "Continue"
+            )->show();
         }
 
     }
