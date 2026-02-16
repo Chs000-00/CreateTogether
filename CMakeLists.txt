@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if ("${CMAKE_SYSTEM_NAME}" STREQUAL "iOS" OR IOS)
     set(CMAKE_OSX_ARCHITECTURES "arm64")
@@ -35,6 +35,7 @@ file(GLOB SOURCES
     src/networking/highLevel/*.cpp
     src/networking/cursor/*.cpp
     src/networking/scheduler/*.cpp
+    src/startup.cpp
 )
 # Set up the mod binary
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
@@ -48,6 +49,7 @@ endif()
 # set(GEODE_LINK_NIGHTLY ON)
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
+# Do I need this?
 CPMAddPackage("gh:camila314/UIBuilder#main")
 target_link_libraries(${PROJECT_NAME} UIBuilder)
 
@@ -80,10 +82,11 @@ else()
     if (ANDROID OR IOS)
         message(WARNING "IOS / Android has no support for steamworks. Please disable NO_STEAMWORKS.")
     endif()
+    
 
-    target_link_libraries(${PROJECT_NAME}
-        ${CMAKE_CURRENT_SOURCE_DIR}/lib/steam_api64.lib
-    )
+    # target_link_libraries(${PROJECT_NAME}
+    #     ${CMAKE_CURRENT_SOURCE_DIR}/lib/steam_api64.lib
+    # )
 
     # Small change to make code more readable, as it could get easy to mix ifndef NO_STEAMWORKS and ifdef NO_STEAMWORKS
     add_compile_definitions(

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Geode/Geode.hpp>
+
 #ifdef STEAMWORKS
     #include <isteamnetworkingmessages.h>
     #include <isteamuser.h>
@@ -14,12 +16,16 @@
 
 #include "../utils/Singleton.hpp"
 
+using namespace geode::prelude;
+
 
 
 class SteamManager: public Singleton<SteamManager> {
     public:
         SteamAPICall_t m_lobbyCreated;
         SteamAPICall_t m_lobbyJoined;
+
+        bool SteamworksLoaded;
 
 
         #ifdef STEAMWORKS

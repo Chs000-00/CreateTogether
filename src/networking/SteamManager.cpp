@@ -5,6 +5,22 @@
     #include <debug/steamnetworkingsockets.h>
 #endif
 
+$execute {
+    auto steamManager = SteamManager::get();
+    
+    #ifdef STEAMWORKS
+        auto steam = GetModuleHandle("steam_api64.dll");
+
+        if (!steam) {
+            log::warn("steam_api64.dll did not load. Steamworks integration will be disabled.");
+        } else {
+            steamManager->SteamworksLoaded = true;
+        }
+    #else
+        steamManager->SteamworksLoaded = false;
+    #endif
+}
+
 #ifdef STEAMWORKS
 
 void SteamManager::onGameJoinRequest(GameLobbyJoinRequested_t* pCallback) {

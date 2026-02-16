@@ -47,7 +47,7 @@ void NetManager::update() {
 void NetManager::leaveLobby() {
     
 
-    log::info("ISINLOBBY! {}", this->m_isInLobby);
+    log::info("Is in lobby {}", this->m_isInLobby);
 
     if (this->m_isInLobby) {
 
