@@ -1,7 +1,7 @@
 #pragma once
 
 #define MOD_LOBBY_ID "chs000.createtogether"
-#define MOD_VERSION "v0.5.2"
+#define MOD_VERSION "v0.5.3"
 
 #define EDITOR_CHANNEL 0
 #define CURSOR_CHANNEL 1

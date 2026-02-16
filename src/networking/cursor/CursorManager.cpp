@@ -32,12 +32,14 @@ void CursorManager::sendCursorUpdateToAll() {
     auto level = static_cast<MyLevelEditorLayer*>(LevelEditorLayer::get());
 
     if (!level) {
-        log::warn("Could not find level? This might get spammed.");
+        log::info("Level returned nullptr"); // This can be spammed
         return;
     }
 
+    // Convert the current mousepos to global space
     auto mp = level->m_objectLayer->convertToNodeSpace(getMousePos());
 
+    // Send it to everyone
     auto pos = CTSerialize::CCPos(mp.x, mp.y);
     auto cursorUpdate = CTSerialize::cursor::CreateCursorUpdate(this->m_cursorBuilder, &pos, CTSerialize::cursor::StatusType_None);
     this->sendMessage(cursorUpdate);
@@ -64,6 +66,7 @@ void CursorManager::cursorNetworkingPrelude() {
     log::info("Setting up CursorManager.");
 
     #ifdef NO_STEAMWORKS
+        log::info("CursorManager is running in dedicated mode...");
         SteamNetworkingIPAddr serverAddr;
         serverAddr.SetIPv4(DEDICATED_SERVER_IP, DEDICATED_CURSOR_PORT);
         char szAddr[ SteamNetworkingIPAddr::k_cchMaxString ];
@@ -78,6 +81,8 @@ void CursorManager::cursorNetworkingPrelude() {
             log::warn("Could not create a connection with the cursor server");
         }
 
+    #else
+        log::info("CursorManager is running in steamworks mode...");
     #endif
 
     // TODO: FINISH

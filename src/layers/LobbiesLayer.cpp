@@ -79,6 +79,8 @@ void LobbiesLayer::refreshLobbyList(CCObject* sender) {
     this->m_menu->getChildByID("loading-spinner")->setVisible(true);
 
     // SteamMatchmaking()->AddRequestLobbyListDistanceFilter(k_ELobbyDistanceFilterFar);
+
+    // Make sure no other mod uses steamworks
     SteamMatchmaking()->AddRequestLobbyListStringFilter("lobby_type", MOD_LOBBY_ID, k_ELobbyComparisonEqual);
 	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
     this->m_lobbyMatchListCallResult.Set(hSteamAPICall, this, &LobbiesLayer::onLobbyMatchList);
@@ -155,7 +157,7 @@ void LobbiesLayer::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOF
         
         SteamMatchmaking()->RequestLobbyData(lobbyID);
 
-        log::info("LOBBY NUM {}", i);
+        log::info("Lobby #{}", i);
 
         if (SteamMatchmaking()->GetLobbyData(lobbyID, "version") != MOD_VERSION) {
             clobby.isVersionMismatched = true;
@@ -172,7 +174,7 @@ void LobbiesLayer::onLobbyMatchList(LobbyMatchList_t *pLobbyMatchList, bool bIOF
         clobby.steamId = lobbyID;
 
         dataVector.push_back(clobby);   
-        log::debug("Data stuff: {} | {}", clobby.steamId.ConvertToUint64(), lobbyID.ConvertToUint64());
+        log::debug("SteamID: {} | LobbyID: {}", clobby.steamId.ConvertToUint64(), lobbyID.ConvertToUint64());
 
         this->m_data = dataVector;
     }

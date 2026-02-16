@@ -18,15 +18,6 @@ using namespace geode::prelude;
 // specify parameters for the setup function in the Popup<...> template
 bool LobbyPopup::setup(EPopupType type) {
 
-    if (!Mod::get()->setSavedValue("shown-beta-warning", true)) {
-        FLAlertLayer::create(
-            "Warning:",
-            "Create together is currently in beta! Issues can and will happen, so make sure you backed up your levels beforehand!",
-            "Continue"
-        )->show();
-    }
-
-
     switch (type) {
         case eLobbyHostPopup: {
             this->setTitle("Create Lobby:");
@@ -170,6 +161,7 @@ LobbyPopup* LobbyPopup::create(EPopupType type) {
         ret->autorelease();
         return ret;
     }
+
 
     delete ret;
     return nullptr;

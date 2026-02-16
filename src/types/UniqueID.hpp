@@ -15,6 +15,11 @@ struct vUIDContainer {
         this->objectID = oID;
     }
 
+    // TODO: Finish
+    inline std::string getHash() {
+        return ""
+    }
+
     flatbuffers::Offset<CTSerialize::veryUniqueID> createOffset(flatbuffers::FlatBufferBuilder builder) {
         return CTSerialize::CreateveryUniqueID(builder, this->associatedID, this->objectID);
     }
