@@ -19,7 +19,7 @@
 		"online"
 	],
 	"settings": {
-		"only-default-wave": {
+		"only-default-cursors": {
 			"type": "bool",
 			"name": "Only show default cursors",
 			"description": "Only show the default cursors when creating together",

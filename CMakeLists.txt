@@ -9,10 +9,10 @@ endif()
 
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-set(NO_STEAMWORKS OFF)
+set(NO_STEAMWORKS ON)
 
 # This is different from NO_STEAMWORKS.
-set(COMPILE_DEDICATED_SERVER OFF)
+set(COMPILE_DEDICATED_SERVER ON)
 
 if (COMPILE_DEDICATED_SERVER)
     message(status "Compiling dedicated server")
@@ -21,7 +21,7 @@ if (COMPILE_DEDICATED_SERVER)
 
 endif()
 
-project(CreateTogether VERSION 0.5.2)
+project(CreateTogether VERSION 0.5.3)
 
 file(GLOB SOURCES
     src/hooks/*.cpp

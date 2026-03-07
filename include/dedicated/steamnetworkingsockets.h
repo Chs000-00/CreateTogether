@@ -10,7 +10,7 @@
 #pragma once
 #endif
 
-#include "debug/isteamnetworkingsockets.h"
+#include "dedicated/isteamnetworkingsockets.h"
 
 extern "C" {
 

@@ -2,13 +2,12 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/binding/LevelEditorLayer.hpp>
-#include <gl/glu.h>
 #include <Geode/binding/PlayLayer.hpp>
 #include "../config.hpp"
 
 
 #ifdef NO_STEAMWORKS
-    #include <debug/isteamnetworkingutils.h>
+    #include <dedicated/isteamnetworkingutils.h>
 #else
     #include <isteamnetworkingutils.h>
 #endif
@@ -116,9 +115,8 @@ Result<uint8_t> toggleFromLevelSettings(LevelSettingsObject* settings, int optio
     return Ok(0);
 }
 
-std::string getCursorHash(SteamNetworkingIdentity id) {
+std::string hashSteamNetowrkingID(SteamNetworkingIdentity id) {
 
-    // Really bad band-aid fix
     #ifdef NO_STEAMWORKS
         SteamNetworkingIPAddr fromServerAddr;
         fromServerAddr = id.m_ip;
@@ -128,8 +126,24 @@ std::string getCursorHash(SteamNetworkingIdentity id) {
 
     char buf[SteamNetworkingIdentity::k_cchMaxString];
 
-
     id.ToString(buf, sizeof(buf));
     // log::debug("CursorHash {}", buf);
     return buf;
+}
+
+
+bool steamworksLoaded() {
+    #ifdef STEAMWORKS
+        return SteamManager::get()->m_steamworksLoaded;
+    #else 
+        return false;
+    #endif
+}
+
+bool steamworksUnloaded() {
+    #ifdef STEAMWORKS
+        return !SteamManager::get()->m_steamworksLoaded;
+    #else 
+        return true;
+    #endif
 }

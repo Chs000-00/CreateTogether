@@ -1,8 +1,8 @@
 #include "SteamManager.hpp"
 
 #ifdef NO_STEAMWORKS
-    #include <debug/isteamnetworkingutils.h>
-    #include <debug/steamnetworkingsockets.h>
+    #include <dedicated/isteamnetworkingutils.h>
+    #include <dedicated/steamnetworkingsockets.h>
 #endif
 
 $execute {
@@ -14,10 +14,11 @@ $execute {
         if (!steam) {
             log::warn("steam_api64.dll did not load. Steamworks integration will be disabled.");
         } else {
-            steamManager->SteamworksLoaded = true;
+            log::info("steam_api64.dll was found. Steamworks will be loaded & enabled.");
+            steamManager->m_steamworksLoaded = true;
         }
     #else
-        steamManager->SteamworksLoaded = false;
+        steamManager->m_steamworksLoaded = false;
     #endif
 }
 

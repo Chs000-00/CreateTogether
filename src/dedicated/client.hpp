@@ -2,7 +2,7 @@
 
 // This file is used to make the code more bearable to read
 
-#include "debug/isteamnetworkingsockets.h"
+#include "dedicated/isteamnetworkingsockets.h"
 #include "../networking/NetManager.hpp"
 
 inline void steamNetConnectionStatusChangedCallback( SteamNetConnectionStatusChangedCallback_t* pInfo ) {

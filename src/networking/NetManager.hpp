@@ -5,7 +5,7 @@
     #include <isteamuser.h>
     #include <isteammatchmaking.h>
 #else
-    #include <debug/isteamnetworkingmessages.h>
+    #include <dedicated/isteamnetworkingmessages.h>
 #endif
 
 
@@ -102,6 +102,10 @@ class NetManager : public Singleton<NetManager> {
         // Ignore recieved messages. This should be true to avoid calling message functions while playtesting or
         // Before the level was loaded.
         bool m_ignoreMessages = false;
+
+        // TODO: Implement
+        bool m_steamworksEnabled = true;
+
     private:
         // Sends all the currently queued data. Oh and also deletes the data afterward.
         // void sendQueuedData();

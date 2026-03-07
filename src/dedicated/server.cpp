@@ -2,8 +2,8 @@
 #include <iostream>
 #include <signal.h>
 
-#include <debug/steamnetworkingsockets.h>
-#include <debug/isteamnetworkingutils.h>
+#include <dedicated/steamnetworkingsockets.h>
+#include <dedicated/isteamnetworkingutils.h>
 
 #include <flatbuffers/flatbuffers.h>
 #include <flatbuffers/minireflect.h>

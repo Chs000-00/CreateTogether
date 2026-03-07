@@ -6,8 +6,8 @@
 // for callbacks, etc.  In the OpenSource version, it's a stub with
 // just a few things.
 
-#include "debug/steamtypes.h"
-#include "debug/steamclientpublic.h"
+#include "dedicated/steamtypes.h"
+#include "dedicated/steamclientpublic.h"
 
 enum { k_iSteamNetworkingSocketsCallbacks = 1220 };
 enum { k_iSteamNetworkingMessagesCallbacks = 1250 };

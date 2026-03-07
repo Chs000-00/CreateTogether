@@ -2,7 +2,6 @@
 
 #include <ctserialize_generated.h>
 #include <ctcursor_generated.h>
-#include <string>
 #include "../../types/Cursor.hpp"
 
 #ifdef STEAMWORKS
@@ -10,7 +9,7 @@
     #include <isteamuser.h>
     #include <isteammatchmaking.h>
 #else
-    #include <debug/isteamnetworkingmessages.h>
+    #include <dedicated/isteamnetworkingmessages.h>
 #endif
 
 using namespace geode::prelude;

@@ -7,8 +7,8 @@
 #ifndef STEAMCLIENTPUBLIC_H
 #define STEAMCLIENTPUBLIC_H
 
-#include "debug/steamtypes.h"
-#include "debug/steamuniverse.h"
+#include "dedicated/steamtypes.h"
+#include "dedicated/steamuniverse.h"
 
 // General result codes
 enum EResult

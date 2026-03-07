@@ -8,8 +8,8 @@
 #define ISTEAMNETWORKINGUTILS
 #pragma once
 
-#include "debug/steamnetworkingtypes.h"
-#include "debug/steam_api_common.h"
+#include "dedicated/steamnetworkingtypes.h"
+#include "dedicated/steam_api_common.h"
 
 struct SteamDatagramRelayAuthTicket;
 struct SteamRelayNetworkStatus_t;

@@ -12,9 +12,9 @@
 #define STEAMNETWORKINGSOCKETS_FLAT
 #pragma once
 
-#include "debug/steamnetworkingtypes.h"
-#include "debug/isteamnetworkingsockets.h"
-#include "debug/isteamnetworkingutils.h"
+#include "dedicated/steamnetworkingtypes.h"
+#include "dedicated/isteamnetworkingsockets.h"
+#include "dedicated/isteamnetworkingutils.h"
 class ISteamNetworkingConnectionSignaling;
 
 typedef uint64 uint64_steamid; // Used when passing or returning CSteamID

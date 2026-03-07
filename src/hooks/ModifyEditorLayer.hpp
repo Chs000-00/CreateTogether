@@ -9,7 +9,7 @@
     #include <isteamnetworkingmessages.h>
     #include <isteamuser.h>
 #else
-    #include <debug/isteamnetworkingmessages.h>
+    #include <dedicated/isteamnetworkingmessages.h>
 #endif
 
 using namespace geode::prelude;

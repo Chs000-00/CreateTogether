@@ -5,7 +5,7 @@
 #include <Geode/binding/LevelSettingsObject.hpp>
 
 #ifdef NO_STEAMWORKS
-    #include <debug/steamnetworkingtypes.h>
+    #include <dedicated/steamnetworkingtypes.h>
 #else
     #include <steamnetworkingtypes.h>
 #endif
@@ -23,4 +23,10 @@ bool isWithinRange(int n, int min, int max);
 Result<uint8_t> toggleFromLevelSettings(LevelSettingsObject* settings, int option);
 
 // Change the SteamNetworkingIdentity to a string for hashing, so the cursor code could work properly.
-std::string getCursorHash(SteamNetworkingIdentity id);
+std::string hashSteamNetowrkingID(SteamNetworkingIdentity id);
+
+bool steamworksLoaded();
+bool steamworksUnloaded();
+
+bool steamworksEnabled();
+bool steamworksDisabled();

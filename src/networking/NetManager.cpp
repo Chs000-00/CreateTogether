@@ -11,8 +11,8 @@
 using namespace geode::prelude;
 
 #ifdef NO_STEAMWORKS
-    #include <debug/steamnetworkingsockets.h>
-    #include <debug/isteamnetworkingutils.h>
+    #include <dedicated/steamnetworkingsockets.h>
+    #include <dedicated/isteamnetworkingutils.h>
     #include "dedicated/isteamnetworkingsockets.h"
     #include "../dedicated/client.hpp"
 #endif

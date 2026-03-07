@@ -17,7 +17,7 @@ struct vUIDContainer {
 
     // TODO: Finish
     inline std::string getHash() {
-        return ""
+        return "";
     }
 
     flatbuffers::Offset<CTSerialize::veryUniqueID> createOffset(flatbuffers::FlatBufferBuilder builder) {

@@ -1,6 +1,4 @@
 #include "Geode/cocos/base_nodes/CCNode.h"
-#include "Geode/cocos/layers_scenes_transitions_nodes/CCLayer.h"
-#include "Geode/loader/Log.hpp"
 #include "HighLevelHeader.hpp"
 #include "NetSend.hpp"
 #include "SharedHighLevelHeaders.hpp"
@@ -41,8 +39,11 @@ Result<uint8_t> recvCreateObjects(const CTSerialize::CreateObjects* msg) {
     }
 
     MyGameObject* betterPlacedGameObject = static_cast<MyGameObject*>(placedGameObject);
-    betterPlacedGameObject->m_fields->m_veryUniqueID = minObj->uniqueID()->str();
-    level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, minObj->uniqueID()->str());
+    
+    auto vuid = vUIDContainer(minObj->uniqueID()->associatedID(), minObj->uniqueID()->objectID());
+
+    betterPlacedGameObject->m_fields->m_veryUniqueID = vuid;
+    level->m_fields->m_pUniqueIDOfGameObject->setObject(placedGameObject, vuid.getHash());
     return Ok(0);
 }
 
@@ -149,12 +150,13 @@ Result<uint8_t> recvModifyObjects(const CTSerialize::ModifyObjects* msg) {
 
     for (auto i = 0; i != std::min(objectArr.size(), (size_t)uniqueIDList->size()); ++i) {
         auto newObj = (objectArr[i]);
-        auto vuid = uniqueIDList->Get(i)->c_str();
+        auto vuid = vUIDContainer(uniqueIDList->Get(i)->associatedID(), uniqueIDList->Get(i)->objectID());
 
-        if (auto oldObj = static_cast<MyGameObject*>(level->m_fields->m_pUniqueIDOfGameObject->objectForKey(vuid))) {
+
+        if (auto oldObj = static_cast<MyGameObject*>(level->m_fields->m_pUniqueIDOfGameObject->objectForKey(vuid.getHash()))) {
             level->deleteObject(oldObj);
             newObj->m_fields->m_veryUniqueID = vuid;
-            level->m_fields->m_pUniqueIDOfGameObject->setObject(newObj, vuid);
+            level->m_fields->m_pUniqueIDOfGameObject->setObject(newObj, vuid.getHash());
         }
         else {
             return Err("object vUID not found");
@@ -263,9 +265,10 @@ Result<uint8_t> recvReturnLevelString(const CTSerialize::ReturnLevelString* msg,
 
     for (auto i = 0; i != std::min(objectArr.size(), (size_t)uniqueIDList->size()); ++i) {
         auto mObject = (objectArr[i]);
-        auto vuid = uniqueIDList->Get(i)->str();
+        auto vuid = vUIDContainer(uniqueIDList->Get(i)->associatedID(), uniqueIDList->Get(i)->objectID());
+        
         mObject->m_fields->m_veryUniqueID = vuid;
-        betterLevel->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, vuid);
+        betterLevel->m_fields->m_pUniqueIDOfGameObject->setObject(mObject, vuid.getHash());
     }
 
 	netManager->m_isRequestingLevelString = false;

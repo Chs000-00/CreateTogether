@@ -3,17 +3,15 @@
 #include "../../config.hpp"
 #include "CursorManager.hpp"
 #include "Geode/loader/Log.hpp"
-#include "Geode/utils/cocos.hpp"
 #include "NetManager.hpp"
 #include "ccserialization_generated.h"
 #include "ctcursor_generated.h"
 #include "../../hooks/ModifyEditorLayer.hpp"
-#include "../../utils/Utills.hpp"
 
 #ifdef NO_STEAMWORKS
-    #include <debug/steamnetworkingsockets.h>
-    #include <debug/isteamnetworkingutils.h>
-    #include "../debug/client.hpp"
+    #include <dedicated/steamnetworkingsockets.h>
+    #include <dedicated/isteamnetworkingutils.h>
+    #include "../dedicated/client.hpp"
 #endif
 
 using namespace geode::prelude;

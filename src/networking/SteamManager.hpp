@@ -7,7 +7,7 @@
     #include <isteamuser.h>
     #include <isteammatchmaking.h>
 #else
-    #include <debug/isteamnetworkingmessages.h>
+    #include <dedicated/isteamnetworkingmessages.h>
 #endif
 
 #include "NetManager.hpp"
@@ -25,7 +25,7 @@ class SteamManager: public Singleton<SteamManager> {
         SteamAPICall_t m_lobbyCreated;
         SteamAPICall_t m_lobbyJoined;
 
-        bool SteamworksLoaded;
+        bool m_steamworksLoaded;
 
 
         #ifdef STEAMWORKS

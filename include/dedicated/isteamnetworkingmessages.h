@@ -4,8 +4,8 @@
 #define ISTEAMNETWORKINGMESSAGES
 #pragma once
 
-#include "debug/steamnetworkingtypes.h"
-#include "debug/steam_api_common.h"
+#include "dedicated/steamnetworkingtypes.h"
+#include "dedicated/steam_api_common.h"
 
 //-----------------------------------------------------------------------------
 /// The non-connection-oriented interface to send and receive messages

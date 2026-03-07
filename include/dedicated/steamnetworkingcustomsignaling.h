@@ -11,7 +11,7 @@
 #define STEAMNETWORKINGCUSTOMSIGNALING
 #pragma once
 
-#include "debug/steamnetworkingtypes.h"
+#include "dedicated/steamnetworkingtypes.h"
 
 class ISteamNetworkingSockets;
 
